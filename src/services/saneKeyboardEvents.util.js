@@ -114,6 +114,10 @@ var saneKeyboardEvents = (function() {
 
     // -*- public methods -*- //
     function select(text) {
+      // "textarea" may be replaced by a different element with no "select" function
+      // by substituteTextarea
+      if (!textarea[0].select) return;
+
       // check textarea at least once/one last time before munging (so
       // no race condition if selection happens after keypress/paste but
       // before checkTextarea), then never again ('cos it's been munged)
@@ -149,7 +153,7 @@ var saneKeyboardEvents = (function() {
       keypress = null;
 
       if (shouldBeSelected) checkTextareaFor(function() {
-        textarea[0].select(); // re-select textarea in case it's an unrecognized
+        if (textarea[0].select) textarea[0].select(); // re-select textarea in case it's an unrecognized
         checkTextarea = noop; // key that clears the selection, then never
         clearTimeout(timeoutId); // again, 'cos next thing might be blur
       });
@@ -194,7 +198,7 @@ var saneKeyboardEvents = (function() {
         handlers.typedText(text);
       } // in Firefox, keys that don't type text, just clear seln, fire keypress
       // https://github.com/mathquill/mathquill/issues/293#issuecomment-40997668
-      else if (text) textarea[0].select(); // re-select if that's why we're here
+      else if (text && textarea[0].select) textarea[0].select(); // re-select if that's why we're here
     }
 
     function onBlur() { keydown = keypress = null; }
