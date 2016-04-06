@@ -327,7 +327,7 @@ var SummationNotation = P(MathCommand, function(_, super_) {
   };
   _.createLeftOf = function(cursor) {
     super_.createLeftOf.apply(this, arguments);
-    if (cursor.options.sumStartsWithNEquals) {
+    if (cursor.options.sumStartsWithNEquals && this.ctrlSeq !== '\\int ') {
       Letter('n').createLeftOf(cursor);
       Equality().createLeftOf(cursor);
     }
@@ -379,8 +379,8 @@ LatexCmds.coprod =
 LatexCmds.coproduct = bind(SummationNotation,'\\coprod ','&#8720;');
 
 LatexCmds['∫'] =
-LatexCmds['int'] =
-LatexCmds.integral = bind(Symbol,'\\int ','<big>&int;</big>');
+LatexCmds['integral'] =
+LatexCmds.integral = bind(SummationNotation,'\\int ','&int;');
 
 var Fraction =
 LatexCmds.frac =
