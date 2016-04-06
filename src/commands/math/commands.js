@@ -379,7 +379,7 @@ LatexCmds.coprod =
 LatexCmds.coproduct = bind(SummationNotation,'\\coprod ','&#8720;');
 
 LatexCmds['∫'] =
-LatexCmds['int'] =
+LatexCmds['integral'] =
 LatexCmds.integral = bind(SummationNotation,'\\int ','&int;');
 
 var Fraction =
