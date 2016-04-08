@@ -19,4 +19,65 @@ suite('CSS', function() {
       widht: ''
     });
   });
+
+  test('empty root block does not collapse', function() {
+    var testEl = $('<span></span>').appendTo('#mock');
+    var mq = MQ.MathField(testEl[0]);
+    var rootEl = testEl.find('.mq-root-block');
+
+    assert.ok(rootEl.hasClass('mq-empty'), 'Empty root block should have the mq-empty class name.');
+    assert.ok(rootEl.height() > 0, 'Empty root block height should be above 0.');
+
+    testEl.remove();
+  });
+
+  test('empty block does not collapse', function() {
+    var testEl = $('<span>\\frac{}{}</span>').appendTo('#mock');
+    var mq = MQ.MathField(testEl[0]);
+    var numeratorEl = testEl.find('.mq-numerator');
+
+    assert.ok(numeratorEl.hasClass('mq-empty'), 'Empty numerator should have the mq-empty class name.');
+    assert.ok(numeratorEl.height() > 0, 'Empty numerator height should be above 0.');
+
+    testEl.remove();
+  });
+
+  test('test florin spacing', function () {
+    var mq,
+        mock = $('#mock');
+
+    mq = MathQuill.MathField($('<span></span>').appendTo(mock)[0]);
+    mq.typedText("f'");
+
+    var mqF = $(mq.el()).find('.mq-f');
+    var testVal = parseFloat(mqF.css('margin-right')) - parseFloat(mqF.css('margin-left'));
+    assert.ok(testVal > 0, 'this should be truthy') ;
+
+    $(mq.el()).remove();
+  });
+
+  test('operator name spacing e.g. sin x', function() {
+    var mq = MathQuill.MathField($('<span></span>').appendTo(mock)[0]);
+
+    mq.typedText('sin');
+    var n = jQuery('#mock var.mq-operator-name:last');
+    assert.equal(n.text(), 'n');
+    assert.ok(!n.is('.mq-last'));
+
+    mq.typedText('x');
+    assert.ok(n.is('.mq-last'));
+
+    mq.keystroke('Left').typedText('(');
+    assert.ok(!n.is('.mq-last'));
+
+    mq.keystroke('Backspace').typedText('^');
+    assert.ok(!n.is('.mq-last'));
+    var supsub = jQuery('#mock .mq-supsub');
+    assert.ok(supsub.is('.mq-after-operator-name'));
+
+    mq.typedText('2').keystroke('Tab').typedText('(');
+    assert.ok(!supsub.is('.mq-after-operator-name'));
+
+    $(mq.el()).empty();
+  });
 });
