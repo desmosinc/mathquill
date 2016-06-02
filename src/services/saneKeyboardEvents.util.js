@@ -201,6 +201,14 @@ var saneKeyboardEvents = (function() {
 
     function onBlur() { keydown = keypress = null; }
 
+    function onCopy(e) { handlers.copy(e) }
+
+    function onCut(e) {
+      setTimeout(function () {
+        handlers.cut(e);
+      });
+    }
+
     function onPaste(e) {
       // browsers are dumb.
       //
@@ -229,6 +237,8 @@ var saneKeyboardEvents = (function() {
       keydown: onKeydown,
       keypress: onKeypress,
       focusout: onBlur,
+      cut: onCut,
+      copy: onCopy,
       paste: onPaste
     });
 

@@ -309,6 +309,12 @@ keyboards just don't work in Desmos on iOS, the tradeoffs are up to you.
 [stucox]: http://www.stucox.com/blog/you-cant-detect-a-touchscreen/
 [Modernizr]: https://github.com/Modernizr/Modernizr/issues/548
 
+
+`substituteKeyboardEvents`, a function that wraps the normal saneKeyboardEvents util
+so that normalized events can be spied on. If you specify new 'cut', 'paste', 'copy',
+'typedText', or 'keystroke' handlers then it's your responsibility to make sure the
+original handler gets called.
+
 Supported handlers:
 - `moveOutOf`, `deleteOutOf`, and `selectOutOf` are called with `dir` and the
   math field API object as arguments
