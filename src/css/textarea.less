@@ -9,7 +9,8 @@
   }
 
   .mq-textarea *, .mq-selectable {
-    .user-select(text);
+    // Commenting next line because it prevents VoiceOver on iOS from seeing MathQuill textareas.
+    //.user-select(text);
 
     position: absolute; // the only way to hide the textarea *and* the
     clip: rect(1em 1em 1em 1em); // blinking insertion point in IE
