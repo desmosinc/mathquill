@@ -114,6 +114,9 @@ var TextColor = LatexCmds.textcolor = P(MathCommand, function(_, super_) {
       })
     ;
   };
+  _.isStyleBlock = function() {
+    return true;
+  };
 });
 
 // Very similar to the \textcolor command, but will add the given CSS class.
