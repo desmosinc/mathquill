@@ -1094,7 +1094,7 @@ Environments.matrix = P(Environment, function(_, super_) {
         return i % this.rowSize === 0;
       } else {
         // If we're on the right edge and moving right, we should exit.
-        return (i + 1) % this.rowSize == 0;
+        return (i + 1) % this.rowSize === 0;
       }
     }
     if (dir === L) {
