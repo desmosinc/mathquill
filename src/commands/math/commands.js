@@ -1085,6 +1085,25 @@ Environments.matrix = P(Environment, function(_, super_) {
     table.toggleClass('mq-rows-1', table.find('tr').length === 1);
     this.relink();
   };
+  _.upInto = function(dir, cursor) {
+    if (cursor.parent.parent === this) {
+      // We're inside the matrix.
+      var i = this.blocks.indexOf(cursor.parent);
+      if (dir === L) {
+        // If we're on the left edge and moving left, we should exit.
+        return i % this.rowSize === 0;
+      } else {
+        // If we're on the right edge and moving right, we should exit.
+        return (i + 1) % this.rowSize == 0;
+      }
+    }
+    if (dir === L) {
+      return this.blocks[this.rowSize - 1];
+    } else {
+      return this.blocks[0];
+    }
+  }
+
   // Set up directional pointers between cells
   _.relink = function() {
     var blocks = this.blocks;
@@ -1134,6 +1153,10 @@ Environments.matrix = P(Environment, function(_, super_) {
     }
 
     maxLength = Math.max.apply(null, lengths);
+
+	// Record the row size as it's useful for determining which edge of the matrix we're on.
+    this.rowSize = maxLength;
+
     if (maxLength !== Math.min.apply(null, lengths)) {
       // Pad shorter rows to correct length
       for (i=0; i<rows.length; i+=1) {
