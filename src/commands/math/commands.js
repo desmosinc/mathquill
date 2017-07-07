@@ -941,7 +941,7 @@ LatexCmds.begin = P(MathCommand, function(_, super_) {
     var string = Parser.string;
     var regex = Parser.regex;
     return string('{')
-      .then(regex(/^[a-z]+/i))
+      .then(regex(/^[a-z*]+/i))
       .skip(string('}'))
       .then(function (env) {
           return (Environments[env] ?
@@ -966,7 +966,7 @@ var Environment = P(MathCommand, function(_, super_) {
 var Matrix =
 Environments.matrix = P(Environment, function(_, super_) {
 
-  var delimiters = {
+  _.delimiters = {
     column: '&',
     row: '\\\\'
   };
@@ -975,6 +975,9 @@ Environments.matrix = P(Environment, function(_, super_) {
     right: null
   };
   _.environment = 'matrix';
+
+  _.removeEmptyColumns = true;  // Default to removing empty columns on deleting cell.
+  _.removeEmptyRows = true;  // Default to removing empty rows on deleting the last cell.
 
   _.reflow = function() {
     var blockjQ = this.jQ.children('table');
@@ -993,12 +996,12 @@ Environments.matrix = P(Environment, function(_, super_) {
     this.eachChild(function (cell) {
       if (typeof row !== 'undefined') {
         latex += (row !== cell.row) ?
-          delimiters.row :
-          delimiters.column;
+          this.delimiters.row :
+          this.delimiters.column;
       }
       row = cell.row;
       latex += cell.latex();
-    });
+    }.bind(this));
 
     return this.wrappers().join(latex);
   };
@@ -1014,18 +1017,24 @@ Environments.matrix = P(Environment, function(_, super_) {
 
     // Build <tr><td>.. structure from cells
     this.eachChild(function (cell) {
-      if (row !== cell.row) {
+      var isFirstColumn = row !== cell.row;
+      if (isFirstColumn) {
         row = cell.row;
         trs += '<tr>$tds</tr>';
         cells[row] = [];
       }
+      if (this.parent.htmlColumnSeparator && !isFirstColumn) {
+        cells[row].push(this.parent.htmlColumnSeparator);
+      }
       cells[row].push('<td>&'+(i++)+'</td>');
     });
+
+    var tableClasses = this.extraTableClasses ? 'mq-non-leaf ' + this.extraTableClasses : 'mq-non-leaf';
 
     this.htmlTemplate =
         '<span class="mq-matrix mq-non-leaf">'
       +   parenHtml(this.parentheses.left)
-      +   '<table class="mq-non-leaf">'
+      +   '<table class="' + tableClasses + '">'
       +     trs.replace(/\$tds/g, function () {
               return cells.shift().join('');
             })
@@ -1051,8 +1060,8 @@ Environments.matrix = P(Environment, function(_, super_) {
     var string = Parser.string;
 
     return optWhitespace
-    .then(string(delimiters.column)
-      .or(string(delimiters.row))
+    .then(string(this.delimiters.column)
+      .or(string(this.delimiters.row))
       .or(latexMathParser.block))
     .many()
     .skip(optWhitespace)
@@ -1071,13 +1080,13 @@ Environments.matrix = P(Environment, function(_, super_) {
           blocks.push(items[i]);
         } else {
           addCell();
-          if (items[i] === delimiters.row) row+=1;
+          if (items[i] === this.delimiters.row) row+=1;
         }
       }
       addCell();
       self.autocorrect();
       return Parser.succeed(self);
-    });
+    }.bind(this));
   };
   // Relink all the cells after parsing
   _.finalizeTree = function() {
@@ -1212,7 +1221,7 @@ Environments.matrix = P(Environment, function(_, super_) {
       }
     }
 
-    if (isEmpty(myRow) && myColumn.length > 1) {
+    if (_.removeEmptyRows && isEmpty(myRow) && myColumn.length > 1) {
       row = rows.indexOf(myRow);
       // Decrease all following row numbers
       this.eachChild(function (cell) {
@@ -1222,7 +1231,7 @@ Environments.matrix = P(Environment, function(_, super_) {
       remove(myRow);
       this.jQ.find('tr').eq(row).remove();
     }
-    if (isEmpty(myColumn) && myRow.length > 1) {
+    if (_.removeEmptyColumns && isEmpty(myColumn) && myRow.length > 1) {
       remove(myColumn);
     }
     this.finalizeTree();
@@ -1250,14 +1259,17 @@ Environments.matrix = P(Environment, function(_, super_) {
     });
 
     // Add new cells, one for each column
+    var isFirstColumn = true;
     for (var i=0; i<columns; i+=1) {
       block = MatrixCell(row+1);
       block.parent = this;
       newCells.push(block);
-
+      if (this.htmlColumnSeparator && !isFirstColumn) {
+        newRow.append($(this.htmlColumnSeparator));
+      }
+      isFirstColumn = false;
       // Create cell <td>s and add to new row
       block.jQ = $('<td class="mq-empty">')
-        .attr(mqBlockId, block.id)
         .appendTo(newRow);
     }
 
@@ -1284,8 +1296,7 @@ Environments.matrix = P(Environment, function(_, super_) {
       newCells.push(block);
       rows[i].splice(column, 0, block);
 
-      block.jQ = $('<td class="mq-empty">')
-        .attr(mqBlockId, block.id);
+      block.jQ = $('<td class="mq-empty">');
     }
 
     // Add cell <td> elements in correct positions
@@ -1362,6 +1373,33 @@ Environments.Vmatrix = P(Matrix, function(_, super_) {
     left: '&#8214;',
     right: '&#8214;'
   };
+});
+
+// An environment for aligning equations that translates well enough to amsmath align*.
+// This is inheriting from Matrix for implementation purposes only, it is a more restrictive design
+// allowing only three columns, the middle of which is just the '=' sign, and is represented slightly
+// differently in latex. Nevertheless, we want it to render as a table so it's convenient to extend Matrix.
+Environments['align*'] = P(Matrix, function (_, super_) {
+  _.environment = 'align*';
+  _.extraTableClasses = 'rcl';
+  _.createBlocks = function() {
+    this.blocks = [
+      MatrixCell(0, this),
+      MatrixCell(0, this),
+    ];
+  }
+  _.htmlColumnSeparator = '<td>=</td>';
+  _.delimiters = {
+    column: '&=',
+    row: '\\\\',
+  };
+
+  // Don't delete empty columns, the align environment is for equations and should always have two columns.
+  _.removeEmptyColumns = false;
+
+  // For the same reason, don't allow adding columns.
+  _.addColumn = function() {};
+
 });
 
 // Replacement for mathblocks inside matrix cells
