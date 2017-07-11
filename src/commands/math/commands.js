@@ -941,7 +941,7 @@ LatexCmds.begin = P(MathCommand, function(_, super_) {
     var string = Parser.string;
     var regex = Parser.regex;
     return string('{')
-      .then(regex(/^[a-z*]+/i))
+      .then(regex(/^[a-z*]+/i))  // LaTex uses * as a convention for alternative forms of a command, usually 'without automatic numbering'
       .skip(string('}'))
       .then(function (env) {
           return (Environments[env] ?
