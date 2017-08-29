@@ -78,6 +78,7 @@ Controller.open(function(_, super_) {
     return this.root.latex().replace(/(\\[a-z]+) (?![a-z])/ig,'$1');
   };
   _.writeLatex = function(latex) {
+    this.__generation += 1;
     var cursor = this.notify('edit').cursor;
 
     var all = Parser.all;
@@ -99,6 +100,7 @@ Controller.open(function(_, super_) {
     return this;
   };
   _.renderLatexMath = function(latex) {
+    this.__generation += 1;
     var root = this.root, cursor = this.cursor;
 
     var all = Parser.all;
@@ -129,6 +131,7 @@ Controller.open(function(_, super_) {
     cursor.insAtRightEnd(root);
   };
   _.renderLatexText = function(latex) {
+    this.__generation += 1;
     var root = this.root, cursor = this.cursor;
 
     root.jQ.children().slice(1).remove();

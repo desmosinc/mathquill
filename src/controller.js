@@ -21,6 +21,7 @@ var Controller = P(function(_) {
     root.controller = this;
 
     this.cursor = root.cursor = Cursor(root, options);
+    this.__generation = 0;
     // TODO: stop depending on root.cursor, and rm it
   };
 

@@ -12,6 +12,7 @@ Controller.open(function(_) {
       var root = Node.getNodeOfElement(rootjQ[0]) || Node.getNodeOfElement(ultimateRootjQ[0]);
       var ctrlr = root.controller, cursor = ctrlr.cursor, blink = cursor.blink;
       var textareaSpan = ctrlr.textareaSpan, textarea = ctrlr.textarea;
+      var generation = ctrlr.__generation;
 
       e.preventDefault(); // doesn't work in IE≤8, but it's a one-line fix:
       e.target.unselectable = true; // http://jsbin.com/yagekiji/1
@@ -22,6 +23,7 @@ Controller.open(function(_) {
       var target;
       function mousemove(e) { target = $(e.target); }
       function docmousemove(e) {
+        if (ctrlr.__generation !== generation) return;
         if (!cursor.anticursor) cursor.startSelection();
         ctrlr.seek(target, e.pageX, e.pageY).cursor.select();
         if(cursor.selection) aria.clear().queue(cursor.selection.join('mathspeak') + ' selected').alert();
