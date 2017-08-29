@@ -304,7 +304,7 @@
     display: block;
     text-align: center;
   }
-  
+
   .mq-hat-prefix {
     display: block;
     text-align: center;
@@ -366,4 +366,41 @@
       -ms-filter: "FlipH";
     }
   }
+
+  .mq-matrix {
+    vertical-align: middle;
+    margin-left: 0.1em;
+    margin-right: 0.1em;
+
+    table {
+      width: auto;
+      border-bottom: none;
+      border-spacing: 3px;
+      border-collapse: separate;
+      &.mq-rows-1 { /* better alignment when there's just one row */
+        vertical-align: middle;
+        margin-bottom: 1px;
+      }
+
+      &.rcl {
+        td:nth-child(1) {
+          text-align: right;
+        }
+        td:nth-child(2) {
+          text-align: center;
+        }
+        td:nth-child(3) {
+          text-align: left;
+        }
+      }
+    }
+
+    td {
+      border: none;
+      width: auto; /* defensive resets */
+      padding: 0.1em 0.3em;
+      vertical-align: baseline;
+    }
+  }
+
 }
