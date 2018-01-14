@@ -160,7 +160,8 @@ LatexCmds.longleftarrow = bind(VanillaSymbol, '\\longleftarrow ', '&#8592;', 'le
 LatexCmds.longrightarrow = bind(VanillaSymbol, '\\longrightarrow ', '&#8594;', 'right arrow');
 LatexCmds.Longleftarrow = bind(VanillaSymbol, '\\Longleftarrow ', '&#8656;', 'left arrow');
 LatexCmds.Longrightarrow = bind(VanillaSymbol, '\\Longrightarrow ', '&#8658;', 'right arrow');
-LatexCmds.longleftrightarrow = bind(VanillaSymbol, '\\longleftrightarrow ', '&#8596;', 'left and right arrow');
+// update to Style command instead of VanillaSymbol
+//LatexCmds.longleftrightarrow = bind(VanillaSymbol, '\\longleftrightarrow ', '&#8596;', 'left and right arrow');
 LatexCmds.updownarrow = bind(VanillaSymbol, '\\updownarrow ', '&#8597;', 'up and down arrow');
 LatexCmds.Longleftrightarrow = bind(VanillaSymbol, '\\Longleftrightarrow ', '&#8660;', 'left and right arrow');
 LatexCmds.Updownarrow = bind(VanillaSymbol, '\\Updownarrow ', '&#8661;', 'up and down arrow');
