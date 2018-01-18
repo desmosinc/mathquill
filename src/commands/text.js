@@ -67,8 +67,11 @@ var TextBlock = P(Node, function(_, super_) {
     return this.ctrlSeq + '{' + contents + '}';
   };
   _.html = function() {
-    var template = this.htmlTemplate || '<span class="mq-text-mode">&0</span>';
-    return template.replace(/>&(\d+)/g, ' mathquill-command-id=' + this.id + ' aria-hidden="true">' + this.textContents());
+      return (
+           '<span class="mq-text-mode" mathquill-command-id='+this.id+'>'
+         +   this.textContents()
+         + '</span>'
+       );
   };
   _.mathspeak = function() { return { speech: this.text() }; };
 
@@ -305,7 +308,11 @@ LatexCmds.textmd = TextBlock;
 function makeTextBlock(latex, tagName, attrs) {
   return P(TextBlock, {
     ctrlSeq: latex,
-    htmlTemplate: '<'+tagName+' '+attrs+'>&0</'+tagName+'>'
+    html: function() {
+        //htmlTemplate: '<'+tagName+' '+attrs+'>&0</'+tagName+'>',
+        var cmdId = ' mathquill-command-id=' + this.id;
+        return '<'+tagName+' '+attrs+cmdId+'>'+this.textContents()+'</'+tagName+'>';
+      }
   });
 }
 
