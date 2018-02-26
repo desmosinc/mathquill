@@ -34,6 +34,14 @@ suite('typing with auto-replaces', function() {
     });
   });
 
+  suite('equivalentMinusSymbols', function () {
+    test('crazy minus symbols', function () {
+      //these are 4 different htmlentities. check that they all resolve to the standard '-'
+      mq.typedText('−—–-');
+      assertLatex('----');
+    });
+  });
+
   suite('LatexCommandInput', function() {
     test('basic', function() {
       mq.typedText('\\sqrt-x');
