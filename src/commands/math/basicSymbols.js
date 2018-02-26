@@ -567,8 +567,6 @@ var LatexFragment = P(MathCommand, function(_) {
 LatexCmds['¹'] = bind(LatexFragment, '^1');
 LatexCmds['²'] = bind(LatexFragment, '^2');
 LatexCmds['³'] = bind(LatexFragment, '^3');
-//this is the unicode minus (\u2212). bind this to minus
-LatexCmds['−'] = bind(LatexFragment, '-');
 LatexCmds['¼'] = bind(LatexFragment, '\\frac14');
 LatexCmds['½'] = bind(LatexFragment, '\\frac12');
 LatexCmds['¾'] = bind(LatexFragment, '\\frac34');
@@ -604,8 +602,8 @@ var PlusMinus = P(BinaryOperator, function(_) {
 });
 
 LatexCmds['+'] = bind(PlusMinus, '+', '+', 'plus');
-//yes, these are different dashes, I think one is an en dash and the other is a hyphen
-LatexCmds['–'] = LatexCmds['-'] = bind(PlusMinus, '-', '&minus;', 'minus');
+//yes, these are different dashes. They're minus sign, endash, and emdash.
+LatexCmds['−'] = LatexCmds['—'] = LatexCmds['–'] = LatexCmds['-'] = bind(PlusMinus, '-', '&minus;', 'minus');
 LatexCmds['±'] = LatexCmds.pm = LatexCmds.plusmn = LatexCmds.plusminus =
   bind(PlusMinus,'\\pm ','&plusmn;', 'plus-or-minus');
 LatexCmds.mp = LatexCmds.mnplus = LatexCmds.minusplus =
