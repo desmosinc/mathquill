@@ -567,6 +567,8 @@ var LatexFragment = P(MathCommand, function(_) {
 LatexCmds['¹'] = bind(LatexFragment, '^1');
 LatexCmds['²'] = bind(LatexFragment, '^2');
 LatexCmds['³'] = bind(LatexFragment, '^3');
+//this is the unicode minus (\u2212). bind this to minus
+LatexCmds['−'] = bind(LatexFragment, '-');
 LatexCmds['¼'] = bind(LatexFragment, '\\frac14');
 LatexCmds['½'] = bind(LatexFragment, '\\frac12');
 LatexCmds['¾'] = bind(LatexFragment, '\\frac34');
