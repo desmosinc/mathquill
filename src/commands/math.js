@@ -14,14 +14,8 @@ var MathElement = P(Node, function(_, super_) {
     var self = this;
     self.postOrder(function (node) { node.finalizeTree(options) });
     self.postOrder(function (node) { node.contactWeld(cursor) });
-
-    // note: this order is important.
-    // empty elements need the empty box provided by blur to
-    // be present in order for their dimensions to be measured
-    // correctly by 'reflow' handlers.
     self.postOrder(function (node) { node.blur(); });
 
-    self.postOrder(function (node) { node.reflow(); });
     if (self[R].siblingCreated) self[R].siblingCreated(options, L);
     if (self[L].siblingCreated) self[L].siblingCreated(options, R);
     self.bubble(function (node) { node.reflow(); });

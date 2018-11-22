@@ -139,7 +139,7 @@ function getInterface(v) {
         .replace(/ class=(""|(?= |>))/g, '');
     };
     _.reflow = function() {
-      this.__controller.root.postOrder(function (node) { node.reflow(); });
+      //this is a no-op
       return this;
     };
   });

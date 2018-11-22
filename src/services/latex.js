@@ -152,13 +152,6 @@ Controller.open(function(_, super_) {
         return false;
       }
 
-      // the trailing digits are not just under the root. We require the root
-      // to be the parent so that we can be sure we do not need a reflow to
-      // grow parens.
-      if (charNode.parent !== root) {
-        return false;
-      }
-
       // push to the start. We're traversing backwards
       oldCharNodes.unshift(charNode);
 

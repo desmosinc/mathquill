@@ -125,7 +125,7 @@ Any element that has been turned into a MathQuill instance can be reverted:
 mathfield.revert().html(); // => 'some <code>HTML</code>'
 ```
 
-## .reflow()
+## .reflow() [DEPRECATED]
 
 MathQuill uses computed dimensions, so if they change (because an element was mathquill-ified before it was in the visible HTML DOM, or the font size changed), then you'll need to tell MathQuill to recompute:
 
