@@ -6,10 +6,15 @@
  * of the tree.
  ************************************************/
 
-var $: $ = (window as any).jQuery;
+import { L, R } from "./utils"
+import { DOMFragment } from "./domFragment"
+import { pray, prayDirection } from "./utils"
+import { MQNode } from "./services/keystroke"
+
+export const $: $ = (window as any).jQuery;
 
 /** A cursor-like location in an mq node tree. */
-class Point {
+export class Point {
   /** The node to the left of this point (or 0 for the position before a first child) */
   [L]: NodeRef;
   /** The node to the right of this point (or 0 for the position after a last child) */
@@ -81,7 +86,7 @@ type ElementTrackingNode = {
   mqCmdNode?: NodeBase;
 };
 
-type Ends<T> = {
+export type Ends<T> = {
   readonly [L]: T;
   readonly [R]: T;
 };
@@ -89,9 +94,9 @@ type Ends<T> = {
 /**
  * MathQuill virtual-DOM tree-node abstract base class
  */
-var defaultJQ = $();
+export const defaultJQ = $();
 
-class NodeBase {
+export class NodeBase {
   static idCounter = 0;
   static uniqueNodeId() {
     return (NodeBase.idCounter += 1);
@@ -396,7 +401,7 @@ function prayWellFormed(parent: MQNode, leftward: NodeRef, rightward: NodeRef) {
  * DocumentFragment, whose contents must be detached from the visible tree
  * and have their 'parent' pointers set to the DocumentFragment).
  */
-class Fragment {
+export class Fragment {
   /**
    * The (doubly-linked) list of nodes contained in this fragment.
    *

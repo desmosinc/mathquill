@@ -1,4 +1,7 @@
-const urlParams = new URLSearchParams(window.location.search);
+import { pray } from "./utils"
+import { domFrag } from "./domFragment"
+
+export const urlParams = new URLSearchParams(window.location.search);
 
 type HTMLTagName =
   | 'span'
@@ -55,7 +58,7 @@ interface HtmlBuilder {
   entityText(s: string): Text;
 }
 
-const h: HtmlBuilder = function h(
+export const h: HtmlBuilder = function h(
   type: HTMLTagName | SVGTagName,
   attributes?: CreateElementAttributes,
   children?: (ChildNode | DocumentFragment)[]
@@ -109,7 +112,7 @@ h.entityText = (s: string) => {
   return val.childNodes[0] as Text;
 };
 
-function closest(el: unknown | null, s: string) {
+export function closest(el: unknown | null, s: string) {
   if (typeof (el as any)?.closest === 'function') {
     return (el as HTMLElement).closest(s);
   }

@@ -2,6 +2,9 @@
  * Manage the MathQuill instance's textarea
  * (as owned by the Controller)
  ********************************************/
+
+import { h } from "../dom"
+
 Options.prototype.substituteTextarea = function () {
   return h('textarea', {
     autocapitalize: 'off',
@@ -13,7 +16,7 @@ Options.prototype.substituteTextarea = function () {
 };
 Options.prototype.substituteKeyboardEvents = saneKeyboardEvents;
 
-class Controller extends Controller_scrollHoriz {
+export class Controller extends Controller_scrollHoriz {
   selectFn: (text: string) => void;
 
   createTextarea() {

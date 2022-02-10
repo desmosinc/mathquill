@@ -9,7 +9,9 @@
  */
 var INCREMENTAL_SELECTION_OPEN = false;
 
-class MQNode extends NodeBase {
+import { NodeBase } from '../tree';
+
+export class MQNode extends NodeBase {
   keystroke(key: string, e: KeyboardEvent, ctrlr: Controller) {
     var cursor = ctrlr.cursor;
 

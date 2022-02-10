@@ -11,9 +11,14 @@
  * Chrome 54+ on Android works reliably with Talkback.
  ****************************************/
 
+import { h } from "../dom"
+import { domFrag } from "../domFragment"
+import { prayDirection, Direction, L } from "../utils"
+import { Fragment } from "../tree"
+
 type AriaQueueItem = NodeRef | Fragment | string;
 
-class Aria {
+export class Aria {
   controller: Controller;
   span = h('span', {
     class: 'mq-aria-alert',

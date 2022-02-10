@@ -9,6 +9,15 @@ HTML DOM to match. */
 textbox, but any one HTML document can contain many such textboxes, so any one
 JS environment could actually contain many instances. */
 
+import { Point, Fragment, Ends } from './tree';
+import { L, R, Direction, prayDirection, pray } from './utils';
+import { h } from './dom';
+import { DOMFragment, domFrag } from './domFragment';
+import { MQNode } from './services/keystroke';
+import { Controller } from './services/textarea';
+import { U_ZERO_WIDTH_SPACE } from './unicode';
+import { getBoundingClientRect } from './browser';
+
 //A fake cursor in the fake textbox that the math is rendered in.
 class Anticursor extends Point {
   ancestors: Record<string | number, Anticursor | MQNode | undefined> = {};
@@ -21,7 +30,7 @@ class Anticursor extends Point {
   }
 }
 
-class Cursor extends Point {
+export class Cursor extends Point {
   controller: Controller;
   parent: MQNode;
   options: CursorOptions;
@@ -387,7 +396,7 @@ class Cursor extends Point {
   // can be overridden
   selectionChanged() {}
 }
-class MQSelection extends Fragment {
+export class MQSelection extends Fragment {
   protected ends: Ends<MQNode>;
 
   constructor(withDir: MQNode, oppDir: MQNode, dir?: Direction) {

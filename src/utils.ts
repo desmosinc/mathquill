@@ -3,19 +3,14 @@
 //
 // the contract is that they can be used as object properties
 // and (-L) === R, and (-R) === L.
-type L = -1;
-type R = 1;
-const L: L = -1;
-const R: R = 1;
-type Direction = L | R;
-
-var min = Math.min;
-var max = Math.max;
+export type L = -1;
+export type R = 1;
+export const L: L = -1;
+export const R: R = 1;
+export type Direction = L | R;
 
 if (!(window as any).jQuery)
   throw 'MathQuill requires jQuery 1.5.2+ to be loaded first';
-
-function noop() {}
 
 /**
  * a development-only debug method.  This definition and all
@@ -27,10 +22,10 @@ function noop() {}
  * with the same name, and only call this function by
  * name.
  */
-function pray(message: string, cond?: any): asserts cond {
+export function pray(message: string, cond?: any): asserts cond {
   if (!cond) throw new Error('prayer failed: ' + message);
 }
 
-function prayDirection(dir: Direction) {
+export function prayDirection(dir: Direction) {
   pray('a direction was passed', dir === L || dir === R);
 }

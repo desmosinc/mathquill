@@ -1,3 +1,6 @@
+import { pray, L, R, Direction } from "./utils"
+import { $, Ends } from "./tree"
+
 /**
  * A `DOMFragment` represents a contiguous span of sibling DOM Nodes,
  * which may include both Element nodes and other nodes like Text and
@@ -38,7 +41,7 @@
  * change the contents of a `DOMFragment` by adding or removing DOM
  * nodes between its ends.
  */
-class DOMFragment {
+export class DOMFragment {
   private ends: Ends<Node> | undefined;
 
   /**
@@ -684,7 +687,7 @@ class DOMFragment {
   }
 }
 
-const domFrag = DOMFragment.create;
+export const domFrag = DOMFragment.create;
 
 /**
  * Insert `source` before or after `target` child of `parent` denending
