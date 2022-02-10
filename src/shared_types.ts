@@ -5,22 +5,23 @@ import { saneKeyboardEvents } from "./services/saneKeyboardEvents.util"
 import { Cursor } from "./cursor"
 import { Controller } from "./services/textarea"
 import { L, R } from "./utils"
+import { LatexFragment } from "./commands/math/basicSymbols"
 
-type NodeRef = MQNode | 0;
-type ControllerEvent =
+export type NodeRef = MQNode | 0;
+export type ControllerEvent =
   | 'move'
   | 'upDown'
   | 'replace'
   | 'edit'
   | 'select'
   | undefined;
-type JoinMethod = 'mathspeak' | 'latex' | 'text';
+export type JoinMethod = 'mathspeak' | 'latex' | 'text';
 
-type CursorOptions = Options;
+export type CursorOptions = Options;
 
-type ConfigOptions = ConfigOptionsV1 | ConfigOptionsV2;
+export type ConfigOptions = ConfigOptionsV1 | ConfigOptionsV2;
 
-interface ConfigOptionsV1 {
+export interface ConfigOptionsV1 {
   ignoreNextMousedown: (_el: MouseEvent) => boolean;
   substituteTextarea: () => HTMLElement;
   substituteKeyboardEvents: typeof saneKeyboardEvents;
@@ -54,7 +55,7 @@ interface ConfigOptionsV1 {
   handlers: HandlerOptions;
 }
 
-interface ConfigOptionsV2 {
+export interface ConfigOptionsV2 {
   ignoreNextMousedown: (_el: MouseEvent) => boolean;
   substituteTextarea: () => HTMLElement;
 
@@ -87,17 +88,17 @@ interface ConfigOptionsV2 {
   handlers: HandlerOptions;
 }
 
-type MathspeakOptions = {
+export type MathspeakOptions = {
   createdLeftOf?: Cursor;
   ignoreShorthand?: boolean;
 };
-type EmbedOptions = {
+export type EmbedOptions = {
   latex?: () => string;
   text?: () => string;
   htmlString?: string;
 };
 
-type InequalityData = {
+export type InequalityData = {
   ctrlSeq: string;
   ctrlSeqStrict: string;
   htmlEntity: string;
@@ -108,48 +109,45 @@ type InequalityData = {
   mathspeakStrict: string;
 };
 
-type HandlerOptions = any;
-type ControllerData = any;
-type ControllerRoot = MQNode & {
+export type HandlerOptions = any;
+export type ControllerData = any;
+export type ControllerRoot = MQNode & {
   controller: Controller;
   cursor?: Cursor;
   latex: () => string;
 };
-type HandlerName = any;
-type JQ_KeyboardEvent = KeyboardEvent & {
+export type HandlerName = any;
+export type JQ_KeyboardEvent = KeyboardEvent & {
   originalEvent?: KeyboardEvent;
 };
-type RootBlockMixinInput = any;
-type BracketSide = L | R | 0;
+export type RootBlockMixinInput = any;
+export type BracketSide = L | R | 0;
 
-type InnerMathField = any;
-type InnerFields = any;
-type EmbedOptionsData = any;
-type MQ = any;
-type LatexCmdsAny = any;
-type CharCmdsAny = any;
-type LatexCmdsSingleCharBuilder = Record<string, (char: string) => MQNode>;
-type LatexCmdsSingleChar = Record<
+export type InnerMathField = any;
+export type InnerFields = any;
+export type EmbedOptionsData = any;
+export type MQ = any;
+export type LatexCmdsAny = any;
+export type CharCmdsAny = any;
+export type LatexCmdsSingleCharBuilder = Record<string, (char: string) => MQNode>;
+export type LatexCmdsSingleChar = Record<
   string,
   undefined | typeof TempSingleCharNode | ((char: string) => TempSingleCharNode)
 >;
 
-type LatexFragmentBuilderNoParam = () => LatexFragment;
-type MQNodeBuilderNoParam = () => MQNode;
-type MQNodeBuilderOneParam = (string: string) => MQNode;
+export type LatexFragmentBuilderNoParam = () => LatexFragment;
+export type MQNodeBuilderNoParam = () => MQNode;
+export type MQNodeBuilderOneParam = (string: string) => MQNode;
 
-type LatexCmd =
+export type LatexCmd =
   | typeof MQNode
   | MQNodeBuilderNoParam
   | MQNodeBuilderOneParam
   | LatexFragmentBuilderNoParam;
-type LatexCmds = Record<string, LatexCmd>;
-type CharCmds = Record<string, LatexCmd>;
+export type LatexCmdsType = Record<string, LatexCmd>;
+export type CharCmdsType = Record<string, LatexCmd>;
 
-declare var MQ1: any;
-declare var validateAutoCommandsOption: any;
-
-type JQSelector =
+export type JQSelector =
   | $
   | HTMLElement
   | null
@@ -158,7 +156,7 @@ type JQSelector =
   | HTMLElement[]
   | EventTarget;
 
-interface $ {
+export interface $ {
   (selector?: JQSelector): $;
   attr(attr: string, val: string | number | null): $;
   css(prop: string, val: string | number | null): $;

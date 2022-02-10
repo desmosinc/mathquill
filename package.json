@@ -30,6 +30,6 @@
   },
   "scripts": {
     "prepare": "husky install",
-    "build": "rollup --config rollup.config.ts --configPlugin typescript"
+    "build": "rollup --config rollup.config.ts"
   }
 }

@@ -5,7 +5,7 @@ import { NodeBase } from "./tree";
 
 export const urlParams = new URLSearchParams(window.location.search);
 
-type HTMLTagName =
+export type HTMLTagName =
   | 'span'
   | 'textarea'
   | 'i'
@@ -22,7 +22,7 @@ interface CreateElementAttributes {
   [name: string]: string | boolean | number | undefined;
 }
 
-function parseHTML(s: string) {
+export function parseHTML(s: string) {
   // https://youmightnotneedjquery.com/#parse_html
   const tmp = document.implementation.createHTMLDocument('');
   tmp.body.innerHTML = s;

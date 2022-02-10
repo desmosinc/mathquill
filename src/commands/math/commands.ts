@@ -1,6 +1,6 @@
-import { noop, parseHTML } from "jquery";
+import { noop } from "../../utils";
 import { Cursor, Anticursor } from "src/cursor";
-import { h } from "src/dom";
+import { h, HTMLTagName, parseHTML } from "src/dom";
 import { domFrag, DOMFragment, jQToDOMFragment } from "src/domFragment";
 import { EMBEDS, Options, RootBlockMixin } from "src/publicapi";
 import { MQNode } from "src/services/keystroke";
@@ -273,7 +273,7 @@ LatexCmds.textcolor = class extends MathCommand {
 // Usage: \class{classname}{math}
 // Note regex that whitelists valid CSS classname characters:
 // https://github.com/mathquill/mathquill/pull/191#discussion_r4327442
-var Class = (LatexCmds['class'] = class extends MathCommand {
+export var Class = (LatexCmds['class'] = class extends MathCommand {
   cls: string | undefined;
 
   parser() {
@@ -953,7 +953,7 @@ var LiveFraction =
       }
     });
 
-const AnsBuilder = () =>
+export const AnsBuilder = () =>
   new MQSymbol(
     '\\operatorname{ans}',
     h('span', { class: 'mq-ans' }, [h.text('ans')]),
@@ -1091,7 +1091,7 @@ class DelimsNode extends MathCommand {
 // Round/Square/Curly/Angle Brackets (aka Parens/Brackets/Braces)
 //   first typed as one-sided bracket with matching "ghost" bracket at
 //   far end of current block, until you type an opposing one
-class Bracket extends DelimsNode {
+export class Bracket extends DelimsNode {
   side: BracketSide;
   sides: {
     [L]: { ch: string; ctrlSeq: string };
@@ -1378,7 +1378,7 @@ class Bracket extends DelimsNode {
           : cursor.insAtDirEnd(side, this.getEnd(L));
     }
   }
-  replaceBracket($brack: $, side: BracketSide) {
+  replaceBracket($brack: JQuery, side: BracketSide) {
     var symbol = this.getSymbol(side);
     jQToDOMFragment($brack).children().replaceWith(domFrag(symbol.html()));
     $brack.css('width', symbol.width);

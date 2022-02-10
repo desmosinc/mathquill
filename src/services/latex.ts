@@ -5,8 +5,9 @@ import { Controller_keystroke } from './keystroke';
 import { MathBlock, VanillaSymbol } from '../commands/math';
 import { Parser } from './parser.util';
 import { optionProcessors } from 'src/publicapi';
-import { Letter, Digit } from 'src/commands/math/basicSymbols';
+import { Letter, Digit, PlusMinus } from 'src/commands/math/basicSymbols';
 import { jQToDOMFragment, domFrag } from 'src/domFragment';
+import { RootMathCommand } from 'src/commands/text';
 import { LatexCmdsSingleChar } from 'src/shared_types';
 
 export class TempSingleCharNode extends MQNode {

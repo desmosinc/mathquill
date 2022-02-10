@@ -10,7 +10,7 @@ import { LatexCmds, Fragment, isMQNodeClass, CharCmds } from "src/tree";
 import { U_NO_BREAK_SPACE } from "src/unicode";
 import { Direction, L, R } from "src/utils";
 import { MathBlock, MathCommand, bindVanillaSymbol, bindBinaryOperator, BinaryOperator, DOMView, MQSymbol, VanillaSymbol } from "../math";
-import { PercentOfBuilder, SubscriptCommand, SummationNotation, SupSub } from "./commands";
+import { AnsBuilder, Bracket, PercentOfBuilder, SubscriptCommand, SummationNotation, SupSub } from "./commands";
 
 /*********************************
  * Symbols for Basic Mathematics
@@ -313,7 +313,7 @@ optionProcessors.autoCommands = function (cmds: string) {
       throw '"' + cmd + '" is a built-in operator name';
     }
     dict[cmd] = 1;
-    maxLength = max(maxLength, cmd.length);
+    maxLength = Math.max(maxLength, cmd.length);
   }
   dict._maxLength = maxLength;
   return dict;
@@ -508,7 +508,7 @@ export class Letter extends Variable {
       first && i < str.length;
       i += 1, first = (first as MQNode)[R]
     ) {
-      for (var len = min(autoOpsLength, str.length - i); len > 0; len -= 1) {
+      for (var len = Math.min(autoOpsLength, str.length - i); len > 0; len -= 1) {
         var word = str.slice(i, i + len);
         var last: MQNode = undefined!; // TODO - TS complaining that we use last before assigning to it
 
@@ -655,7 +655,7 @@ optionProcessors.autoOperatorNames = function (cmds) {
     if (cmd.indexOf('|') < 0) {
       // normal auto operator
       dict[cmd] = cmd;
-      maxLength = max(maxLength, cmd.length);
+      maxLength = Math.max(maxLength, cmd.length);
     } else {
       // this item has a speech-friendly alternative
       var cmdArray = cmd.split('|');
@@ -666,7 +666,7 @@ optionProcessors.autoOperatorNames = function (cmds) {
         throw '"' + cmd[0] + '" not minimum length of 2';
       }
       dict[cmdArray[0]] = cmdArray[1].replace(/-/g, ' '); // convert dashes to spaces for the sake of speech
-      maxLength = max(maxLength, cmdArray[0].length);
+      maxLength = Math.max(maxLength, cmdArray[0].length);
     }
   }
   dict._maxLength = maxLength;
@@ -929,7 +929,7 @@ LatexCmds.Gamma =
 
 // symbols that aren't a single MathCommand, but are instead a whole
 // Fragment. Creates the Fragment from a LaTeX string
-class LatexFragment extends MathCommand {
+export class LatexFragment extends MathCommand {
   latexStr: string;
 
   constructor(latex: string) {
@@ -1061,7 +1061,7 @@ function isBinaryOperator(node: NodeRef): boolean {
   return true;
 }
 
-var PlusMinus = class extends BinaryOperator {
+export var PlusMinus = class extends BinaryOperator {
   constructor(ch?: string, html?: ChildNode, mathspeak?: string) {
     super(ch, html, undefined, mathspeak, true);
   }

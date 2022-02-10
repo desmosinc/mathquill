@@ -6,13 +6,14 @@ import { domFrag } from "./domFragment"
 import { LatexCmds, NodeBase } from './tree';
 import { Controller } from "./services/textarea"
 import { jQToDOMFragment } from "./domFragment"
-import { CursorOptions, ConfigOptionsV1, ConfigOptionsV2, EmbedOptionsData, EmbedOptions, ControllerRoot, HandlerOptions, LatexCmdsAny, MQ1, RootBlockMixinInput } from "./shared_types";
+import { CursorOptions, ConfigOptionsV1, ConfigOptionsV2, EmbedOptionsData, EmbedOptions, ControllerRoot, HandlerOptions, LatexCmdsAny, RootBlockMixinInput, MQ } from "./shared_types";
 import { ControllerData } from "./shared_types";
 import { Direction, L, noop, R } from "./utils"
 import { getScrollX, getScrollY } from "./browser";
 import { MathBlock } from "./commands/math";
 import { h } from "./dom";
 import { saneKeyboardEvents } from "./services/saneKeyboardEvents.util";
+import { EmbedNode } from "./commands/math/commands";
 
 export type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';
 
@@ -509,11 +510,11 @@ function getInterface(v: number) {
 }
 
 MathQuill.noConflict = function () {
-  window.MathQuill = origMathQuill;
+  (window as any).MathQuill = origMathQuill;
   return MathQuill;
 };
-var origMathQuill = window.MathQuill;
-window.MathQuill = MathQuill;
+var origMathQuill = (window as any).MathQuill;
+(window as any).MathQuill = MathQuill;
 
 export function RootBlockMixin(_: RootBlockMixinInput) {
   _.moveOutOf = function (dir: Direction) {

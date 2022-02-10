@@ -24,7 +24,7 @@ import { noop } from "../utils"
  *    + event handler logic
  *    + attach event handlers and export methods
  ************************************************/
-type TextareaChecker = (e?: Event) => void;
+type TextareaChecker = (e?: JQuery.TriggeredEvent) => void;
 
 export let saneKeyboardEvents = (function () {
   // The following [key values][1] map was compiled from the
@@ -180,7 +180,7 @@ export let saneKeyboardEvents = (function () {
       keypress = null;
 
       if (shouldBeSelected)
-        checkTextareaOnce(function (e?: Event) {
+        checkTextareaOnce(function (e?: JQuery.TriggeredEvent) {
           if (!(e && e.type === 'focusout')) {
             // re-select textarea in case it's an unrecognized key that clears
             // the selection, then never again, 'cos next thing might be blur

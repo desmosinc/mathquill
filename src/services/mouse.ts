@@ -6,6 +6,7 @@ import { ControllerRoot } from "../shared_types"
 import { ControllerBase } from "../controller"
 import { jQToDOMFragment } from "../domFragment"
 import { Cursor } from "../cursor"
+import { closest } from "src/dom"
 
 /********************************************************
  * Deals with mouse events for clicking, drag-to-select
@@ -43,9 +44,8 @@ export class Controller_mouse extends Controller_latex {
   delegateMouseEvents() {
     var ultimateRootElement = this.root.domFrag().oneElement();
     //drag-to-select event handling
-    this.container.bind('mousedown.mathquill', function (_e) {
-      var e = _e as MouseEvent;
-      var rootjQ = $(closest(e.target as HTMLElement | null, '.mq-root-block'));
+    this.container.bind('mousedown.mathquill', function (e) {
+      var rootjQ = $(closest(e.target, '.mq-root-block'));
       var root = (NodeBase.getNodeOfElement(rootjQ[0]) ||
         NodeBase.getNodeOfElement(ultimateRootElement)) as ControllerRoot;
       var ctrlr = root.controller,
@@ -55,7 +55,7 @@ export class Controller_mouse extends Controller_latex {
       var textarea = ctrlr.getTextareaOrThrow();
 
       e.preventDefault(); // doesn't work in IE≤8, but it's a one-line fix:
-      (e.target as ).unselectable = true; // http://jsbin.com/yagekiji/1 // TODO - no idea what this unselectable property is
+      (e.target as any).unselectable = true; // http://jsbin.com/yagekiji/1 // TODO - no idea what this unselectable property is
 
       if (cursor.options.ignoreNextMousedown(e)) return;
       else cursor.options.ignoreNextMousedown = ignoreNextMouseDownNoop;

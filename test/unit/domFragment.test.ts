@@ -1,3 +1,7 @@
+import { h } from "src/dom";
+import { DOMFragment, domFrag } from "src/domFragment";
+import { L, R } from "src/utils";
+
 suite('DOMFragment', function () {
   function nodeArraysEqual(arr1: Node[], arr2: Node[]) {
     if (arr1.length !== arr2.length) return false;

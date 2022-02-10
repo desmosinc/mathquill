@@ -14,9 +14,12 @@ import { Cursor, MQSelection } from "./cursor"
 import { TextBlock } from "./commands/text"
 import { 
 	NodeRef, CursorOptions, InnerFields, 
-	InnerMathField, MathspeakOptions
+	InnerMathField, MathspeakOptions,
+  LatexCmdsType, CharCmdsType
 } from "./shared_types"
 import { Parser } from "./services/parser.util"
+import { MathCommand, MathBlock } from "./commands/math"
+import { SupSub } from "./commands/math/commands"
 
 /** A cursor-like location in an mq node tree. */
 export class Point {
@@ -613,8 +616,8 @@ export class Fragment {
  *
  * (Commands are all subclasses of Node.)
  */
-export var LatexCmds: LatexCmds = {};
-export var CharCmds: CharCmds = {};
+export var LatexCmds: LatexCmdsType = {};
+export var CharCmds: CharCmdsType = {};
 
 export function isMQNodeClass(cmd: any): cmd is typeof MQNode {
   return cmd && cmd.prototype instanceof MQNode;
