@@ -12,6 +12,7 @@ JS environment could actually contain many instances. */
 import { Point, Fragment, Ends } from './tree';
 import { L, R, Direction, prayDirection, pray } from './utils';
 import { h } from './dom';
+import { ControllerBase } from "./controller"
 import { DOMFragment, domFrag } from './domFragment';
 import { MQNode } from './services/keystroke';
 import { Controller } from './services/textarea';

@@ -254,7 +254,7 @@ ControllerBase.onNotify(function (cursor: Cursor, e: ControllerEvent) {
   if (e !== 'select') cursor.endSelection();
 });
 
-class Controller_keystroke extends Controller_focusBlur {
+export class Controller_keystroke extends Controller_focusBlur {
   keystroke(key: string, evt: KeyboardEvent) {
     this.cursor.parent.keystroke(key, evt, this.getControllerSelf());
   }

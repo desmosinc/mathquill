@@ -718,7 +718,7 @@ function _insAtDirEnd(
   }
 }
 
-function jQToDOMFragment(jQ: $) {
+export function jQToDOMFragment(jQ: $) {
   if (jQ.length === 0) return domFrag();
   if (jQ.length === 1) return domFrag(jQ[0]);
 

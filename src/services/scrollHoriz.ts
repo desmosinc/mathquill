@@ -3,7 +3,10 @@
  * overflow their width
  **********************************************/
 
-class Controller_scrollHoriz extends Controller_mouse {
+import { getBoundingClientRect } from "../browser"
+import { L, R } from "../utils"
+
+export class Controller_scrollHoriz extends Controller_mouse {
   setOverflowClasses() {
     var root = this.root.domFrag().oneElement();
     var shouldHaveOverflowRight = false;

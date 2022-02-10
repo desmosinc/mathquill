@@ -6,10 +6,11 @@
  * of the tree.
  ************************************************/
 
-import { L, R } from "./utils"
-import { DOMFragment } from "./domFragment"
+import { L, R, Direction } from "./utils"
+import { DOMFragment, domFrag } from "./domFragment"
 import { pray, prayDirection } from "./utils"
 import { MQNode } from "./services/keystroke"
+import { Cursor, MQSelection } from "./cursor"
 
 export const $: $ = (window as any).jQuery;
 

@@ -1,3 +1,6 @@
+import { MQNode } from './keystroke';
+import { Fragment } from "../tree"
+
 class TempSingleCharNode extends MQNode {
   constructor(_char: string) {
     super();
@@ -102,7 +105,7 @@ optionProcessors.maxDepth = function (depth: number) {
   return typeof depth === 'number' ? depth : undefined;
 };
 
-class Controller_latex extends Controller_keystroke {
+export class Controller_latex extends Controller_keystroke {
   cleanLatex(latex: string) {
     //prune unnecessary spaces
     return latex.replace(/(\\[a-z]+) (?![a-z])/gi, '$1');

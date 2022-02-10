@@ -1,7 +1,12 @@
+import { Aria } from "./services/aria"
+import { Cursor } from "./cursor"
+import { Controller } from "./services/textarea"
+import { Direction, L, R } from "./utils"
+
 /*********************************************
  * Controller for a MathQuill instance
  ********************************************/
-class ControllerBase {
+export class ControllerBase {
   id: number;
   data: ControllerData;
   root: ControllerRoot;

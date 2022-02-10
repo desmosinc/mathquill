@@ -2,6 +2,11 @@
  * The publicly exposed MathQuill API.
  ********************************************************/
 
+import { domFrag } from "./domFragment"
+import { NodeBase } from './tree';
+import { Controller } from "./services/textarea"
+import { jQToDOMFragment } from "./domFragment"
+
 type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';
 
 interface IAbstractMathQuill {
