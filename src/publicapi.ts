@@ -6,8 +6,11 @@ import { domFrag } from "./domFragment"
 import { NodeBase } from './tree';
 import { Controller } from "./services/textarea"
 import { jQToDOMFragment } from "./domFragment"
+import { CursorOptions, ConfigOptionsV1, ConfigOptionsV2, EmbedOptionsData, EmbedOptions } from "./shared_types";
+import { ControllerData } from "./shared_types";
+import { L, R } from "./utils"
 
-type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';
+export type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';
 
 interface IAbstractMathQuill {
   __controller: Controller;
@@ -15,7 +18,7 @@ interface IAbstractMathQuill {
   id: number;
   data: ControllerData;
   /** Interface V1 returns a jQuery collection. Interface V2 returns an HTMLElement. */
-  revert(): $ | HTMLElement;
+  revert(): JQuery | HTMLElement;
 
   mathquillify(classNames: string): void;
   __mathquillify(
@@ -38,7 +41,7 @@ interface APIClass extends IAbstractMathQuillClass {
   RootBlock: typeof MathBlock;
 }
 
-interface APIClasses {
+export interface APIClasses {
   StaticMath?: APIClass;
   MathField?: APIClass;
   InnerMathField?: APIClass;
@@ -71,13 +74,13 @@ class OptionProcessors {
   quietEmptyDelimiters: (list: string) => CursorOptions['quietEmptyDelimiters'];
 }
 
-const optionProcessors = new OptionProcessors();
-type AutoDict = {
+export const optionProcessors = new OptionProcessors();
+export type AutoDict = {
   _maxLength?: number;
   [id: string]: any;
 };
 
-class Options {
+export class Options {
   constructor(public version: 1 | 2) {}
   ignoreNextMousedown: (_el: MouseEvent) => boolean;
   substituteTextarea: () => HTMLElement;

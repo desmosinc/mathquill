@@ -15,6 +15,9 @@ import { h } from "../dom"
 import { domFrag } from "../domFragment"
 import { prayDirection, Direction, L } from "../utils"
 import { Fragment } from "../tree"
+import { MQNode } from "./keystroke"
+import { Controller } from "./textarea"
+import { NodeRef } from "../shared_types"
 
 type AriaQueueItem = NodeRef | Fragment | string;
 
@@ -33,7 +36,7 @@ export class Aria {
   }
 
   attach() {
-    const container = this.controller.container && this.controller.container[0];
+    const container = this.controller.container && this.controller.container.get();
     if (container && this.span.parentNode !== container) {
       domFrag(container).prepend(domFrag(this.span));
     }

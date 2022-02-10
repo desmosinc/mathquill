@@ -1,5 +1,5 @@
 import { pray, L, R, Direction } from "./utils"
-import { $, Ends } from "./tree"
+import { Ends } from "./tree"
 
 /**
  * A `DOMFragment` represents a contiguous span of sibling DOM Nodes,
@@ -275,7 +275,7 @@ export class DOMFragment {
    * this fragment. The result does not include nodes that are not
    * Elements, such as Text and Comment nodes.
    */
-  toJQ(): $ {
+  toJQ(): JQuery {
     return $(this.toElementArray());
   }
 
@@ -717,8 +717,7 @@ function _insAtDirEnd(
     parent.appendChild(source);
   }
 }
-
-export function jQToDOMFragment(jQ: $) {
+export function jQToDOMFragment(jQ: JQuery) {
   if (jQ.length === 0) return domFrag();
   if (jQ.length === 1) return domFrag(jQ[0]);
 

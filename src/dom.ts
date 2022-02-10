@@ -1,5 +1,7 @@
 import { pray } from "./utils"
 import { domFrag } from "./domFragment"
+import { MathBlock } from "./commands/math";
+import { NodeBase } from "./tree";
 
 export const urlParams = new URLSearchParams(window.location.search);
 

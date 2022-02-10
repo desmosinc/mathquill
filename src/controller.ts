@@ -2,6 +2,8 @@ import { Aria } from "./services/aria"
 import { Cursor } from "./cursor"
 import { Controller } from "./services/textarea"
 import { Direction, L, R } from "./utils"
+import { KIND_OF_MQ } from "./publicapi"
+import { ControllerRoot, ControllerData, CursorOptions, HandlerName, ControllerEvent } from "./shared_types"
 
 /*********************************************
  * Controller for a MathQuill instance
@@ -10,7 +12,7 @@ export class ControllerBase {
   id: number;
   data: ControllerData;
   root: ControllerRoot;
-  container: $;
+  container: JQuery;
   options: CursorOptions;
   aria: Aria;
   ariaLabel: string;
@@ -19,11 +21,11 @@ export class ControllerBase {
   editable: boolean | undefined;
   _ariaAlertTimeout: number;
   KIND_OF_MQ: KIND_OF_MQ;
-  textarea: $ | undefined;
-  textareaSpan: $ | undefined;
-  mathspeakSpan: $ | undefined;
+  textarea: JQuery | undefined;
+  textareaSpan: JQuery | undefined;
+  mathspeakSpan: JQuery | undefined;
 
-  constructor(root: ControllerRoot, container: $, options: CursorOptions) {
+  constructor(root: ControllerRoot, container: JQuery, options: CursorOptions) {
     this.id = root.id;
     this.data = {};
 

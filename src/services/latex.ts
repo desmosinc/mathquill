@@ -1,7 +1,10 @@
 import { MQNode } from './keystroke';
 import { Fragment } from "../tree"
+import { L, R } from "../utils"
+import { Controller_keystroke } from './keystroke';
+import { MathBlock } from '../commands/math';
 
-class TempSingleCharNode extends MQNode {
+export class TempSingleCharNode extends MQNode {
   constructor(_char: string) {
     super();
   }

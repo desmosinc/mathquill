@@ -11,8 +11,12 @@ import { DOMFragment, domFrag } from "./domFragment"
 import { pray, prayDirection } from "./utils"
 import { MQNode } from "./services/keystroke"
 import { Cursor, MQSelection } from "./cursor"
-
-export const $: $ = (window as any).jQuery;
+import { TextBlock } from "./commands/text"
+import { 
+	NodeRef, CursorOptions, InnerFields, 
+	InnerMathField, MathspeakOptions
+} from "./shared_types"
+import { Parser } from "./services/parser.util"
 
 /** A cursor-like location in an mq node tree. */
 export class Point {
@@ -181,7 +185,7 @@ export class NodeBase {
     return '{{ MathQuill Node #' + this.id + ' }}';
   }
 
-  getJQ(): $ {
+  getJQ(): JQuery {
     return this.domFrag().toJQ();
   }
 
@@ -464,7 +468,7 @@ export class Fragment {
     return this.ends ? this.ends[dir] : 0;
   }
 
-  getJQ(): $ {
+  getJQ(): JQuery {
     return this.domFrag().toJQ();
   }
 
@@ -609,9 +613,9 @@ export class Fragment {
  *
  * (Commands are all subclasses of Node.)
  */
-var LatexCmds: LatexCmds = {};
-var CharCmds: CharCmds = {};
+export var LatexCmds: LatexCmds = {};
+export var CharCmds: CharCmds = {};
 
-function isMQNodeClass(cmd: any): cmd is typeof MQNode {
+export function isMQNodeClass(cmd: any): cmd is typeof MQNode {
   return cmd && cmd.prototype instanceof MQNode;
 }

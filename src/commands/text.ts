@@ -2,13 +2,20 @@
  * Abstract classes of text blocks
  ************************************************/
 
+import { MQNode } from "../services/keystroke"
+import { domFrag, DOMFragment } from "../domFragment"
+import { Direction, L, R } from "../utils"
+import { Cursor } from "../cursor"
+import { APIClasses } from "../publicapi"
+import { MathspeakOptions } from "../shared_types"
+
 /**
  * Blocks of plain text, with one or two TextPiece's as children.
  * Represents flat strings of typically serif-font Roman characters, as
  * opposed to hierchical, nested, tree-structured math.
  * Wraps a single HTMLSpanElement.
  */
-class TextBlock extends MQNode {
+export class TextBlock extends MQNode {
   ctrlSeq = '\\text';
   ariaLabel = 'Text';
   replacedText?: string;

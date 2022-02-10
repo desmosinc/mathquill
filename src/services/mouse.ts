@@ -1,3 +1,12 @@
+import { Controller_latex } from "./latex"
+import { NodeBase } from "../tree"
+import { Options } from "../publicapi"
+import { noop } from "../utils"
+import { ControllerRoot } from "../shared_types"
+import { ControllerBase } from "../controller"
+import { jQToDOMFragment } from "../domFragment"
+import { Cursor } from "../cursor"
+
 /********************************************************
  * Deals with mouse events for clicking, drag-to-select
  *******************************************************/
@@ -30,11 +39,11 @@ var cancelSelectionOnEdit:
   });
 })();
 
-class Controller_mouse extends Controller_latex {
+export class Controller_mouse extends Controller_latex {
   delegateMouseEvents() {
     var ultimateRootElement = this.root.domFrag().oneElement();
     //drag-to-select event handling
-    this.container.bind('mousedown.mathquill', function (_e: Event) {
+    this.container.bind('mousedown.mathquill', function (_e) {
       var e = _e as MouseEvent;
       var rootjQ = $(closest(e.target as HTMLElement | null, '.mq-root-block'));
       var root = (NodeBase.getNodeOfElement(rootjQ[0]) ||
@@ -46,13 +55,13 @@ class Controller_mouse extends Controller_latex {
       var textarea = ctrlr.getTextareaOrThrow();
 
       e.preventDefault(); // doesn't work in IE≤8, but it's a one-line fix:
-      (e.target as any).unselectable = true; // http://jsbin.com/yagekiji/1 // TODO - no idea what this unselectable property is
+      (e.target as ).unselectable = true; // http://jsbin.com/yagekiji/1 // TODO - no idea what this unselectable property is
 
       if (cursor.options.ignoreNextMousedown(e)) return;
       else cursor.options.ignoreNextMousedown = ignoreNextMouseDownNoop;
 
-      var target: $ | undefined;
-      function mousemove(e: Event) {
+      var target: JQuery | undefined;
+      function mousemove(e) {
         target = $(e.target);
       }
       function docmousemove(e: MouseEvent) {
@@ -131,7 +140,7 @@ class Controller_mouse extends Controller_latex {
     });
   }
 
-  seek($target: $, clientX: number, _clientY: number) {
+  seek($target: JQuery, clientX: number, _clientY: number) {
     var cursor = this.notify('select').cursor;
     var node;
     var targetElm: HTMLElement | null = $target && $target[0];

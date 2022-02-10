@@ -1,3 +1,5 @@
+import { pray } from "../utils"
+
 function parseError(stream: string, message: string): never {
   if (stream) {
     stream = "'" + stream + "'";
@@ -16,7 +18,7 @@ type ParserBody<T> = (
   onFailure: (stream: string, msg: string) => UnknownParserResult
 ) => T;
 
-class Parser<T> {
+export class Parser<T> {
   _: ParserBody<T>;
 
   // The Parser object is a wrapper for a parser function.

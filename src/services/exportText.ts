@@ -3,7 +3,9 @@
  * As you can see, only half-baked so far.
  **********************************************/
 
-class Controller_exportText extends ControllerBase {
+import { ControllerBase } from "../controller";
+
+export class Controller_exportText extends ControllerBase {
   exportText() {
     return this.root.foldChildren('', function (text, child) {
       return text + child.text();

@@ -2,12 +2,24 @@
  * Abstract classes of math blocks and commands.
  ************************************************/
 
+import { MQNode } from "../services/keystroke";
+import { CursorOptions, NodeRef, MathspeakOptions } from "../shared_types";
+import { Cursor, MQSelection } from "../cursor"
+import { APIClasses } from "../publicapi"
+import { Fragment, Ends, NodeBase } from "../tree";
+import { Direction, pray, L, R } from "../utils"
+import { Parser, } from "../services/parser.util";
+import { domFrag } from "../domFragment";
+import { h } from "../dom";
+import { getBoundingClientRect } from "../browser";
+import { Controller } from "../services/textarea";
+
 /**
  * Math tree node base class.
  * Some math-tree-specific extensions to MQNode.
  * Both MathBlock's and MathCommand's descend from it.
  */
-class MathElement extends MQNode {
+export class MathElement extends MQNode {
   finalizeInsert(options: CursorOptions, cursor: Cursor) {
     var self = this;
     self.postOrder(function (node) {
@@ -88,7 +100,7 @@ class DOMView {
  * Commands and operators, like subscripts, exponents, or fractions.
  * Descendant commands are organized into blocks.
  */
-class MathCommand extends MathElement {
+export class MathCommand extends MathElement {
   replacedFragment: Fragment | undefined;
   protected domView: DOMView;
   protected ends: Ends<MQNode>;
@@ -415,7 +427,7 @@ class VanillaSymbol extends MQSymbol {
     super(ch, h('span', {}, [html || h.text(ch)]), undefined, mathspeak);
   }
 }
-function bindVanillaSymbol(
+export function bindVanillaSymbol(
   ch: string,
   htmlEntity?: string,
   mathspeak?: string
@@ -453,7 +465,7 @@ class BinaryOperator extends MQSymbol {
     }
   }
 }
-function bindBinaryOperator(
+export function bindBinaryOperator(
   ctrlSeq?: string,
   htmlEntity?: string,
   text?: string,
@@ -473,7 +485,7 @@ function bindBinaryOperator(
  * symbols and operators that descend (in the Math DOM tree) from
  * ancestor operators.
  */
-class MathBlock extends MathElement {
+export class MathBlock extends MathElement {
   controller?: Controller;
 
   join(methodName: JoinMethod) {

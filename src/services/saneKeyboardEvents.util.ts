@@ -1,3 +1,7 @@
+import { Controller } from "./textarea"
+import { JQ_KeyboardEvent } from "../shared_types"
+import { noop } from "../utils"
+
 /*************************************************
  * Sane Keyboard Events Shim
  *
@@ -22,7 +26,7 @@
  ************************************************/
 type TextareaChecker = (e?: Event) => void;
 
-var saneKeyboardEvents = (function () {
+export let saneKeyboardEvents = (function () {
   // The following [key values][1] map was compiled from the
   // [DOM3 Events appendix section on key codes][2] and
   // [a widely cited report on cross-browser tests of key codes][3],
@@ -89,7 +93,7 @@ var saneKeyboardEvents = (function () {
 
   // create a keyboard events shim that calls callbacks at useful times
   // and exports useful public methods
-  return function saneKeyboardEvents(el: $, controller: Controller) {
+  return function saneKeyboardEvents(el: JQuery, controller: Controller) {
     var keydown: JQ_KeyboardEvent | null = null;
     var keypress: KeyboardEvent | null = null;
 
@@ -118,7 +122,7 @@ var saneKeyboardEvents = (function () {
         checker(e);
       });
     }
-    target.bind('keydown keypress input keyup paste', function (e: Event) {
+    target.bind('keydown keypress input keyup paste', function (e) {
       checkTextarea(e);
     });
 

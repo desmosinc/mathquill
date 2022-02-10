@@ -3,6 +3,13 @@
  * interaction with the typist.
  ****************************************/
 
+import { ControllerBase } from '../controller';
+import { L, R, Direction, pray, prayDirection } from "../utils"
+import { Cursor } from "../cursor"
+import { Controller_focusBlur } from "./focusBlur"
+import { ControllerEvent } from "../shared_types"
+import { Controller } from "./textarea"
+
 /**
  * Only one incremental selection may be open at a time. Track whether
  * an incremental selection is open to help enforce this invariant.

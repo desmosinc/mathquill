@@ -5,6 +5,7 @@
 
 import { getBoundingClientRect } from "../browser"
 import { L, R } from "../utils"
+import { Controller_mouse } from "./mouse";
 
 export class Controller_scrollHoriz extends Controller_mouse {
   setOverflowClasses() {

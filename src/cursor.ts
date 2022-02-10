@@ -12,15 +12,17 @@ JS environment could actually contain many instances. */
 import { Point, Fragment, Ends } from './tree';
 import { L, R, Direction, prayDirection, pray } from './utils';
 import { h } from './dom';
+import { NodeRef, CursorOptions, JoinMethod } from "./shared_types"
 import { ControllerBase } from "./controller"
 import { DOMFragment, domFrag } from './domFragment';
 import { MQNode } from './services/keystroke';
 import { Controller } from './services/textarea';
 import { U_ZERO_WIDTH_SPACE } from './unicode';
 import { getBoundingClientRect } from './browser';
+import { MathBlock } from './commands/math';
 
 //A fake cursor in the fake textbox that the math is rendered in.
-class Anticursor extends Point {
+export class Anticursor extends Point {
   ancestors: Record<string | number, Anticursor | MQNode | undefined> = {};
   constructor(parent: MQNode, leftward: NodeRef, rightward: NodeRef) {
     super(parent, leftward, rightward);
@@ -67,7 +69,7 @@ export class Cursor extends Point {
     };
   }
 
-  getJQ(): $ {
+  getJQ(): JQuery {
     return this.domFrag().toJQ();
   }
 

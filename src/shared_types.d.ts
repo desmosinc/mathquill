@@ -1,3 +1,11 @@
+import { MQNode } from "./services/keystroke"
+import { Options, AutoDict } from "./publicapi"
+import { TempSingleCharNode } from "./services/latex"
+import { saneKeyboardEvents } from "./services/saneKeyboardEvents.util"
+import { Cursor } from "./cursor"
+import { Controller } from "./services/textarea"
+import { L, R } from "./utils"
+
 type NodeRef = MQNode | 0;
 type ControllerEvent =
   | 'move'

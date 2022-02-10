@@ -4,6 +4,10 @@
  ********************************************/
 
 import { h } from "../dom"
+import { Options } from "../publicapi"
+import { jQToDOMFragment } from "../domFragment"
+import { Controller_scrollHoriz } from "./scrollHoriz"
+import { saneKeyboardEvents } from "./saneKeyboardEvents.util"
 
 Options.prototype.substituteTextarea = function () {
   return h('textarea', {
