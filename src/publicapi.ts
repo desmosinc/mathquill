@@ -3,12 +3,16 @@
  ********************************************************/
 
 import { domFrag } from "./domFragment"
-import { NodeBase } from './tree';
+import { LatexCmds, NodeBase } from './tree';
 import { Controller } from "./services/textarea"
 import { jQToDOMFragment } from "./domFragment"
-import { CursorOptions, ConfigOptionsV1, ConfigOptionsV2, EmbedOptionsData, EmbedOptions } from "./shared_types";
+import { CursorOptions, ConfigOptionsV1, ConfigOptionsV2, EmbedOptionsData, EmbedOptions, ControllerRoot, HandlerOptions, LatexCmdsAny, MQ1, RootBlockMixinInput } from "./shared_types";
 import { ControllerData } from "./shared_types";
-import { L, R } from "./utils"
+import { Direction, L, noop, R } from "./utils"
+import { getScrollX, getScrollY } from "./browser";
+import { MathBlock } from "./commands/math";
+import { h } from "./dom";
+import { saneKeyboardEvents } from "./services/saneKeyboardEvents.util";
 
 export type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';
 
@@ -50,16 +54,16 @@ export interface APIClasses {
   EditableField: IAbstractMathQuillClass;
 }
 
-type API = {
+export type API = {
   StaticMath?: (APIClasses: APIClasses) => APIClass;
   MathField?: (APIClasses: APIClasses) => APIClass;
   InnerMathField?: (APIClasses: APIClasses) => APIClass;
   TextField?: (APIClasses: APIClasses) => APIClass;
 };
 
-var API: API = {};
+export var API: API = {};
 
-var EMBEDS: Record<string, (data: EmbedOptionsData) => EmbedOptions> = {};
+export let EMBEDS: Record<string, (data: EmbedOptionsData) => EmbedOptions> = {};
 
 class OptionProcessors {
   maxDepth: (n: number) => CursorOptions['maxDepth'];
@@ -257,7 +261,7 @@ function getInterface(v: number) {
     __options: CursorOptions;
     id: number;
     data: ControllerData;
-    abstract revert(): HTMLElement | $;
+    abstract revert(): HTMLElement | JQuery;
 
     constructor(ctrlr: Controller) {
       super();
@@ -511,7 +515,7 @@ MathQuill.noConflict = function () {
 var origMathQuill = window.MathQuill;
 window.MathQuill = MathQuill;
 
-function RootBlockMixin(_: RootBlockMixinInput) {
+export function RootBlockMixin(_: RootBlockMixinInput) {
   _.moveOutOf = function (dir: Direction) {
     this.controller.handle('moveOutOf', dir);
   };

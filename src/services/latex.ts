@@ -1,10 +1,13 @@
 import { MQNode } from './keystroke';
-import { Fragment } from "../tree"
+import { Fragment, LatexCmds } from "../tree"
 import { L, R } from "../utils"
 import { Controller_keystroke } from './keystroke';
-import { MathBlock } from '../commands/math';
+import { MathBlock, VanillaSymbol } from '../commands/math';
 import { Parser } from './parser.util';
 import { optionProcessors } from 'src/publicapi';
+import { Letter, Digit } from 'src/commands/math/basicSymbols';
+import { jQToDOMFragment, domFrag } from 'src/domFragment';
+import { LatexCmdsSingleChar } from 'src/shared_types';
 
 export class TempSingleCharNode extends MQNode {
   constructor(_char: string) {
@@ -13,7 +16,7 @@ export class TempSingleCharNode extends MQNode {
 }
 
 // Parser MathBlock
-var latexMathParser = (function () {
+export const latexMathParser = (function () {
   function commandToBlock(cmd: MQNode | Fragment): MathBlock {
     // can also take in a Fragment
     var block = new MathBlock();

@@ -8,7 +8,7 @@ import { MQNode } from "src/services/keystroke";
 import { TempSingleCharNode } from "src/services/latex";
 import { CharCmds, Fragment, LatexCmds, isMQNodeClass } from "src/tree";
 import { L, R } from "src/utils";
-import { MathCommand } from "../math";
+import { DOMView, MathCommand, VanillaSymbol } from "../math";
 import { TextBlock } from "../text";
 
 CharCmds['\\'] = class LatexCommandInput extends MathCommand {

@@ -2,15 +2,17 @@ import { noop, parseHTML } from "jquery";
 import { Cursor, Anticursor } from "src/cursor";
 import { h } from "src/dom";
 import { domFrag, DOMFragment, jQToDOMFragment } from "src/domFragment";
-import { Options } from "src/publicapi";
+import { EMBEDS, Options, RootBlockMixin } from "src/publicapi";
 import { MQNode } from "src/services/keystroke";
+import { latexMathParser } from "src/services/latex";
 import { Parser } from "src/services/parser.util";
 import { Controller } from "src/services/textarea";
 import { MathspeakOptions, NodeRef, BracketSide, CursorOptions, ControllerRoot, InnerFields, InnerMathField, EmbedOptions } from "src/shared_types";
 import { LatexCmds, Ends, Point, NodeBase, CharCmds, Fragment } from "src/tree";
 import { U_DOT_ABOVE, U_ZERO_WIDTH_SPACE, U_NARY_SUMMATION, U_NARY_PRODUCT, U_NARY_COPRODUCT, U_INTEGRAL } from "src/unicode";
 import { L, R, pray, Direction } from "src/utils";
-import { MathCommand, MathBlock } from "../math";
+import { MathCommand, MathBlock, DOMView, MQSymbol, RootMathBlock, BinaryOperator } from "../math";
+import { Letter, Digit, Equality } from "./basicSymbols";
 
 /***************************
  * Commands and Operators.
@@ -329,7 +331,7 @@ function getCtrlSeqsFromBlock(block: NodeRef): string {
 
 Options.prototype.charsThatBreakOutOfSupSub = '';
 
-class SupSub extends MathCommand {
+export class SupSub extends MathCommand {
   ctrlSeq = '_{...}^{...}';
   sub?: MathBlock;
   sup?: MathBlock;
@@ -571,7 +573,7 @@ function insLeftOfMeUnlessAtEnd(this: MQNode, cursor: Cursor) {
   return undefined;
 }
 
-class SubscriptCommand extends SupSub {
+export class SubscriptCommand extends SupSub {
   supsub = 'sub' as const;
 
   domView = new DOMView(1, (blocks) =>
@@ -660,7 +662,7 @@ LatexCmds.superscript =
       }
     };
 
-class SummationNotation extends MathCommand {
+export class SummationNotation extends MathCommand {
   constructor(ch: string, symbol: string, ariaLabel?: string) {
     super();
 
@@ -959,7 +961,7 @@ const AnsBuilder = () =>
   );
 LatexCmds.ans = AnsBuilder;
 
-const PercentOfBuilder = () =>
+export const PercentOfBuilder = () =>
   new MQSymbol(
     '\\%\\operatorname{of}',
     h('span', { class: 'mq-nonSymbola mq-operator-name' }, [h.text('% of ')]),
@@ -1672,7 +1674,7 @@ LatexCmds.editable = LatexCmds.MathQuillMathField = MathFieldNode; // backcompat
 // Create by calling public API method .dropEmbedded(),
 // or by calling the global public API method .registerEmbed()
 // and rendering LaTeX like \embed{registeredName} (see test).
-class EmbedNode extends MQSymbol {
+export class EmbedNode extends MQSymbol {
   setOptions(options: EmbedOptions) {
     function noop() {
       return '';

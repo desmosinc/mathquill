@@ -6,13 +6,13 @@ import { MQNode } from "../services/keystroke"
 import { domFrag, DOMFragment } from "../domFragment"
 import { Direction, L, pray, prayDirection, R } from "../utils"
 import { Anticursor, Cursor } from "../cursor"
-import { APIClasses } from "../publicapi"
+import { API, APIClasses } from "../publicapi"
 import { MathspeakOptions } from "../shared_types"
 import { h } from "src/dom"
 import { Parser } from "src/services/parser.util"
 import { Controller } from "src/services/textarea"
 import { Fragment, NodeBase, LatexCmds } from "src/tree"
-import { MathCommand, MathBlock } from "./math"
+import { MathCommand, MathBlock, DOMView, VanillaSymbol, RootMathBlock } from "./math"
 
 /**
  * Blocks of plain text, with one or two TextPiece's as children.
@@ -489,7 +489,7 @@ LatexCmds.lowercase = makeTextBlock('\\lowercase', 'Lowercase', 'span', {
   class: 'mq-text-mode',
 });
 
-class RootMathCommand extends MathCommand {
+export class RootMathCommand extends MathCommand {
   cursor: Cursor;
   constructor(cursor: Cursor) {
     super('$');

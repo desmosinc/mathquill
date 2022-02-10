@@ -3,18 +3,19 @@ import { h } from "src/dom";
 import { domFrag } from "src/domFragment";
 import { Options, optionProcessors, AutoDict } from "src/publicapi";
 import { MQNode } from "src/services/keystroke";
-import { TempSingleCharNode } from "src/services/latex";
+import { latexMathParser, TempSingleCharNode } from "src/services/latex";
 import { Parser } from "src/services/parser.util";
 import { CursorOptions, NodeRef, MathspeakOptions, LatexCmdsAny, InequalityData } from "src/shared_types";
 import { LatexCmds, Fragment, isMQNodeClass, CharCmds } from "src/tree";
 import { U_NO_BREAK_SPACE } from "src/unicode";
 import { Direction, L, R } from "src/utils";
-import { MathBlock, MathCommand, bindVanillaSymbol, bindBinaryOperator } from "../math";
+import { MathBlock, MathCommand, bindVanillaSymbol, bindBinaryOperator, BinaryOperator, DOMView, MQSymbol, VanillaSymbol } from "../math";
+import { PercentOfBuilder, SubscriptCommand, SummationNotation, SupSub } from "./commands";
 
 /*********************************
  * Symbols for Basic Mathematics
  ********************************/
-class DigitGroupingChar extends MQSymbol {
+export class DigitGroupingChar extends MQSymbol {
   finalizeTree(opts: CursorOptions, dir: Direction) {
     this.sharedSiblingMethod(opts, dir);
   }
@@ -178,7 +179,7 @@ class DigitGroupingChar extends MQSymbol {
   }
 }
 
-class Digit extends DigitGroupingChar {
+export class Digit extends DigitGroupingChar {
   constructor(ch: string, mathspeak?: string) {
     super(
       ch,
@@ -343,13 +344,13 @@ optionProcessors.autoParenthesizedFunctions = function (cmds) {
       throw 'autocommand "' + cmd + '" not minimum length of 2';
     }
     dict[cmd] = 1;
-    maxLength = max(maxLength, cmd.length);
+    maxLength = Math.max(maxLength, cmd.length);
   }
   dict._maxLength = maxLength;
   return dict;
 };
 
-class Letter extends Variable {
+export class Letter extends Variable {
   letter: string;
 
   constructor(ch: string) {
@@ -1243,7 +1244,7 @@ LatexCmds['≠'] =
   LatexCmds.neq =
     bindBinaryOperator('\\ne ', '&ne;', 'not equal');
 
-class Equality extends BinaryOperator {
+export class Equality extends BinaryOperator {
   constructor() {
     super('=', h.text('='), '=', 'equals');
   }

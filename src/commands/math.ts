@@ -5,7 +5,7 @@
 import { MQNode } from "../services/keystroke";
 import { CursorOptions, NodeRef, MathspeakOptions, CharCmdsAny, InnerFields, JoinMethod, LatexCmdsAny, LatexCmdsSingleCharBuilder } from "../shared_types";
 import { Anticursor, Cursor, MQSelection } from "../cursor"
-import { APIClasses, Options } from "../publicapi"
+import { API, APIClasses, Options, RootBlockMixin } from "../publicapi"
 import { Fragment, Ends, NodeBase, CharCmds, LatexCmds } from "../tree";
 import { Direction, pray, L, R, noop } from "../utils"
 import { Parser, } from "../services/parser.util";
@@ -13,6 +13,8 @@ import { domFrag, jQToDOMFragment } from "../domFragment";
 import { h } from "../dom";
 import { getBoundingClientRect } from "../browser";
 import { Controller } from "../services/textarea";
+import { latexMathParser } from "src/services/latex";
+import { Digit, Letter } from "./math/basicSymbols";
 
 /**
  * Math tree node base class.
@@ -89,7 +91,7 @@ export class MathElement extends MQNode {
   }
 }
 
-class DOMView {
+export class DOMView {
   constructor(
     public readonly childCount: number,
     public readonly render: (blocks: MathBlock[]) => Element | DocumentFragment
@@ -344,7 +346,7 @@ export class MathCommand extends MathElement {
 /**
  * Lightweight command without blocks or children.
  */
-class MQSymbol extends MathCommand {
+export class MQSymbol extends MathCommand {
   constructor(
     ctrlSeq?: string,
     html?: HTMLElement,
@@ -422,7 +424,7 @@ class MQSymbol extends MathCommand {
     return true;
   }
 }
-class VanillaSymbol extends MQSymbol {
+export class VanillaSymbol extends MQSymbol {
   constructor(ch: string, html?: ChildNode, mathspeak?: string) {
     super(ch, h('span', {}, [html || h.text(ch)]), undefined, mathspeak);
   }
@@ -440,7 +442,7 @@ export function bindVanillaSymbol(
     );
 }
 
-class BinaryOperator extends MQSymbol {
+export class BinaryOperator extends MQSymbol {
   constructor(
     ctrlSeq?: string,
     html?: ChildNode,
@@ -738,7 +740,7 @@ API.StaticMath = function (APIClasses: APIClasses) {
   };
 };
 
-class RootMathBlock extends MathBlock {}
+export class RootMathBlock extends MathBlock {}
 RootBlockMixin(RootMathBlock.prototype); // adds methods to RootMathBlock
 
 API.MathField = function (APIClasses: APIClasses) {
