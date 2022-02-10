@@ -9,6 +9,9 @@ import { Cursor } from "../cursor"
 import { Controller_focusBlur } from "./focusBlur"
 import { ControllerEvent } from "../shared_types"
 import { Controller } from "./textarea"
+import { optionProcessors } from '../publicapi';
+import { Fragment } from '../tree';
+import { Anticursor } from '../cursor';
 
 /**
  * Only one incremental selection may be open at a time. Track whether

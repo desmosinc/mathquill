@@ -4,10 +4,15 @@
 
 import { MQNode } from "../services/keystroke"
 import { domFrag, DOMFragment } from "../domFragment"
-import { Direction, L, R } from "../utils"
-import { Cursor } from "../cursor"
+import { Direction, L, pray, prayDirection, R } from "../utils"
+import { Anticursor, Cursor } from "../cursor"
 import { APIClasses } from "../publicapi"
 import { MathspeakOptions } from "../shared_types"
+import { h } from "src/dom"
+import { Parser } from "src/services/parser.util"
+import { Controller } from "src/services/textarea"
+import { Fragment, NodeBase, LatexCmds } from "src/tree"
+import { MathCommand, MathBlock } from "./math"
 
 /**
  * Blocks of plain text, with one or two TextPiece's as children.

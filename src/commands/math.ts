@@ -3,13 +3,13 @@
  ************************************************/
 
 import { MQNode } from "../services/keystroke";
-import { CursorOptions, NodeRef, MathspeakOptions } from "../shared_types";
-import { Cursor, MQSelection } from "../cursor"
-import { APIClasses } from "../publicapi"
-import { Fragment, Ends, NodeBase } from "../tree";
-import { Direction, pray, L, R } from "../utils"
+import { CursorOptions, NodeRef, MathspeakOptions, CharCmdsAny, InnerFields, JoinMethod, LatexCmdsAny, LatexCmdsSingleCharBuilder } from "../shared_types";
+import { Anticursor, Cursor, MQSelection } from "../cursor"
+import { APIClasses, Options } from "../publicapi"
+import { Fragment, Ends, NodeBase, CharCmds, LatexCmds } from "../tree";
+import { Direction, pray, L, R, noop } from "../utils"
 import { Parser, } from "../services/parser.util";
-import { domFrag } from "../domFragment";
+import { domFrag, jQToDOMFragment } from "../domFragment";
 import { h } from "../dom";
 import { getBoundingClientRect } from "../browser";
 import { Controller } from "../services/textarea";

@@ -8,6 +8,7 @@ import { Options } from "../publicapi"
 import { jQToDOMFragment } from "../domFragment"
 import { Controller_scrollHoriz } from "./scrollHoriz"
 import { saneKeyboardEvents } from "./saneKeyboardEvents.util"
+import { MQNode } from "./keystroke"
 
 Options.prototype.substituteTextarea = function () {
   return h('textarea', {

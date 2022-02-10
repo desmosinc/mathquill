@@ -1,3 +1,17 @@
+import { noop, parseHTML } from "jquery";
+import { Cursor, Anticursor } from "src/cursor";
+import { h } from "src/dom";
+import { domFrag, DOMFragment, jQToDOMFragment } from "src/domFragment";
+import { Options } from "src/publicapi";
+import { MQNode } from "src/services/keystroke";
+import { Parser } from "src/services/parser.util";
+import { Controller } from "src/services/textarea";
+import { MathspeakOptions, NodeRef, BracketSide, CursorOptions, ControllerRoot, InnerFields, InnerMathField, EmbedOptions } from "src/shared_types";
+import { LatexCmds, Ends, Point, NodeBase, CharCmds, Fragment } from "src/tree";
+import { U_DOT_ABOVE, U_ZERO_WIDTH_SPACE, U_NARY_SUMMATION, U_NARY_PRODUCT, U_NARY_COPRODUCT, U_INTEGRAL } from "src/unicode";
+import { L, R, pray, Direction } from "src/utils";
+import { MathCommand, MathBlock } from "../math";
+
 /***************************
  * Commands and Operators.
  **************************/
