@@ -139,9 +139,9 @@ LatexCmds.mathbb = class extends MathCommand {
     return 1 as const;
   }
   parser() {
-    var string = Parser.string;
-    var regex = Parser.regex;
-    var optWhitespace = Parser.optWhitespace;
+    let string = Parser.string;
+    let regex = Parser.regex;
+    let optWhitespace = Parser.optWhitespace;
     return optWhitespace
       .then(string('{'))
       .then(optWhitespace)
@@ -150,7 +150,7 @@ LatexCmds.mathbb = class extends MathCommand {
       .skip(string('}'))
       .map(function (c) {
         // instantiate the class for the matching char
-        var cmd = LatexCmds[c];
+        let cmd = LatexCmds[c];
         if (isMQNodeClass(cmd)) {
           return new cmd();
         } else {

@@ -5,7 +5,7 @@ import { Controller_exportText } from "./exportText"
 ControllerBase.onNotify(function (cursor, e) {
   // these try to cover all ways that mathquill can be modified
   if (e === 'edit' || e === 'replace' || e === undefined) {
-    var controller = cursor.controller;
+    let controller = cursor.controller;
     if (!controller) return;
     if (!controller.options.enableDigitGrouping) return;
 
@@ -37,10 +37,10 @@ export class Controller_focusBlur extends Controller_exportText {
   }
 
   focusBlurEvents() {
-    var ctrlr = this,
+    let ctrlr = this,
       root = ctrlr.root,
       cursor = ctrlr.cursor;
-    var blurTimeout: NodeJS.Timeout;
+    let blurTimeout: NodeJS.Timeout;
     const textarea = ctrlr.getTextareaOrThrow();
     textarea
       .focus(function () {
@@ -97,7 +97,7 @@ export class Controller_focusBlur extends Controller_exportText {
     cursor.hide().parent.blur(cursor);
   }
   unbindFocusBlurEvents() {
-    var textarea = this.getTextareaOrThrow();
+    let textarea = this.getTextareaOrThrow();
     textarea.unbind('focus blur');
   }
 }

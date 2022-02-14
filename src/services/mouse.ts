@@ -11,7 +11,7 @@ import { closest } from "src/dom"
 /********************************************************
  * Deals with mouse events for clicking, drag-to-select
  *******************************************************/
-const ignoreNextMouseDownNoop = (_el: MouseEvent) => {
+const ignoreNextMouseDownNoop = (_el: JQuery.Event) => {
   return false;
 };
 Options.prototype.ignoreNextMousedown = ignoreNextMouseDownNoop;
@@ -19,7 +19,7 @@ Options.prototype.ignoreNextMousedown = ignoreNextMouseDownNoop;
 // Whenever edits to the tree occur, in-progress selection events
 // must be invalidated and selection changes must not be applied to
 // the edited tree. cancelSelectionOnEdit takes care of this.
-var cancelSelectionOnEdit:
+let cancelSelectionOnEdit:
   | undefined
   | {
       cb: () => void;
@@ -42,17 +42,19 @@ var cancelSelectionOnEdit:
 
 export class Controller_mouse extends Controller_latex {
   delegateMouseEvents() {
-    var ultimateRootElement = this.root.domFrag().oneElement();
+    let ultimateRootElement = this.root.domFrag().oneElement();
     //drag-to-select event handling
     this.container.bind('mousedown.mathquill', function (e) {
-      var rootjQ = $(closest(e.target, '.mq-root-block'));
-      var root = (NodeBase.getNodeOfElement(rootjQ[0]) ||
+      let closestRootBlock = closest(e.target, '.mq-root-block')
+      if (closestRootBlock == null) return
+      let rootjQ = $(closestRootBlock);
+      let root = (NodeBase.getNodeOfElement(rootjQ[0]) ||
         NodeBase.getNodeOfElement(ultimateRootElement)) as ControllerRoot;
-      var ctrlr = root.controller,
+      let ctrlr = root.controller,
         cursor = ctrlr.cursor,
         blink = cursor.blink;
-      var textareaSpan = ctrlr.getTextareaSpanOrThrow();
-      var textarea = ctrlr.getTextareaOrThrow();
+      let textareaSpan = ctrlr.getTextareaSpanOrThrow();
+      let textarea = ctrlr.getTextareaOrThrow();
 
       e.preventDefault(); // doesn't work in IE≤8, but it's a one-line fix:
       (e.target as any).unselectable = true; // http://jsbin.com/yagekiji/1 // TODO - no idea what this unselectable property is
@@ -60,11 +62,11 @@ export class Controller_mouse extends Controller_latex {
       if (cursor.options.ignoreNextMousedown(e)) return;
       else cursor.options.ignoreNextMousedown = ignoreNextMouseDownNoop;
 
-      var target: JQuery | undefined;
+      let target: JQuery | undefined;
       function mousemove(e) {
         target = $(e.target);
       }
-      function docmousemove(e: MouseEvent) {
+      function docmousemove(e: JQuery.Event) {
         if (!cursor.anticursor) cursor.startSelection();
         ctrlr.seek(target!, e.clientX, e.clientY).cursor.select();
         if (cursor.selection)
@@ -77,7 +79,7 @@ export class Controller_mouse extends Controller_latex {
       // outside rootjQ, the MathQuill node corresponding to the target (if any)
       // won't be inside this root, so don't mislead Controller::seek with it
 
-      function unbindListeners(e: MouseEvent) {
+      function unbindListeners(e: JQuery.Event) {
         // delete the mouse handlers now that we're not dragging anymore
         rootjQ.unbind('mousemove', mousemove);
 
@@ -103,7 +105,7 @@ export class Controller_mouse extends Controller_latex {
         unbindListeners(e);
       }
 
-      var wasEdited;
+      let wasEdited;
       cancelSelectionOnEdit = {
         cursor: cursor,
         cb: function () {
@@ -141,9 +143,9 @@ export class Controller_mouse extends Controller_latex {
   }
 
   seek($target: JQuery, clientX: number, _clientY: number) {
-    var cursor = this.notify('select').cursor;
-    var node;
-    var targetElm: HTMLElement | null = $target && $target[0];
+    let cursor = this.notify('select').cursor;
+    let node;
+    let targetElm: HTMLElement | null = $target && $target[0];
 
     // we can click on an element that is deeply nested past the point
     // that mathquill knows about. We need to traverse up to the first

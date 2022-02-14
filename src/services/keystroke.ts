@@ -17,13 +17,13 @@ import { Anticursor } from '../cursor';
  * Only one incremental selection may be open at a time. Track whether
  * an incremental selection is open to help enforce this invariant.
  */
-var INCREMENTAL_SELECTION_OPEN = false;
+let INCREMENTAL_SELECTION_OPEN = false;
 
 import { NodeBase } from '../tree';
 
 export class MQNode extends NodeBase {
   keystroke(key: string, e: KeyboardEvent, ctrlr: Controller) {
-    var cursor = ctrlr.cursor;
+    let cursor = ctrlr.cursor;
 
     switch (key) {
       case 'Ctrl-Shift-Backspace':
@@ -271,7 +271,7 @@ export class Controller_keystroke extends Controller_focusBlur {
 
   escapeDir(dir: Direction, _key: string, e: KeyboardEvent) {
     prayDirection(dir);
-    var cursor = this.cursor;
+    let cursor = this.cursor;
 
     // only prevent default of Tab if not in the root editable
     if (cursor.parent !== this.root) e.preventDefault();
@@ -286,9 +286,9 @@ export class Controller_keystroke extends Controller_focusBlur {
   }
   moveDir(dir: Direction) {
     prayDirection(dir);
-    var cursor = this.cursor,
+    let cursor = this.cursor,
       updown = cursor.options.leftRightIntoCmdGoes;
-    var cursorDir = cursor[dir];
+    let cursorDir = cursor[dir];
 
     if (cursor.selection) {
       cursor.insDirOf(dir, cursor.selection.getEnd(dir));
@@ -323,10 +323,10 @@ export class Controller_keystroke extends Controller_focusBlur {
     return this.moveUpDown('down');
   }
   moveUpDown(dir: 'up' | 'down') {
-    var self = this;
-    var cursor = self.notify('upDown').cursor;
-    var dirInto: 'upInto' | 'downInto';
-    var dirOutOf: 'upOutOf' | 'downOutOf';
+    let self = this;
+    let cursor = self.notify('upDown').cursor;
+    let dirInto: 'upInto' | 'downInto';
+    let dirOutOf: 'upOutOf' | 'downOutOf';
 
     if (dir === 'up') {
       dirInto = 'upInto';
@@ -336,17 +336,17 @@ export class Controller_keystroke extends Controller_focusBlur {
       dirOutOf = 'downOutOf';
     }
 
-    var cursorL = cursor[L];
-    var cursorR = cursor[R];
-    var cursorR_dirInto = cursorR && cursorR[dirInto];
-    var cursorL_dirInto = cursorL && cursorL[dirInto];
+    let cursorL = cursor[L];
+    let cursorR = cursor[R];
+    let cursorR_dirInto = cursorR && cursorR[dirInto];
+    let cursorL_dirInto = cursorL && cursorL[dirInto];
 
     if (cursorR_dirInto) cursor.insAtLeftEnd(cursorR_dirInto);
     else if (cursorL_dirInto) cursor.insAtRightEnd(cursorL_dirInto);
     else {
       cursor.parent.bubble(function (ancestor: MQNode) {
         // TODO - revist this
-        var prop = ancestor[dirOutOf];
+        let prop = ancestor[dirOutOf];
         if (prop) {
           if (typeof prop === 'function')
             prop = prop.call(ancestor, cursor) as any; // TODO - figure out if we need to assign to prop
@@ -360,10 +360,10 @@ export class Controller_keystroke extends Controller_focusBlur {
   }
   deleteDir(dir: Direction) {
     prayDirection(dir);
-    var cursor = this.cursor;
-    var cursorEl = cursor[dir] as MQNode;
-    var cursorElParent = cursor.parent.parent;
-    var ctrlr = cursor.controller;
+    let cursor = this.cursor;
+    let cursorEl = cursor[dir] as MQNode;
+    let cursorElParent = cursor.parent.parent;
+    let ctrlr = cursor.controller;
 
     if (cursorEl && cursorEl instanceof MQNode) {
       if (cursorEl.sides) {
@@ -390,8 +390,8 @@ export class Controller_keystroke extends Controller_focusBlur {
           // likely a fraction, and we just backspaced over the slash
           ctrlr.aria.queue(cursorElParent.mathspeakTemplate[1]);
         } else {
-          var mst = cursorElParent.mathspeakTemplate;
-          var textToQueue = dir === L ? mst[0] : mst[mst.length - 1];
+          let mst = cursorElParent.mathspeakTemplate;
+          let textToQueue = dir === L ? mst[0] : mst[mst.length - 1];
           ctrlr.aria.queue(textToQueue);
         }
       } else {
@@ -399,7 +399,7 @@ export class Controller_keystroke extends Controller_focusBlur {
       }
     }
 
-    var hadSelection = cursor.selection;
+    let hadSelection = cursor.selection;
     this.notify('edit'); // deletes selection if present
     if (!hadSelection) {
       const cursorDir = cursor[dir];
@@ -420,11 +420,11 @@ export class Controller_keystroke extends Controller_focusBlur {
   }
   ctrlDeleteDir(dir: Direction) {
     prayDirection(dir);
-    var cursor = this.cursor;
+    let cursor = this.cursor;
     if (!cursor[dir] || cursor.selection) return this.deleteDir(dir);
 
     this.notify('edit');
-    var fragRemoved;
+    let fragRemoved;
     if (dir === L) {
       fragRemoved = new Fragment(
         (cursor.parent as MQNode).getEnd(L),
@@ -472,7 +472,7 @@ export class Controller_keystroke extends Controller_focusBlur {
 
     INCREMENTAL_SELECTION_OPEN = true;
     this.notify('select');
-    var cursor = this.cursor;
+    let cursor = this.cursor;
     if (!cursor.anticursor) cursor.startSelection();
   }
 
@@ -488,11 +488,11 @@ export class Controller_keystroke extends Controller_focusBlur {
     pray('A selection is open', INCREMENTAL_SELECTION_OPEN);
     INCREMENTAL_SELECTION_OPEN = true;
 
-    var cursor = this.cursor,
+    let cursor = this.cursor,
       seln = cursor.selection;
     prayDirection(dir);
 
-    var node = cursor[dir];
+    let node = cursor[dir];
     if (node) {
       // "if node we're selecting towards is inside selection (hence retracting)
       // and is on the *far side* of the selection (hence is only node selected)
@@ -516,10 +516,10 @@ export class Controller_keystroke extends Controller_focusBlur {
    */
   private finishIncrementalSelection() {
     pray('A selection is open', INCREMENTAL_SELECTION_OPEN);
-    var cursor = this.cursor;
+    let cursor = this.cursor;
     cursor.clearSelection();
     cursor.select() || cursor.show();
-    var selection = cursor.selection;
+    let selection = cursor.selection;
     if (selection) {
       cursor.controller.aria
         .clear()

@@ -52,7 +52,7 @@ CharCmds['\\'] = class LatexCommandInput extends MathCommand {
         // TODO needs tests
         cursor.controller.aria.alert(ch);
       } else {
-        var cmd = (this.parent as LatexCommandInput).renderCommand(cursor);
+        let cmd = (this.parent as LatexCommandInput).renderCommand(cursor);
         // TODO needs tests
         cursor.controller.aria.queue(cmd.mathspeak({ createdLeftOf: cursor }));
         if (ch !== '\\' || !this.isEmpty()) cursor.parent.write(cursor, ch);
@@ -60,10 +60,10 @@ CharCmds['\\'] = class LatexCommandInput extends MathCommand {
       }
     };
 
-    var originalKeystroke = endsL.keystroke;
+    let originalKeystroke = endsL.keystroke;
     endsL.keystroke = function (key, e, ctrlr) {
       if (key === 'Tab' || key === 'Enter' || key === 'Spacebar') {
-        var cmd = (this.parent as LatexCommandInput).renderCommand(
+        let cmd = (this.parent as LatexCommandInput).renderCommand(
           ctrlr.cursor
         );
         // TODO needs tests
@@ -112,9 +112,9 @@ CharCmds['\\'] = class LatexCommandInput extends MathCommand {
       cursor.insAtRightEnd(this.parent);
     }
 
-    var latex = this.getEnd(L).latex();
+    let latex = this.getEnd(L).latex();
     if (!latex) latex = ' ';
-    var cmd = LatexCmds[latex];
+    let cmd = LatexCmds[latex];
 
     if (cmd) {
       let node: MQNode;

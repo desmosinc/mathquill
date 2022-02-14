@@ -49,7 +49,7 @@ export class Cursor extends Point {
   );
   private _domFrag = domFrag();
   selection: MQSelection | undefined;
-  intervalId: number;
+  intervalId: NodeJS.Timeout | null;
   anticursor: Anticursor | undefined;
 
   constructor(
@@ -92,7 +92,7 @@ export class Cursor extends Point {
       //was hidden and detached, insert this.jQ back into HTML DOM
       const right = this[R];
       if (right) {
-        var selection = this.selection;
+        let selection = this.selection;
         if (selection && selection.getEnd(L)[L] === this[L])
           this.domFrag().insertBefore(selection.domFrag());
         else this.domFrag().insertBefore(right.domFrag());
@@ -104,7 +104,7 @@ export class Cursor extends Point {
   }
   hide() {
     if (this.intervalId) clearInterval(this.intervalId);
-    this.intervalId = 0;
+    this.intervalId = null;
     this.domFrag().detach();
     this.setDOMFrag(domFrag());
     return this;
@@ -116,7 +116,7 @@ export class Cursor extends Point {
     withDir: NodeRef,
     oppDir: NodeRef
   ) {
-    var oldParent = this.parent;
+    let oldParent = this.parent;
     this.parent = parent;
     this[dir as Direction] = withDir;
     this[-dir as Direction] = oppDir;
@@ -164,18 +164,18 @@ export class Cursor extends Point {
    *     the cursor's current position
    */
   jumpUpDown(from: MQNode, to: MQNode) {
-    var self = this;
+    let self = this;
     self.upDownCache[from.id] = Point.copy(self);
-    var cached = self.upDownCache[to.id];
+    let cached = self.upDownCache[to.id];
     if (cached) {
-      var cachedR = cached[R];
+      let cachedR = cached[R];
       if (cachedR) {
         self.insLeftOf(cachedR);
       } else {
         self.insAtRightEnd(cached.parent);
       }
     } else {
-      var clientX = self.getBoundingClientRectWithoutMargin().left;
+      let clientX = self.getBoundingClientRectWithoutMargin().left;
       to.seek(clientX, self);
     }
     self.controller.aria.queue(to, true);
@@ -198,12 +198,12 @@ export class Cursor extends Point {
     };
   }
   unwrapGramp() {
-    var gramp = this.parent.parent;
-    var greatgramp = gramp.parent;
-    var rightward = gramp[R];
-    var cursor = this;
+    let gramp = this.parent.parent;
+    let greatgramp = gramp.parent;
+    let rightward = gramp[R];
+    let cursor = this;
 
-    var leftward = gramp[L];
+    let leftward = gramp[L];
     gramp.disown().eachChild(function (uncle) {
       if (uncle.isEmpty()) return true;
 
@@ -221,11 +221,11 @@ export class Cursor extends Point {
 
     if (!this[R]) {
       //then find something to be rightward to insLeftOf
-      var thisL = this[L];
+      let thisL = this[L];
       if (thisL) this[R] = thisL[R];
       else {
         while (!this[R]) {
-          var newParent = this.parent[R];
+          let newParent = this.parent[R];
           if (newParent) {
             this.parent = newParent;
             this[R] = newParent.getEnd(L);
@@ -238,23 +238,23 @@ export class Cursor extends Point {
       }
     }
 
-    var thisR = this[R];
+    let thisR = this[R];
     if (thisR) this.insLeftOf(thisR);
     else this.insAtRightEnd(greatgramp);
 
     gramp.domFrag().remove();
 
-    var grampL = gramp[L];
-    var grampR = gramp[R];
+    let grampL = gramp[L];
+    let grampR = gramp[R];
     if (grampL) grampL.siblingDeleted(cursor.options, R);
     if (grampR) grampR.siblingDeleted(cursor.options, L);
   }
   startSelection() {
-    var anticursor = (this.anticursor = Anticursor.fromCursor(this));
-    var ancestors = anticursor.ancestors;
+    let anticursor = (this.anticursor = Anticursor.fromCursor(this));
+    let ancestors = anticursor.ancestors;
 
     for (
-      var ancestor: MQNode | Anticursor = anticursor;
+      let ancestor: MQNode | Anticursor = anticursor;
       ancestor.parent;
       ancestor = ancestor.parent
     ) {
@@ -265,15 +265,15 @@ export class Cursor extends Point {
     delete this.anticursor;
   }
   select() {
-    var _lca;
-    var anticursor = this.anticursor!;
+    let _lca;
+    let anticursor = this.anticursor!;
     if (this[L] === anticursor[L] && this.parent === anticursor.parent)
       return false;
-
+    let ancestor: MQNode | Point | undefined
     // Find the lowest common ancestor (`lca`), and the ancestor of the cursor
     // whose parent is the LCA (which'll be an end of the selection fragment).
     for (
-      var ancestor: MQNode | Point | undefined = this;
+      ancestor = this;
       ancestor.parent;
       ancestor = ancestor.parent
     ) {
@@ -283,7 +283,7 @@ export class Cursor extends Point {
       }
     }
     pray('cursor and anticursor in the same tree', _lca);
-    var lca = _lca as MQNode;
+    let lca = _lca as MQNode;
 
     // The cursor and the anticursor should be in the same tree, because the
     // mousemove handler attached to the document, unlike the one attached to
@@ -293,13 +293,13 @@ export class Cursor extends Point {
 
     // The other end of the selection fragment, the ancestor of the anticursor
     // whose parent is the LCA.
-    var antiAncestor = anticursor.ancestors[lca.id] as MQNode;
+    let antiAncestor = anticursor.ancestors[lca.id] as MQNode;
 
     // Now we have two either Nodes or Points, guaranteed to have a common
     // parent and guaranteed that if both are Points, they are not the same,
     // and we have to figure out which is the left end and which the right end
     // of the selection.
-    var leftEnd,
+    let leftEnd,
       rightEnd,
       dir: Direction = R;
 
@@ -315,7 +315,7 @@ export class Cursor extends Point {
     // the right of `ancestor`.
     if (ancestor[L] !== antiAncestor) {
       for (
-        var rightward: NodeRef | Point | undefined = ancestor;
+        let rightward: NodeRef | Point | undefined = ancestor;
         rightward;
         rightward = rightward[R]
       ) {
@@ -341,14 +341,14 @@ export class Cursor extends Point {
       rightEnd as MQNode
     );
 
-    var insEl = this.selection!.getEnd(dir);
+    let insEl = this.selection!.getEnd(dir);
     this.insDirOf(dir, insEl);
     this.selectionChanged();
     return true;
   }
   resetToEnd(controller: ControllerBase) {
     this.clearSelection();
-    var root = controller.root;
+    let root = controller.root;
     this[R] = 0;
     this[L] = root.getEnd(R);
     this.parent = root;
@@ -362,7 +362,7 @@ export class Cursor extends Point {
     return this;
   }
   deleteSelection() {
-    var selection = this.selection;
+    let selection = this.selection;
     if (!selection) return;
 
     this[L] = selection.getEnd(L)[L];
@@ -372,7 +372,7 @@ export class Cursor extends Point {
     delete this.selection;
   }
   replaceSelection() {
-    var seln = this.selection;
+    let seln = this.selection;
     if (seln) {
       this[L] = seln.getEnd(L)[L];
       this[R] = seln.getEnd(R)[R];
@@ -381,8 +381,8 @@ export class Cursor extends Point {
     return seln;
   }
   depth() {
-    var node: MQNode | Point = this;
-    var depth = 0;
+    let node: MQNode | Point = this;
+    let depth = 0;
     while ((node = node.parent)) {
       depth += node instanceof MathBlock ? 1 : 0;
     }

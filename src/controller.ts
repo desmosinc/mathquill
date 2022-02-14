@@ -19,7 +19,7 @@ export class ControllerBase {
   ariaPostLabel: string;
   cursor: Cursor;
   editable: boolean | undefined;
-  _ariaAlertTimeout: number;
+  _ariaAlertTimeout: NodeJS.Timeout | null;
   KIND_OF_MQ: KIND_OF_MQ;
   textarea: JQuery | undefined;
   textareaSpan: JQuery | undefined;
@@ -53,9 +53,9 @@ export class ControllerBase {
   }
 
   handle(name: HandlerName, dir?: Direction) {
-    var handlers = this.options.handlers;
+    let handlers = this.options.handlers;
     if (handlers && handlers.fns[name]) {
-      var mq = new handlers.APIClasses[this.KIND_OF_MQ](this);
+      let mq = new handlers.APIClasses[this.KIND_OF_MQ](this);
       if (dir === L || dir === R) handlers.fns[name](dir, mq);
       else handlers.fns[name](mq);
     }
@@ -66,13 +66,13 @@ export class ControllerBase {
     ControllerBase.notifyees.push(f);
   }
   notify(e: ControllerEvent) {
-    for (var i = 0; i < ControllerBase.notifyees.length; i += 1) {
+    for (let i = 0; i < ControllerBase.notifyees.length; i += 1) {
       ControllerBase.notifyees[i](this.cursor, e);
     }
     return this;
   }
   setAriaLabel(ariaLabel: string) {
-    var oldAriaLabel = this.getAriaLabel();
+    let oldAriaLabel = this.getAriaLabel();
     if (ariaLabel && typeof ariaLabel === 'string' && ariaLabel !== '') {
       this.ariaLabel = ariaLabel;
     } else if (this.editable) {
@@ -138,13 +138,13 @@ export class ControllerBase {
   }
 
   getTextareaOrThrow() {
-    var textarea = this.textarea;
+    let textarea = this.textarea;
     if (!textarea) throw new Error('expected a textarea');
     return textarea;
   }
 
   getTextareaSpanOrThrow() {
-    var textareaSpan = this.textareaSpan;
+    let textareaSpan = this.textareaSpan;
     if (!textareaSpan) throw new Error('expected a textareaSpan');
     return textareaSpan;
   }

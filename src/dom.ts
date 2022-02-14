@@ -114,12 +114,12 @@ h.entityText = (s: string) => {
   return val.childNodes[0] as Text;
 };
 
-export function closest(el: unknown | null, s: string) {
-  if (typeof (el as any)?.closest === 'function') {
-    return (el as HTMLElement).closest(s);
+export function closest(el: Element, s: string): Node | null {
+  if (typeof el?.closest === 'function') {
+    return el.closest(s);
   }
 
-  if (!(el instanceof HTMLElement)) return null;
+  if (!(el instanceof Node)) return null;
 
   // https://developer.mozilla.org/en-US/docs/Web/API/Element/closest#polyfill
   const matches =
@@ -127,7 +127,7 @@ export function closest(el: unknown | null, s: string) {
     (Element.prototype as any).msMatchesSelector ||
     Element.prototype.webkitMatchesSelector;
 
-  var match: ParentNode | null = el;
+  let match: Node | null = el;
   do {
     if (matches.call(match, s)) return match;
     match = match?.parentElement ?? match?.parentNode ?? null;

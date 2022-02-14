@@ -73,10 +73,10 @@ export let saneKeyboardEvents = (function () {
   // To the extent possible, create a normalized string representation
   // of the key combo (i.e., key code and modifier keys).
   function stringify(evt: JQ_KeyboardEvent) {
-    var which = evt.which || evt.keyCode;
-    var keyVal = KEY_VALUES[which];
-    var key;
-    var modifiers = [];
+    let which = evt.which || evt.keyCode;
+    let keyVal = KEY_VALUES[which];
+    let key;
+    let modifiers = [];
 
     if (evt.ctrlKey) modifiers.push('Ctrl');
     if (evt.originalEvent && evt.originalEvent.metaKey) modifiers.push('Meta');
@@ -94,11 +94,11 @@ export let saneKeyboardEvents = (function () {
   // create a keyboard events shim that calls callbacks at useful times
   // and exports useful public methods
   return function saneKeyboardEvents(el: JQuery, controller: Controller) {
-    var keydown: JQ_KeyboardEvent | null = null;
-    var keypress: KeyboardEvent | null = null;
+    let keydown: JQ_KeyboardEvent | null = null;
+    let keypress: KeyboardEvent | null = null;
 
-    var textarea = $(el);
-    var target = $(controller.container || textarea);
+    let textarea = $(el);
+    let target = $(controller.container || textarea);
 
     // checkTextareaFor() is called after key or clipboard events to
     // say "Hey, I think something was just typed" or "pasted" etc,
@@ -108,8 +108,8 @@ export let saneKeyboardEvents = (function () {
     // after selecting something and then typing, the textarea is
     // incorrectly reported as selected during the input event (but not
     // subsequently).
-    var checkTextarea: TextareaChecker = noop;
-    var timeoutId: NodeJS.Timeout;
+    let checkTextarea: TextareaChecker = noop;
+    let timeoutId: NodeJS.Timeout;
     function checkTextareaFor(checker: TextareaChecker) {
       checkTextarea = checker;
       clearTimeout(timeoutId);
@@ -150,7 +150,7 @@ export let saneKeyboardEvents = (function () {
       if (text) guardedTextareaSelect();
       shouldBeSelected = !!text;
     }
-    var shouldBeSelected = false;
+    let shouldBeSelected = false;
 
     // -*- helper subroutines -*- //
 
@@ -158,7 +158,7 @@ export let saneKeyboardEvents = (function () {
     // This will always return false in IE < 9, which don't support
     // HTMLTextareaElement::selection{Start,End}.
     function hasSelection() {
-      var dom = textarea[0] as HTMLTextAreaElement;
+      let dom = textarea[0] as HTMLTextAreaElement;
 
       if (!('selectionStart' in dom)) return false;
       return dom.selectionStart !== dom.selectionEnd;
@@ -259,7 +259,7 @@ export let saneKeyboardEvents = (function () {
       // b1318e5349160b665003e36d4eedd64101ceacd8
       if (hasSelection()) return;
 
-      var text = (textarea[0] as HTMLTextAreaElement).value;
+      let text = (textarea[0] as HTMLTextAreaElement).value;
       if (text.length === 1) {
         textarea.val('');
         if (controller.options && controller.options.overrideTypedText) {
@@ -302,7 +302,7 @@ export let saneKeyboardEvents = (function () {
       checkTextareaFor(pastedText);
     }
     function pastedText() {
-      var text = (textarea[0] as HTMLTextAreaElement).value;
+      let text = (textarea[0] as HTMLTextAreaElement).value;
       textarea.val('');
       if (text) controller.paste(text);
     }

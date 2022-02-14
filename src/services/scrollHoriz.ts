@@ -9,13 +9,13 @@ import { Controller_mouse } from "./mouse";
 
 export class Controller_scrollHoriz extends Controller_mouse {
   setOverflowClasses() {
-    var root = this.root.domFrag().oneElement();
-    var shouldHaveOverflowRight = false;
-    var shouldHaveOverflowLeft = false;
+    let root = this.root.domFrag().oneElement();
+    let shouldHaveOverflowRight = false;
+    let shouldHaveOverflowLeft = false;
     if (!this.blurred) {
-      var width = getBoundingClientRect(root).width;
-      var scrollWidth = root.scrollWidth;
-      var scroll = root.scrollLeft;
+      let width = getBoundingClientRect(root).width;
+      let scrollWidth = root.scrollWidth;
+      let scroll = root.scrollLeft;
       shouldHaveOverflowRight = scrollWidth > width + scroll;
       shouldHaveOverflowLeft = scroll > 0;
     }
@@ -31,9 +31,10 @@ export class Controller_scrollHoriz extends Controller_mouse {
       root.classList.toggle('mq-editing-overflow-left');
   }
   scrollHoriz() {
-    var cursor = this.cursor,
+    let cursor = this.cursor,
       seln = cursor.selection;
-    var rootRect = getBoundingClientRect(this.root.domFrag().oneElement());
+    let scrollBy;
+    let rootRect = getBoundingClientRect(this.root.domFrag().oneElement());
     if (cursor.domFrag().isEmpty() && !seln) {
       this.root
         .getJQ()
@@ -43,32 +44,32 @@ export class Controller_scrollHoriz extends Controller_mouse {
         });
       return;
     } else if (!seln) {
-      var x = getBoundingClientRect(cursor.domFrag().oneElement()).left;
-      if (x > rootRect.right - 20) var scrollBy = x - (rootRect.right - 20);
-      else if (x < rootRect.left + 20) var scrollBy = x - (rootRect.left + 20);
+      let x = getBoundingClientRect(cursor.domFrag().oneElement()).left;
+      if (x > rootRect.right - 20) scrollBy = x - (rootRect.right - 20);
+      else if (x < rootRect.left + 20) scrollBy = x - (rootRect.left + 20);
       else return;
     } else {
-      var rect = getBoundingClientRect(seln.domFrag().oneElement());
-      var overLeft = rect.left - (rootRect.left + 20);
-      var overRight = rect.right - (rootRect.right - 20);
+      let rect = getBoundingClientRect(seln.domFrag().oneElement());
+      let overLeft = rect.left - (rootRect.left + 20);
+      let overRight = rect.right - (rootRect.right - 20);
       if (seln.getEnd(L) === cursor[R]) {
-        if (overLeft < 0) var scrollBy = overLeft;
+        if (overLeft < 0) scrollBy = overLeft;
         else if (overRight > 0) {
           if (rect.left - overRight < rootRect.left + 20)
-            var scrollBy = overLeft;
-          else var scrollBy = overRight;
+            scrollBy = overLeft;
+          else scrollBy = overRight;
         } else return;
       } else {
-        if (overRight > 0) var scrollBy = overRight;
+        if (overRight > 0) scrollBy = overRight;
         else if (overLeft < 0) {
           if (rect.right - overLeft > rootRect.right - 20)
-            var scrollBy = overRight;
-          else var scrollBy = overLeft;
+            scrollBy = overRight;
+          else scrollBy = overLeft;
         } else return;
       }
     }
 
-    var root = this.root.domFrag().oneElement();
+    let root = this.root.domFrag().oneElement();
     if (scrollBy < 0 && root.scrollLeft === 0) return;
     if (scrollBy > 0 && root.scrollWidth <= root.scrollLeft + rootRect.width)
       return;

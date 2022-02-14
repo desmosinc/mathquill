@@ -36,17 +36,17 @@ export class DigitGroupingChar extends MQSymbol {
   fixDigitGrouping(opts: CursorOptions) {
     if (!opts.enableDigitGrouping) return;
 
-    var left: NodeRef = this;
-    var right: NodeRef = this;
+    let left: NodeRef = this;
+    let right: NodeRef = this;
 
-    var spacesFound = 0;
-    var dots = [];
+    let spacesFound = 0;
+    let dots = [];
 
-    var SPACE = '\\ ';
-    var DOT = '.';
+    let SPACE = '\\ ';
+    let DOT = '.';
 
     // traverse left as far as possible (starting at this char)
-    var node: NodeRef = left;
+    let node: NodeRef = left;
     do {
       if (/^[0-9]$/.test(node.ctrlSeq!)) {
         left = node;
@@ -91,7 +91,7 @@ export class DigitGroupingChar extends MQSymbol {
     // happens when you only have a space
     if (left === right && left && left.ctrlSeq === SPACE) return;
 
-    var disableFormatting = spacesFound > 0 || dots.length > 1;
+    let disableFormatting = spacesFound > 0 || dots.length > 1;
     if (disableFormatting) {
       this.removeGroupingBetween(left, right);
     } else if (dots[0]) {
@@ -108,7 +108,7 @@ export class DigitGroupingChar extends MQSymbol {
   }
 
   removeGroupingBetween(left: NodeRef, right: NodeRef) {
-    var node = left;
+    let node = left;
     do {
       if (node instanceof DigitGroupingChar) {
         node.setGroupingClass(undefined);
@@ -118,11 +118,11 @@ export class DigitGroupingChar extends MQSymbol {
   }
 
   addGroupingBetween(start: NodeRef, end: NodeRef) {
-    var node = start;
-    var count = 0;
+    let node = start;
+    let count = 0;
 
-    var totalDigits = 0;
-    var node = start;
+    let totalDigits = 0;
+    node = start;
     while (node) {
       totalDigits += 1;
 
@@ -130,14 +130,14 @@ export class DigitGroupingChar extends MQSymbol {
       node = node[L];
     }
 
-    var numDigitsInFirstGroup = totalDigits % 3;
+    let numDigitsInFirstGroup = totalDigits % 3;
     if (numDigitsInFirstGroup === 0) numDigitsInFirstGroup = 3;
 
-    var node = start;
+    node = start;
     while (node) {
       count += 1;
 
-      var cls = undefined;
+      let cls = undefined;
 
       // only do grouping if we have at least 4 numbers
       if (totalDigits >= 4) {
@@ -212,9 +212,9 @@ export class Digit extends DigitGroupingChar {
   }
   mathspeak(opts: MathspeakOptions) {
     if (opts && opts.createdLeftOf) {
-      var cursor = opts.createdLeftOf;
-      var cursorL = cursor[L];
-      var cursorLL = cursorL && cursorL[L];
+      let cursor = opts.createdLeftOf;
+      let cursorL = cursor[L];
+      let cursorLL = cursorL && cursorL[L];
       const cursorParentParentSub =
         cursor.parent.parent instanceof SupSub
           ? cursor.parent.parent.sub
@@ -242,7 +242,7 @@ class Variable extends MQSymbol {
     super(chOrCtrlSeq, h('var', {}, [html || h.text(chOrCtrlSeq)]));
   }
   text() {
-    var text = this.ctrlSeq || '';
+    let text = this.ctrlSeq || '';
     if (this.isPartOfOperator) {
       if (text[0] == '\\') {
         text = text.slice(1, text.length);
@@ -267,7 +267,7 @@ class Variable extends MQSymbol {
     return text;
   }
   mathspeak() {
-    var text = this.ctrlSeq || '';
+    let text = this.ctrlSeq || '';
     if (
       this.isPartOfOperator ||
       text.length > 1 ||
@@ -299,12 +299,12 @@ optionProcessors.autoCommands = function (cmds: string) {
   if (!/^[a-z]+(?: [a-z]+)*$/i.test(cmds)) {
     throw '"' + cmds + '" not a space-delimited list of only letters';
   }
-  var list = cmds.split(' ');
-  var dict: AutoDict = {};
-  var maxLength = 0;
+  let list = cmds.split(' ');
+  let dict: AutoDict = {};
+  let maxLength = 0;
 
-  for (var i = 0; i < list.length; i += 1) {
-    var cmd = list[i];
+  for (let i = 0; i < list.length; i += 1) {
+    let cmd = list[i];
     if (cmd.length < 2) {
       throw 'autocommand "' + cmd + '" not minimum length of 2';
     }
@@ -321,10 +321,10 @@ optionProcessors.autoCommands = function (cmds: string) {
 
 Options.prototype.quietEmptyDelimiters = {};
 optionProcessors.quietEmptyDelimiters = function (dlms: string) {
-  var list = dlms.split(' ');
-  var dict: { [id: string]: any } = {};
-  for (var i = 0; i < list.length; i += 1) {
-    var dlm = list[i];
+  let list = dlms.split(' ');
+  let dict: { [id: string]: any } = {};
+  for (let i = 0; i < list.length; i += 1) {
+    let dlm = list[i];
     dict[dlm] = 1;
   }
   return dict;
@@ -335,11 +335,11 @@ optionProcessors.autoParenthesizedFunctions = function (cmds) {
   if (!/^[a-z]+(?: [a-z]+)*$/i.test(cmds)) {
     throw '"' + cmds + '" not a space-delimited list of only letters';
   }
-  var list = cmds.split(' ');
-  var dict: AutoDict = {};
-  var maxLength = 0;
-  for (var i = 0; i < list.length; i += 1) {
-    var cmd = list[i];
+  let list = cmds.split(' ');
+  let dict: AutoDict = {};
+  let maxLength = 0;
+  for (let i = 0; i < list.length; i += 1) {
+    let cmd = list[i];
     if (cmd.length < 2) {
       throw 'autocommand "' + cmd + '" not minimum length of 2';
     }
@@ -364,14 +364,14 @@ export class Letter extends Variable {
     }
 
     //handle autoCommands
-    var autoCmds = cursor.options.autoCommands;
-    var maxLength = autoCmds._maxLength || 0;
+    let autoCmds = cursor.options.autoCommands;
+    let maxLength = autoCmds._maxLength || 0;
     if (maxLength > 0) {
       // want longest possible autocommand, so join together longest
       // sequence of letters
-      var str = '';
-      var l: NodeRef = this;
-      var i = 0;
+      let str = '';
+      let l: NodeRef = this;
+      let i = 0;
       // FIXME: l.ctrlSeq === l.letter checks if first or last in an operator name
       while (l instanceof Letter && l.ctrlSeq === l.letter && i < maxLength) {
         str = l.letter + str;
@@ -387,8 +387,8 @@ export class Letter extends Variable {
           new Fragment(l, this).remove();
           cursor[L] = (l as MQNode)[L];
 
-          var cmd = LatexCmds[str];
-          var node;
+          let cmd = LatexCmds[str];
+          let node;
           if (isMQNodeClass(cmd)) {
             node = new (cmd as typeof TempSingleCharNode)(str); // TODO - How do we know that this class expects a single str input?
           } else {
@@ -404,7 +404,7 @@ export class Letter extends Variable {
 
   autoParenthesize(cursor: Cursor) {
     //exit early if already parenthesized
-    var right = cursor.parent.getEnd(R);
+    let right = cursor.parent.getEnd(R);
     if (right && right instanceof Bracket && right.ctrlSeq === '\\left(') {
       return;
     }
@@ -415,13 +415,13 @@ export class Letter extends Variable {
     }
 
     //handle autoParenthesized functions
-    var str = '';
-    var l: NodeRef = this;
-    var i = 0;
+    let str = '';
+    let l: NodeRef = this;
+    let i = 0;
 
-    var autoParenthesizedFunctions = cursor.options.autoParenthesizedFunctions;
-    var maxLength = autoParenthesizedFunctions._maxLength || 0;
-    var autoOperatorNames = cursor.options.autoOperatorNames;
+    let autoParenthesizedFunctions = cursor.options.autoParenthesizedFunctions;
+    let maxLength = autoParenthesizedFunctions._maxLength || 0;
+    let autoOperatorNames = cursor.options.autoOperatorNames;
     while (l instanceof Letter && i < maxLength) {
       (str = l.letter + str), (l = l[L]), (i += 1);
     }
@@ -468,7 +468,7 @@ export class Letter extends Variable {
   }
 
   autoUnItalicize(opts: CursorOptions) {
-    var autoOps = opts.autoOperatorNames;
+    let autoOps = opts.autoOperatorNames;
     if (autoOps._maxLength === 0) return;
 
     //exit early if in simple subscript and disableAutoSubstitutionInSubscripts is set.
@@ -478,14 +478,16 @@ export class Letter extends Variable {
 
     // want longest possible operator names, so join together entire contiguous
     // sequence of letters
-    var str = this.letter;
-    for (var l = this[L]; l instanceof Letter; l = l[L]) str = l.letter + str;
-    for (var r = this[R]; r instanceof Letter; r = r[R]) str += r.letter;
+    let str = this.letter;
+    let r;
+    let l;
+    for (l = this[L]; l instanceof Letter; l = l[L]) str = l.letter + str;
+    for (r = this[R]; r instanceof Letter; r = r[R]) str += r.letter;
 
     // removeClass and delete flags from all letters before figuring out
     // which, if any, are part of an operator name
-    var lR = l && l[R];
-    var rL = r && r[L];
+    let lR = l && l[R];
+    let rL = r && r[L];
 
     new Fragment(lR || this.parent.getEnd(L), rL || this.parent.getEnd(R)).each(
       function (el) {
@@ -504,17 +506,17 @@ export class Letter extends Variable {
     // check for operator names: at each position from left to right, check
     // substrings from longest to shortest
     outer: for (
-      var i = 0, first = (l as MQNode)[R] || this.parent.getEnd(L);
+      let i = 0, first = (l as MQNode)[R] || this.parent.getEnd(L);
       first && i < str.length;
       i += 1, first = (first as MQNode)[R]
     ) {
-      for (var len = Math.min(autoOpsLength, str.length - i); len > 0; len -= 1) {
-        var word = str.slice(i, i + len);
-        var last: MQNode = undefined!; // TODO - TS complaining that we use last before assigning to it
+      for (let len = Math.min(autoOpsLength, str.length - i); len > 0; len -= 1) {
+        let word = str.slice(i, i + len);
+        let last: MQNode = undefined!; // TODO - TS complaining that we use last before assigning to it
 
         if (autoOps.hasOwnProperty(word)) {
           for (
-            var j = 0, letter: NodeRef = first;
+            let j = 0, letter: NodeRef = first;
             j < len;
             j += 1, letter = (letter as MQNode)[R]
           ) {
@@ -524,7 +526,7 @@ export class Letter extends Variable {
             }
           }
 
-          var isBuiltIn = BuiltInOpNames.hasOwnProperty(word);
+          let isBuiltIn = BuiltInOpNames.hasOwnProperty(word);
           first.ctrlSeq =
             (isBuiltIn ? '\\' : '\\operatorname{') + first.ctrlSeq;
           last.ctrlSeq += isBuiltIn ? ' ' : '}';
@@ -540,10 +542,10 @@ export class Letter extends Variable {
             first.domFrag().addClass('mq-first');
           if (!this.shouldOmitPadding(last[R])) {
             if (last[R] instanceof SupSub) {
-              var supsub = last[R] as MQNode; // XXX monkey-patching, but what's the right thing here?
+              let supsub = last[R] as MQNode; // XXX monkey-patching, but what's the right thing here?
               // Have operatorname-specific code in SupSub? A CSS-like language to style the
               // math tree, but which ignores cursor and selection (which CSS can't)?
-              var respace =
+              let respace =
                 (supsub.siblingCreated =
                 supsub.siblingDeleted =
                   function () {
@@ -585,7 +587,7 @@ export class Letter extends Variable {
     return false;
   }
 }
-var BuiltInOpNames: AutoDict = {}; // the set of operator names like \sin, \cos, etc that
+let BuiltInOpNames: AutoDict = {}; // the set of operator names like \sin, \cos, etc that
 // are built-into LaTeX, see Section 3.17 of the Short Math Guide: http://tinyurl.com/jm9okjc
 // MathQuill auto-unitalicizes some operator names not in that set, like 'hcf'
 // and 'arsinh', which must be exported as \operatorname{hcf} and
@@ -595,31 +597,31 @@ var BuiltInOpNames: AutoDict = {}; // the set of operator names like \sin, \cos,
 // the set of operator names that MathQuill auto-unitalicizes by default; overridable
 Options.prototype.autoOperatorNames = defaultAutoOpNames();
 
-var TwoWordOpNames = { limsup: 1, liminf: 1, projlim: 1, injlim: 1 };
+let TwoWordOpNames = { limsup: 1, liminf: 1, projlim: 1, injlim: 1 };
 
 function defaultAutoOpNames() {
   const AutoOpNames: AutoDict = {
     _maxLength: 9,
   };
-  var mostOps = (
+  let mostOps = (
     'arg deg det dim exp gcd hom inf ker lg lim ln log max min sup' +
     ' limsup liminf injlim projlim Pr'
   ).split(' ');
-  for (var i = 0; i < mostOps.length; i += 1) {
+  for (let i = 0; i < mostOps.length; i += 1) {
     BuiltInOpNames[mostOps[i]] = AutoOpNames[mostOps[i]] = 1;
   }
 
-  var builtInTrigs =
+  let builtInTrigs =
     'sin cos tan arcsin arccos arctan sinh cosh tanh sec csc cot coth'.split(
       // why coth but not sech and csch, LaTeX?
       ' '
     );
-  for (var i = 0; i < builtInTrigs.length; i += 1) {
+  for (let i = 0; i < builtInTrigs.length; i += 1) {
     BuiltInOpNames[builtInTrigs[i]] = 1;
   }
 
-  var autoTrigs = 'sin cos tan sec cosec csc cotan cot ctg'.split(' ');
-  for (var i = 0; i < autoTrigs.length; i += 1) {
+  let autoTrigs = 'sin cos tan sec cosec csc cotan cot ctg'.split(' ');
+  for (let i = 0; i < autoTrigs.length; i += 1) {
     AutoOpNames[autoTrigs[i]] =
       AutoOpNames['arc' + autoTrigs[i]] =
       AutoOpNames[autoTrigs[i] + 'h'] =
@@ -630,8 +632,8 @@ function defaultAutoOpNames() {
 
   // compat with some of the nonstandard LaTeX exported by MathQuill
   // before #247. None of these are real LaTeX commands so, seems safe
-  var moreNonstandardOps = 'gcf hcf lcm proj span'.split(' ');
-  for (var i = 0; i < moreNonstandardOps.length; i += 1) {
+  let moreNonstandardOps = 'gcf hcf lcm proj span'.split(' ');
+  for (let i = 0; i < moreNonstandardOps.length; i += 1) {
     AutoOpNames[moreNonstandardOps[i]] = 1;
   }
   return AutoOpNames;
@@ -644,11 +646,11 @@ optionProcessors.autoOperatorNames = function (cmds) {
   if (!/^[a-z\|\-]+(?: [a-z\|\-]+)*$/i.test(cmds)) {
     throw '"' + cmds + '" not a space-delimited list of letters or "|"';
   }
-  var list = cmds.split(' ');
-  var dict: AutoDict = {};
-  var maxLength = 0;
-  for (var i = 0; i < list.length; i += 1) {
-    var cmd = list[i];
+  let list = cmds.split(' ');
+  let dict: AutoDict = {};
+  let maxLength = 0;
+  for (let i = 0; i < list.length; i += 1) {
+    let cmd = list[i];
     if (cmd.length < 2) {
       throw '"' + cmd + '" not minimum length of 2';
     }
@@ -658,7 +660,7 @@ optionProcessors.autoOperatorNames = function (cmds) {
       maxLength = Math.max(maxLength, cmd.length);
     } else {
       // this item has a speech-friendly alternative
-      var cmdArray = cmd.split('|');
+      let cmdArray = cmd.split('|');
       if (cmdArray.length > 2) {
         throw '"' + cmd + '" has more than 1 mathspeak delimiter';
       }
@@ -678,22 +680,22 @@ class OperatorName extends MQSymbol {
     super(fn || '');
   }
   createLeftOf(cursor: Cursor) {
-    var fn = this.ctrlSeq;
-    for (var i = 0; i < fn.length; i += 1) {
+    let fn = this.ctrlSeq;
+    for (let i = 0; i < fn.length; i += 1) {
       new Letter(fn.charAt(i)).createLeftOf(cursor);
     }
   }
   parser() {
-    var fn = this.ctrlSeq;
-    var block = new MathBlock();
-    for (var i = 0; i < fn.length; i += 1) {
+    let fn = this.ctrlSeq;
+    let block = new MathBlock();
+    for (let i = 0; i < fn.length; i += 1) {
       new Letter(fn.charAt(i)).adopt(block, block.getEnd(R), 0);
     }
     return Parser.succeed(block.children());
   }
 }
 
-for (var fn in Options.prototype.autoOperatorNames)
+for (let fn in Options.prototype.autoOperatorNames)
   if (Options.prototype.autoOperatorNames.hasOwnProperty(fn)) {
     (LatexCmds as LatexCmdsAny)[fn as string] = OperatorName;
   }
@@ -707,9 +709,9 @@ LatexCmds.operatorname = class extends MathCommand {
     return latexMathParser.block.map(function (b) {
       // Check for the special case of \operatorname{ans}, which has
       // a special html representation
-      var isAllLetters = true;
-      var str = '';
-      var children = b.children();
+      let isAllLetters = true;
+      let str = '';
+      let children = b.children();
       children.each(function (child) {
         if (child instanceof Letter) {
           str += child.letter;
@@ -730,7 +732,7 @@ LatexCmds.operatorname = class extends MathCommand {
 LatexCmds.f = class extends Letter {
   letter: string;
   constructor() {
-    var letter = 'f';
+    let letter = 'f';
     super(letter);
 
     this.letter = letter;
@@ -788,8 +790,8 @@ LatexCmds['%'] = class extends NonSymbolaSymbol {
     super('\\%', h.text('%'), 'percent');
   }
   parser() {
-    var optWhitespace = Parser.optWhitespace;
-    var string = Parser.string;
+    let optWhitespace = Parser.optWhitespace;
+    let string = Parser.string;
 
     // Parse `\%\operatorname{of}` as special `percentof` node so that
     // it will be serialized properly and deleted as a unit.
@@ -938,18 +940,18 @@ export class LatexFragment extends MathCommand {
   }
 
   createLeftOf(cursor: Cursor) {
-    var block = latexMathParser.parse(this.latexStr);
+    let block = latexMathParser.parse(this.latexStr);
     block
       .children()
       .adopt(cursor.parent, cursor[L] as MQNode, cursor[R] as MQNode);
     cursor[L] = block.getEnd(R);
     domFrag(block.html()).insertBefore(cursor.domFrag());
     block.finalizeInsert(cursor.options, cursor);
-    var blockEndsR = block.getEnd(R);
-    var blockEndsRR = blockEndsR && blockEndsR[R];
+    let blockEndsR = block.getEnd(R);
+    let blockEndsRR = blockEndsR && blockEndsR[R];
     if (blockEndsRR) blockEndsRR.siblingCreated(cursor.options, L);
-    var blockEndsL = block.getEnd(L);
-    var blockEndsLL = blockEndsL && blockEndsL[L];
+    let blockEndsL = block.getEnd(L);
+    let blockEndsLL = blockEndsL && blockEndsL[L];
     if (blockEndsLL) blockEndsLL.siblingCreated(cursor.options, R);
     cursor.parent.bubble(function (node) {
       node.reflow();
@@ -960,7 +962,7 @@ export class LatexFragment extends MathCommand {
     return latexMathParser.parse(this.latexStr).mathspeak();
   }
   parser() {
-    var frag = latexMathParser.parse(this.latexStr).children();
+    let frag = latexMathParser.parse(this.latexStr).children();
     return Parser.succeed(frag);
   }
 }
@@ -1061,7 +1063,7 @@ function isBinaryOperator(node: NodeRef): boolean {
   return true;
 }
 
-export var PlusMinus = class extends BinaryOperator {
+export let PlusMinus = class extends BinaryOperator {
   constructor(ch?: string, html?: ChildNode, mathspeak?: string) {
     super(ch, html, undefined, mathspeak, true);
   }
@@ -1127,7 +1129,7 @@ class To extends BinaryOperator {
   }
   deleteTowards(dir: Direction, cursor: Cursor) {
     if (dir === L) {
-      var l = cursor[L] as MQNode;
+      let l = cursor[L] as MQNode;
       new Fragment(l, this).remove();
       cursor[L] = l[L];
       new MinusNode().createLeftOf(cursor);
@@ -1148,7 +1150,7 @@ class Inequality extends BinaryOperator {
   data: InequalityData;
 
   constructor(data: InequalityData, strict: boolean) {
-    var strictness: '' | 'Strict' = strict ? 'Strict' : '';
+    let strictness: '' | 'Strict' = strict ? 'Strict' : '';
     super(
       data[`ctrlSeq${strictness}`],
       h.entityText(data[`htmlEntity${strictness}`]),
@@ -1162,7 +1164,7 @@ class Inequality extends BinaryOperator {
 
   swap(strict: boolean) {
     this.strict = strict;
-    var strictness: '' | 'Strict' = strict ? 'Strict' : '';
+    let strictness: '' | 'Strict' = strict ? 'Strict' : '';
     this.ctrlSeq = this.data[`ctrlSeq${strictness}`];
     this.domFrag()
       .children()
@@ -1183,7 +1185,7 @@ class Inequality extends BinaryOperator {
   }
 }
 
-var less: InequalityData = {
+let less: InequalityData = {
   ctrlSeq: '\\le ',
   htmlEntity: '&le;',
   text: '≤',
@@ -1193,7 +1195,7 @@ var less: InequalityData = {
   textStrict: '<',
   mathspeakStrict: 'less than',
 };
-var greater: InequalityData = {
+let greater: InequalityData = {
   ctrlSeq: '\\ge ',
   htmlEntity: '&ge;',
   text: '≥',
@@ -1211,7 +1213,7 @@ class Greater extends Inequality {
   createLeftOf(cursor: Cursor) {
     const cursorL = cursor[L];
     if (cursorL instanceof BinaryOperator && cursorL.ctrlSeq === '-') {
-      var l = cursorL;
+      let l = cursorL;
       cursor[L] = l[L];
       l.remove();
       new To().createLeftOf(cursor);
@@ -1249,7 +1251,7 @@ export class Equality extends BinaryOperator {
     super('=', h.text('='), '=', 'equals');
   }
   createLeftOf(cursor: Cursor) {
-    var cursorL = cursor[L];
+    let cursorL = cursor[L];
     if (cursorL instanceof Inequality && cursorL.strict) {
       cursorL.swap(false);
       cursorL.bubble(function (node) {
@@ -1282,7 +1284,7 @@ class Sim extends BinaryOperator {
   }
   createLeftOf(cursor: Cursor) {
     if (cursor[L] instanceof Sim) {
-      var l = cursor[L] as MQNode;
+      let l = cursor[L] as MQNode;
       cursor[L] = l[L];
       l.remove();
       new Approx().createLeftOf(cursor);
@@ -1302,7 +1304,7 @@ class Approx extends BinaryOperator {
   }
   deleteTowards(dir: Direction, cursor: Cursor) {
     if (dir === L) {
-      var l = cursor[L] as MQNode;
+      let l = cursor[L] as MQNode;
       new Fragment(l, this).remove();
       cursor[L] = l[L];
       new Sim().createLeftOf(cursor);

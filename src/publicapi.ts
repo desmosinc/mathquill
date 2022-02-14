@@ -62,7 +62,7 @@ export type API = {
   TextField?: (APIClasses: APIClasses) => APIClass;
 };
 
-export var API: API = {};
+export let API: API = {};
 
 export let EMBEDS: Record<string, (data: EmbedOptionsData) => EmbedOptions> = {};
 
@@ -87,7 +87,7 @@ export type AutoDict = {
 
 export class Options {
   constructor(public version: 1 | 2) {}
-  ignoreNextMousedown: (_el: MouseEvent) => boolean;
+  ignoreNextMousedown: (_el: JQuery.Event) => boolean;
   substituteTextarea: () => HTMLElement;
 
   /** Only used in interface version 1. */
@@ -132,7 +132,7 @@ class Progenote {}
  * The methods are shimmed in outro.js so that MQ.MathField.prototype etc can
  * be accessed.
  */
-var insistOnInterVer = function () {
+let insistOnInterVer = function () {
   if (window.console)
     console.warn(
       'You are using the MathQuill API without specifying an interface version, ' +
@@ -175,7 +175,7 @@ MathQuill.interfaceVersion = function (v: number) {
 };
 MathQuill.getInterface = getInterface;
 
-var MIN = (getInterface.MIN = 1),
+let MIN = (getInterface.MIN = 1),
   MAX = (getInterface.MAX = 2);
 function getInterface(v: number) {
   if (v !== 1 && v !== 2)
@@ -192,12 +192,12 @@ function getInterface(v: number) {
    * Function that takes an HTML element and, if it's the root HTML element of a
    * static math or math or text field, returns an API object for it (else, null).
    *
-   *   var mathfield = MQ.MathField(mathFieldSpan);
+   *   let mathfield = MQ.MathField(mathFieldSpan);
    *   assert(MQ(mathFieldSpan).id === mathfield.id);
    *   assert(MQ(mathFieldSpan).id === MQ(mathFieldSpan).id);
    *
    */
-  var MQ: MQ = function (el: HTMLElement) {
+  let MQ: MQ = function (el: HTMLElement) {
     if (!el || !el.nodeType) return null; // check that `el` is a HTML element, using the
     // same technique as jQuery: https://github.com/jquery/jquery/blob/679536ee4b7a92ae64a5f58d90e9cc38c001e807/src/core/init.js#L92
     let blockElement;
@@ -208,8 +208,8 @@ function getInterface(v: number) {
         break;
       }
     }
-    var blockNode = NodeBase.getNodeOfElement(blockElement) as MathBlock; // TODO - assumng it's a MathBlock
-    var ctrlr = blockNode && blockNode.controller;
+    let blockNode = NodeBase.getNodeOfElement(blockElement) as MathBlock; // TODO - assumng it's a MathBlock
+    let ctrlr = blockNode && blockNode.controller;
     const APIClass = ctrlr && APIClasses[ctrlr.KIND_OF_MQ];
     return ctrlr && APIClass ? new APIClass(ctrlr) : null;
   };
@@ -230,10 +230,10 @@ function getInterface(v: number) {
         APIClasses: APIClasses,
       };
     }
-    for (var name in newOptions)
+    for (let name in newOptions)
       if (newOptions.hasOwnProperty(name)) {
-        var value = (newOptions as any)[name]; // TODO - think about typing this better
-        var processor = (optionProcessors as any)[name]; // TODO - validate option processors better
+        let value = (newOptions as any)[name]; // TODO - think about typing this better
+        let processor = (optionProcessors as any)[name]; // TODO - validate option processors better
         (currentOptions as any)[name] = processor ? processor(value) : value; // TODO - think about typing better
       }
   }
@@ -278,12 +278,12 @@ function getInterface(v: number) {
     ): IAbstractMathQuill;
 
     mathquillify(classNames: string) {
-      var ctrlr = this.__controller,
+      let ctrlr = this.__controller,
         root = ctrlr.root,
         el = ctrlr.container;
       ctrlr.createTextarea();
 
-      var contents = jQToDOMFragment(el)
+      let contents = jQToDOMFragment(el)
         .addClass(classNames)
         .children()
         .detach();
@@ -370,7 +370,7 @@ function getInterface(v: number) {
       return this;
     }
     empty() {
-      var root = this.__controller.root,
+      let root = this.__controller.root,
         cursor = this.__controller.cursor;
 
       root.setEnds({ [L]: 0, [R]: 0 });
@@ -380,12 +380,12 @@ function getInterface(v: number) {
       return this;
     }
     cmd(cmd: string) {
-      var ctrlr = this.__controller.notify(undefined),
+      let ctrlr = this.__controller.notify(undefined),
         cursor = ctrlr.cursor;
       if (/^\\[a-z]+$/i.test(cmd) && !cursor.isTooDeep()) {
         cmd = cmd.slice(1);
-        var klass = (LatexCmds as LatexCmdsAny)[cmd];
-        var node;
+        let klass = (LatexCmds as LatexCmdsAny)[cmd];
+        let node;
         if (klass) {
           if (klass.constructor) {
             node = new klass(cmd);
@@ -424,24 +424,24 @@ function getInterface(v: number) {
     }
 
     keystroke(keysString: string, evt: KeyboardEvent) {
-      var keys = keysString.replace(/^\s+|\s+$/g, '').split(/\s+/);
-      for (var i = 0; i < keys.length; i += 1) {
+      let keys = keysString.replace(/^\s+|\s+$/g, '').split(/\s+/);
+      for (let i = 0; i < keys.length; i += 1) {
         this.__controller.keystroke(keys[i], evt || { preventDefault: noop });
       }
       return this;
     }
     typedText(text: string) {
-      for (var i = 0; i < text.length; i += 1)
+      for (let i = 0; i < text.length; i += 1)
         this.__controller.typedText(text.charAt(i));
       return this;
     }
     dropEmbedded(pageX: number, pageY: number, options: EmbedOptions) {
-      var clientX = pageX - getScrollX();
-      var clientY = pageY - getScrollY();
+      let clientX = pageX - getScrollX();
+      let clientY = pageY - getScrollY();
 
-      var el = document.elementFromPoint(clientX, clientY);
+      let el = document.elementFromPoint(clientX, clientY);
       this.__controller.seek($(el), clientX, clientY);
-      var cmd = new EmbedNode().setOptions(options);
+      let cmd = new EmbedNode().setOptions(options);
       cmd.createLeftOf(this.__controller.cursor);
     }
     setAriaLabel(ariaLabel: string) {
@@ -460,7 +460,7 @@ function getInterface(v: number) {
     }
     clickAt(clientX: number, clientY: number, target: HTMLElement) {
       target = target || document.elementFromPoint(clientX, clientY);
-      var ctrlr = this.__controller,
+      let ctrlr = this.__controller,
         root = ctrlr.root;
       const rootElement = root.domFrag().oneElement();
       if (!rootElement.contains(target)) target = rootElement;
@@ -478,7 +478,7 @@ function getInterface(v: number) {
   };
   MQ.EditableField.prototype = EditableField.prototype;
 
-  var APIClasses: APIClasses = {
+  let APIClasses: APIClasses = {
     AbstractMathQuill,
     EditableField,
   } as unknown as APIClasses;
@@ -488,14 +488,14 @@ function getInterface(v: number) {
    * of each class. If the element had already been MathQuill-ified but into a
    * different kind (or it's not an HTML element), return null.
    */
-  for (var kind in API)
+  for (let kind in API)
     (function <K extends keyof typeof API>(kind: K, defAPIClass: API[K]) {
       if (!defAPIClass) return;
-      var APIClass = (APIClasses[kind] = defAPIClass(APIClasses));
+      let APIClass = (APIClasses[kind] = defAPIClass(APIClasses));
       MQ[kind] = function (el: HTMLElement, opts: CursorOptions) {
-        var mq = MQ(el);
+        let mq = MQ(el);
         if (mq instanceof APIClass || !el || !el.nodeType) return mq;
-        var ctrlr = new Controller(
+        let ctrlr = new Controller(
           new APIClass.RootBlock() as ControllerRoot,
           $(el),
           new BaseOptions(v)
@@ -513,7 +513,7 @@ MathQuill.noConflict = function () {
   (window as any).MathQuill = origMathQuill;
   return MathQuill;
 };
-var origMathQuill = (window as any).MathQuill;
+let origMathQuill = (window as any).MathQuill;
 (window as any).MathQuill = MathQuill;
 
 export function RootBlockMixin(_: RootBlockMixinInput) {

@@ -20,42 +20,42 @@ export class TempSingleCharNode extends MQNode {
 export const latexMathParser = (function () {
   function commandToBlock(cmd: MQNode | Fragment): MathBlock {
     // can also take in a Fragment
-    var block = new MathBlock();
+    let block = new MathBlock();
     cmd.adopt(block, 0, 0);
     return block;
   }
   function joinBlocks(blocks: MathBlock[]) {
-    var firstBlock = blocks[0] || new MathBlock();
+    let firstBlock = blocks[0] || new MathBlock();
 
-    for (var i = 1; i < blocks.length; i += 1) {
+    for (let i = 1; i < blocks.length; i += 1) {
       blocks[i].children().adopt(firstBlock, firstBlock.getEnd(R), 0);
     }
 
     return firstBlock;
   }
 
-  var string = Parser.string;
-  var regex = Parser.regex;
-  var letter = Parser.letter;
-  var digit = Parser.digit;
-  var any = Parser.any;
-  var optWhitespace = Parser.optWhitespace;
-  var succeed = Parser.succeed;
-  var fail = Parser.fail;
+  let string = Parser.string;
+  let regex = Parser.regex;
+  let letter = Parser.letter;
+  let digit = Parser.digit;
+  let any = Parser.any;
+  let optWhitespace = Parser.optWhitespace;
+  let succeed = Parser.succeed;
+  let fail = Parser.fail;
 
   // Parsers yielding either MathCommands, or Fragments of MathCommands
   //   (either way, something that can be adopted by a MathBlock)
-  var variable = letter.map(function (c) {
+  let variable = letter.map(function (c) {
     return new Letter(c);
   });
-  var number = digit.map(function (c) {
+  let number = digit.map(function (c) {
     return new Digit(c);
   });
-  var symbol = regex(/^[^${}\\_^]/).map(function (c) {
+  let symbol = regex(/^[^${}\\_^]/).map(function (c) {
     return new VanillaSymbol(c);
   });
 
-  var controlSequence = regex(/^[^\\a-eg-zA-Z]/) // hotfix #164; match MathBlock::write
+  let controlSequence = regex(/^[^\\a-eg-zA-Z]/) // hotfix #164; match MathBlock::write
     .or(
       string('\\').then(
         regex(/^[a-z]+/i)
@@ -65,31 +65,31 @@ export const latexMathParser = (function () {
     )
     .then(function (ctrlSeq) {
       // TODO - is Parser<MQNode> correct?
-      var cmdKlass = (LatexCmds as LatexCmdsSingleChar)[ctrlSeq];
+      let cmdKlass = (LatexCmds as LatexCmdsSingleChar)[ctrlSeq];
 
       if (cmdKlass) {
         if (cmdKlass.constructor) {
-          var actualClass = cmdKlass as typeof TempSingleCharNode; // TODO - figure out how to know the difference
+          let actualClass = cmdKlass as typeof TempSingleCharNode; // TODO - figure out how to know the difference
           return new actualClass(ctrlSeq).parser();
         } else {
-          var builder = cmdKlass as (c: string) => TempSingleCharNode; // TODO - figure out how to know the difference
+          let builder = cmdKlass as (c: string) => TempSingleCharNode; // TODO - figure out how to know the difference
           return builder(ctrlSeq).parser();
         }
       } else {
         return fail('unknown command: \\' + ctrlSeq);
       }
     });
-  var command = controlSequence.or(variable).or(number).or(symbol);
+  let command = controlSequence.or(variable).or(number).or(symbol);
   // Parsers yielding MathBlocks
-  var mathGroup: Parser<MathBlock> = string('{')
+  let mathGroup: Parser<MathBlock> = string('{')
     .then(function () {
       return mathSequence;
     })
     .skip(string('}'));
-  var mathBlock = optWhitespace.then(mathGroup.or(command.map(commandToBlock)));
-  var mathSequence = mathBlock.many().map(joinBlocks).skip(optWhitespace);
+  let mathBlock = optWhitespace.then(mathGroup.or(command.map(commandToBlock)));
+  let mathSequence = mathBlock.many().map(joinBlocks).skip(optWhitespace);
 
-  var optMathBlock = string('[')
+  let optMathBlock = string('[')
     .then(
       mathBlock
         .then(function (block) {
@@ -100,7 +100,7 @@ export const latexMathParser = (function () {
         .skip(optWhitespace)
     )
     .skip(string(']'));
-  var latexMath: typeof mathSequence & {
+  let latexMath: typeof mathSequence & {
     block: typeof mathBlock;
     optBlock: typeof optMathBlock;
   } = mathSequence as any;
@@ -123,7 +123,7 @@ export class Controller_latex extends Controller_keystroke {
     return this.cleanLatex(this.root.latex());
   }
   writeLatex(latex: string) {
-    var cursor = this.notify('edit').cursor;
+    let cursor = this.notify('edit').cursor;
     cursor.parent.writeLatex(cursor, latex);
 
     return this;
@@ -132,7 +132,7 @@ export class Controller_latex extends Controller_keystroke {
   classifyLatexForEfficientUpdate(latex: string) {
     if (typeof latex !== 'string') return;
 
-    var matches = latex.match(/-?[0-9.]+$/g);
+    let matches = latex.match(/-?[0-9.]+$/g);
     if (matches && matches.length === 1) {
       return {
         latex: latex,
@@ -144,13 +144,13 @@ export class Controller_latex extends Controller_keystroke {
     return;
   }
   renderLatexMathEfficiently(latex: string) {
-    var root = this.root;
-    var oldLatex = this.exportLatex();
+    let root = this.root;
+    let oldLatex = this.exportLatex();
     if (root.getEnd(L) && root.getEnd(R) && oldLatex === latex) {
       return true;
     }
-    var oldClassification;
-    var classification = this.classifyLatexForEfficientUpdate(latex);
+    let oldClassification;
+    let classification = this.classifyLatexForEfficientUpdate(latex);
     if (classification) {
       oldClassification = this.classifyLatexForEfficientUpdate(oldLatex);
       if (
@@ -164,10 +164,10 @@ export class Controller_latex extends Controller_keystroke {
     }
 
     // check if minus sign is changing
-    var oldDigits = oldClassification.digits;
-    var newDigits = classification.digits;
-    var oldMinusSign = false;
-    var newMinusSign = false;
+    let oldDigits = oldClassification.digits;
+    let newDigits = classification.digits;
+    let oldMinusSign = false;
+    let newMinusSign = false;
     if (oldDigits[0] === '-') {
       oldMinusSign = true;
       oldDigits = oldDigits.substr(1);
@@ -178,9 +178,9 @@ export class Controller_latex extends Controller_keystroke {
     }
 
     // start at the very end
-    var charNode = this.root.getEnd(R);
-    var oldCharNodes = [];
-    for (var i = oldDigits.length - 1; i >= 0; i--) {
+    let charNode = this.root.getEnd(R);
+    let oldCharNodes = [];
+    for (let i = oldDigits.length - 1; i >= 0; i--) {
       // the tree does not match what we expect
       if (!charNode || charNode.ctrlSeq !== oldDigits[i]) {
         return false;
@@ -202,7 +202,7 @@ export class Controller_latex extends Controller_keystroke {
 
     // remove the minus sign
     if (oldMinusSign && !newMinusSign) {
-      var oldMinusNode = charNode;
+      let oldMinusNode = charNode;
       if (!oldMinusNode) return false;
       if (oldMinusNode.ctrlSeq !== '-') return false;
       if (oldMinusNode[R] !== oldCharNodes[0]) return false;
@@ -223,12 +223,12 @@ export class Controller_latex extends Controller_keystroke {
 
     // add a minus sign
     if (!oldMinusSign && newMinusSign) {
-      var newMinusNode = new PlusMinus('-');
-      var minusSpan = document.createElement('span');
+      let newMinusNode = new PlusMinus('-');
+      let minusSpan = document.createElement('span');
       minusSpan.textContent = '-';
       newMinusNode.setDOMFrag(jQToDOMFragment($(minusSpan)));
 
-      var oldCharNodes0L = oldCharNodes[0][L];
+      let oldCharNodes0L = oldCharNodes[0][L];
       if (oldCharNodes0L) oldCharNodes0L[R] = newMinusNode;
       if (root.getEnd(L) === oldCharNodes[0]) {
         root.setEnds({ [L]: newMinusNode, [R]: root.getEnd(R) });
@@ -244,9 +244,9 @@ export class Controller_latex extends Controller_keystroke {
     }
 
     // update the text of the current nodes
-    var commonLength = Math.min(oldDigits.length, newDigits.length);
-    for (i = 0; i < commonLength; i++) {
-      var newText = newDigits[i];
+    let commonLength = Math.min(oldDigits.length, newDigits.length);
+    for (let i = 0; i < commonLength; i++) {
+      let newText = newDigits[i];
       charNode = oldCharNodes[i];
       if (charNode.ctrlSeq !== newText) {
         charNode.ctrlSeq = newText;
@@ -261,21 +261,21 @@ export class Controller_latex extends Controller_keystroke {
       root.setEnds({ [L]: root.getEnd(L), [R]: charNode });
       charNode[R] = 0;
 
-      for (i = oldDigits.length - 1; i >= commonLength; i--) {
+      for (let i = oldDigits.length - 1; i >= commonLength; i--) {
         oldCharNodes[i].domFrag().remove();
       }
     }
 
     // add new digits after the existing ones
     if (newDigits.length > oldDigits.length) {
-      var frag = document.createDocumentFragment();
+      let frag = document.createDocumentFragment();
 
-      for (i = commonLength; i < newDigits.length; i++) {
-        var span = document.createElement('span');
+      for (let i = commonLength; i < newDigits.length; i++) {
+        let span = document.createElement('span');
         span.className = 'mq-digit';
         span.textContent = newDigits[i];
 
-        var newNode = new Digit(newDigits[i]);
+        let newNode = new Digit(newDigits[i]);
         newNode.parent = root;
         newNode.setDOMFrag(jQToDOMFragment($(span)));
         frag.appendChild(span);
@@ -292,7 +292,7 @@ export class Controller_latex extends Controller_keystroke {
       root.domFrag().oneElement().appendChild(frag);
     }
 
-    var currentLatex = this.exportLatex();
+    let currentLatex = this.exportLatex();
     if (currentLatex !== latex) {
       console.warn(
         'tried updating latex efficiently but did not work. Attempted: ' +
@@ -305,7 +305,7 @@ export class Controller_latex extends Controller_keystroke {
 
     this.cursor.resetToEnd(this);
 
-    var rightMost = root.getEnd(R);
+    let rightMost = root.getEnd(R);
     if (rightMost) {
       rightMost.fixDigitGrouping(this.cursor.options);
     }
@@ -313,12 +313,12 @@ export class Controller_latex extends Controller_keystroke {
     return true;
   }
   renderLatexMathFromScratch(latex: string) {
-    var root = this.root,
+    let root = this.root,
       cursor = this.cursor;
-    var all = Parser.all;
-    var eof = Parser.eof;
+    let all = Parser.all;
+    let eof = Parser.eof;
 
-    var block = latexMathParser
+    let block = latexMathParser
       .skip(eof)
       .or(all.result<false>(false))
       .parse(latex);
@@ -348,7 +348,7 @@ export class Controller_latex extends Controller_keystroke {
     this.renderLatexMathFromScratch(latex);
   }
   renderLatexText(latex: string) {
-    var root = this.root,
+    let root = this.root,
       cursor = this.cursor;
 
     root.domFrag().children().slice(1).remove();
@@ -356,13 +356,13 @@ export class Controller_latex extends Controller_keystroke {
     delete cursor.selection;
     cursor.show().insAtRightEnd(root);
 
-    var regex = Parser.regex;
-    var string = Parser.string;
-    var eof = Parser.eof;
-    var all = Parser.all;
+    let regex = Parser.regex;
+    let string = Parser.string;
+    let eof = Parser.eof;
+    let all = Parser.all;
 
     // Parser RootMathCommand
-    var mathMode = string('$')
+    let mathMode = string('$')
       .then(latexMathParser)
       // because TeX is insane, math mode doesn't necessarily
       // have to end.  So we allow for the case that math mode
@@ -370,26 +370,26 @@ export class Controller_latex extends Controller_keystroke {
       .skip(string('$').or(eof))
       .map(function (block) {
         // HACK FIXME: this shouldn't have to have access to cursor
-        var rootMathCommand = new RootMathCommand(cursor);
+        let rootMathCommand = new RootMathCommand(cursor);
 
         rootMathCommand.createBlocks();
-        var rootMathBlock = rootMathCommand.getEnd(L);
+        let rootMathBlock = rootMathCommand.getEnd(L);
         block.children().adopt(rootMathBlock as MQNode, 0, 0);
 
         return rootMathCommand;
       });
-    var escapedDollar = string('\\$').result('$');
-    var textChar = escapedDollar
+    let escapedDollar = string('\\$').result('$');
+    let textChar = escapedDollar
       .or(regex(/^[^$]/))
       .map((ch) => new VanillaSymbol(ch));
-    var latexText = mathMode.or(textChar).many();
-    var commands = latexText
+    let latexText = mathMode.or(textChar).many();
+    let commands = latexText
       .skip(eof)
       .or(all.result<false>(false))
       .parse(latex);
 
     if (commands) {
-      for (var i = 0; i < commands.length; i += 1) {
+      for (let i = 0; i < commands.length; i += 1) {
         commands[i].adopt(root, root.getEnd(R), 0);
       }
 

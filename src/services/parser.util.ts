@@ -23,7 +23,7 @@ export class Parser<T> {
 
   // The Parser object is a wrapper for a parser function.
   // Externally, you use one to parse a string by calling
-  //   var result = SomeParser.parse('Me Me Me! Parse Me!');
+  //   let result = SomeParser.parse('Me Me Me! Parse Me!');
   // You should never call the constructor, rather you should
   // construct your Parser from the base parsers and the
   // parser combinator methods.
@@ -43,7 +43,7 @@ export class Parser<T> {
   or<Q>(alternative: Parser<Q>): Parser<T | Q> {
     pray('or is passed a parser', alternative instanceof Parser);
 
-    var self = this;
+    let self = this;
 
     return new Parser(function (stream, onSuccess, onFailure) {
       return self._(stream, onSuccess, failure);
@@ -55,13 +55,13 @@ export class Parser<T> {
   }
 
   then<Q>(next: Parser<Q> | ((result: T) => Parser<Q>)): Parser<Q> {
-    var self = this;
+    let self = this;
 
     return new Parser<Q>(function (stream: string, onSuccess, onFailure) {
       return self._(stream, success, onFailure) as any as Q;
 
       function success(newStream: string, result: T) {
-        var nextParser = next instanceof Parser ? next : next(result);
+        let nextParser = next instanceof Parser ? next : next(result);
         pray('a parser is returned', nextParser instanceof Parser);
         return nextParser._(newStream, onSuccess, onFailure);
       }
@@ -70,10 +70,10 @@ export class Parser<T> {
 
   // -*- optimized iterative combinators -*- //
   many(): Parser<T[]> {
-    var self = this;
+    let self = this;
 
     return new Parser(function (stream, onSuccess, _onFailure) {
-      var xs: T[] = [];
+      let xs: T[] = [];
       while (self._(stream, success, failure));
       return onSuccess(stream, xs);
 
@@ -91,21 +91,21 @@ export class Parser<T> {
 
   times(min: number, max?: number): Parser<T[]> {
     if (arguments.length < 2) max = min;
-    var self = this;
+    let self = this;
 
     return new Parser(function (stream, onSuccess, onFailure) {
-      var xs: T[] = [];
-      var result: boolean = true;
-      var failure;
+      let xs: T[] = [];
+      let result: boolean = true;
+      let failure;
 
-      for (var i = 0; i < min; i += 1) {
+      for (let i = 0; i < min; i += 1) {
         // TODO, this may be incorrect for parsers that return boolean
         // (or generally, falsey) values
         result = !!self._(stream, success, firstFailure);
         if (!result) return onFailure(stream, failure as any as string);
       }
 
-      for (; i < (max as number) && result; i += 1) {
+      for (let i = 0; i < (max as number) && result; i += 1) {
         self._(stream, success, secondFailure);
       }
 
@@ -137,7 +137,7 @@ export class Parser<T> {
     return this.times(0, n);
   }
   atLeast(n: number) {
-    var self = this;
+    let self = this;
     return self.times(n).then(function (start) {
       return self.many().map(function (end) {
         return start.concat(end);
@@ -159,11 +159,11 @@ export class Parser<T> {
 
   // -*- primitive parsers -*- //
   static string(str: string): Parser<string> {
-    var len = str.length;
-    var expected = "expected '" + str + "'";
+    let len = str.length;
+    let expected = "expected '" + str + "'";
 
     return new Parser(function (stream, onSuccess, onFailure) {
-      var head = stream.slice(0, len);
+      let head = stream.slice(0, len);
 
       if (head === str) {
         return onSuccess(stream.slice(len), head);
@@ -176,13 +176,13 @@ export class Parser<T> {
   static regex(re: RegExp): Parser<string> {
     pray('regexp parser is anchored', re.toString().charAt(1) === '^');
 
-    var expected = 'expected ' + re;
+    let expected = 'expected ' + re;
 
     return new Parser(function (stream, onSuccess, onFailure) {
-      var match = re.exec(stream);
+      let match = re.exec(stream);
 
       if (match) {
-        var result = match[0];
+        let result = match[0];
         return onSuccess(stream.slice(result.length), result);
       } else {
         return onFailure(stream, expected);

@@ -36,19 +36,19 @@ export class Aria {
   }
 
   attach() {
-    const container = this.controller.container && this.controller.container.get();
+    const container = this.controller.container && this.controller.container[0];
     if (container && this.span.parentNode !== container) {
       domFrag(container).prepend(domFrag(this.span));
     }
   }
 
   queue(item: AriaQueueItem, shouldDescribe: boolean = false) {
-    var output: Fragment | string = '';
+    let output: Fragment | string = '';
     if (item instanceof MQNode) {
       // Some constructs include verbal shorthand (such as simple fractions and exponents).
       // Since ARIA alerts relate to moving through interactive content, we don't want to use that shorthand if it exists
       // since doing so may be ambiguous or confusing.
-      var itemMathspeak = item.mathspeak({ ignoreShorthand: true });
+      let itemMathspeak = item.mathspeak({ ignoreShorthand: true });
       if (shouldDescribe) {
         // used to ensure item is described when cursor reaches block boundaries
         if (
