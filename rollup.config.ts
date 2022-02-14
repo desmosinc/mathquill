@@ -6,7 +6,8 @@ export default {
     input: 'src/main.ts',
     output: {
       file: 'build/mathquill.js',
-      format: 'iife'
+      format: 'umd',
+      name: "MQ"
     },
     plugins: [
       typescript(),
