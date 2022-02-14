@@ -1,12 +1,28 @@
 import typescript from '@rollup/plugin-typescript';
+import copy from "rollup-plugin-copy"
+import less from 'rollup-plugin-less';
 
 export default {
     input: 'src/main.ts',
     output: {
-      file: 'bundle.js',
+      file: 'build/bundle.js',
       format: 'iife'
     },
     plugins: [
-      typescript()
+      typescript(),
+      copy({
+        targets: [
+          { src: "test/basic.html", dest: "build" },
+          { src: "test/demo.html", dest: "build" },
+          { src: "test/digit-grouping.html", dest: "build" },
+          { src: "test/unit.html", dest: "build" },
+          { src: "test/visual.html", dest: "build" },
+          { src: "test/support", dest: "build" },
+          { src: "src/fonts", dest: "build" },
+        ]
+      }),
+      less({
+        output: "mathquill.css"
+      })
     ]
 };

@@ -109,7 +109,7 @@ export let saneKeyboardEvents = (function () {
     // incorrectly reported as selected during the input event (but not
     // subsequently).
     var checkTextarea: TextareaChecker = noop;
-    var timeoutId: number;
+    var timeoutId: NodeJS.Timeout;
     function checkTextareaFor(checker: TextareaChecker) {
       checkTextarea = checker;
       clearTimeout(timeoutId);

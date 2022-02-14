@@ -21,11 +21,11 @@ ControllerBase.onNotify(function (cursor, e) {
 
 export class Controller_focusBlur extends Controller_exportText {
   blurred: boolean;
-  __disableGroupingTimeout: number;
-  textareaSelectionTimeout: number;
+  __disableGroupingTimeout: NodeJS.Timeout | null;
+  textareaSelectionTimeout: NodeJS.Timeout | null;
 
   disableGroupingForSeconds(seconds: number) {
-    clearTimeout(this.__disableGroupingTimeout);
+    if (this.__disableGroupingTimeout) clearTimeout(this.__disableGroupingTimeout);
     if (seconds === 0) {
       this.root.domFrag().removeClass('mq-suppress-grouping');
     } else {
@@ -40,7 +40,7 @@ export class Controller_focusBlur extends Controller_exportText {
     var ctrlr = this,
       root = ctrlr.root,
       cursor = ctrlr.cursor;
-    var blurTimeout: number;
+    var blurTimeout: NodeJS.Timeout;
     const textarea = ctrlr.getTextareaOrThrow();
     textarea
       .focus(function () {
@@ -60,7 +60,7 @@ export class Controller_focusBlur extends Controller_exportText {
       .blur(function () {
         if (ctrlr.textareaSelectionTimeout) {
           clearTimeout(ctrlr.textareaSelectionTimeout);
-          ctrlr.textareaSelectionTimeout = 0;
+          ctrlr.textareaSelectionTimeout = null;
         }
         ctrlr.disableGroupingForSeconds(0);
         ctrlr.blurred = true;
