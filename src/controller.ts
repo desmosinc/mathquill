@@ -4,6 +4,7 @@ import { Controller } from "./services/textarea"
 import { Direction, L, R } from "./utils"
 import { KIND_OF_MQ } from "./publicapi"
 import { ControllerRoot, ControllerData, CursorOptions, HandlerName, ControllerEvent } from "./shared_types"
+import { jQToDOMFragment } from "./domFragment"
 
 type TextareaKeyboardEventListeners = Partial<{
   [K in keyof HTMLElementEventMap]: (event: HTMLElementEventMap[K]) => any;
@@ -28,16 +29,9 @@ export class ControllerBase {
   textarea: JQuery | undefined;
   textareaSpan: JQuery | undefined;
   mathspeakSpan: JQuery | undefined;
-
-  constructor(root: ControllerRoot, container: JQuery, options: CursorOptions) {
-
-  textarea: $ | undefined;
   private textareaEventListeners: Partial<{
     [K in keyof HTMLElementEventMap]: (event: HTMLElementEventMap[K]) => any;
   }> = {};
-
-  textareaSpan: $ | undefined;
-  mathspeakSpan: $ | undefined;
 
   constructor(
     root: ControllerRoot,

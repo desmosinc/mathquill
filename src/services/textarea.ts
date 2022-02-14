@@ -5,7 +5,7 @@
 
 import { h } from "../dom"
 import { Options } from "../publicapi"
-import { jQToDOMFragment } from "../domFragment"
+import { domFrag, jQToDOMFragment } from "../domFragment"
 import { Controller_scrollHoriz } from "./scrollHoriz"
 import { saneKeyboardEvents } from "./saneKeyboardEvents.util"
 import { MQNode } from "./keystroke"

@@ -1,5 +1,5 @@
 import { ControllerBase } from "../controller"
-import { jQToDOMFragment } from "../domFragment"
+import { domFrag, jQToDOMFragment } from "../domFragment"
 import { Controller_exportText } from "./exportText"
 
 ControllerBase.onNotify(function (cursor, e) {
@@ -36,13 +36,13 @@ export class Controller_focusBlur extends Controller_exportText {
     }
   }
 
-  private blurTimeout: number;
+  private blurTimeout: NodeJS.Timeout | null;
 
   private handleTextareaFocusEditable = () => {
     const cursor = this.cursor;
     this.updateMathspeak();
     this.blurred = false;
-    clearTimeout(this.blurTimeout);
+    if (this.blurTimeout) clearTimeout(this.blurTimeout);
     domFrag(this.container).addClass('mq-focused');
     if (!cursor.parent) cursor.insAtRightEnd(this.root);
     if (cursor.selection) {
@@ -57,7 +57,7 @@ export class Controller_focusBlur extends Controller_exportText {
   private handleTextareaBlurEditable = () => {
     if (this.textareaSelectionTimeout) {
       clearTimeout(this.textareaSelectionTimeout);
-      this.textareaSelectionTimeout = 0;
+      this.textareaSelectionTimeout = null;
     }
     this.disableGroupingForSeconds(0);
     this.blurred = true;
@@ -91,7 +91,7 @@ export class Controller_focusBlur extends Controller_exportText {
 
   private handleWindowBlur = () => {
     // blur event also fired on window, just switching
-    clearTimeout(this.blurTimeout); // tabs/windows, not intentional blur
+    if (this.blurTimeout) clearTimeout(this.blurTimeout); // tabs/windows, not intentional blur
     if (this.cursor.selection)
       this.cursor.selection.domFrag().addClass('mq-blur');
     this.blur();

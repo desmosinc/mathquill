@@ -1,17 +1,16 @@
 
 import { Controller } from "./textarea"
-import { JQ_KeyboardEvent } from "../shared_types"
 import { noop } from "../utils"
 
 /** Poller that fires once every tick. */
 class EveryTick<Args extends unknown[] = []> {
-  private timeoutId: number;
+  private timeoutId: NodeJS.Timeout | null;
   private fn: (...args: Args | []) => void = noop;
   constructor() {}
 
   listen(fn: (...args: Args | []) => void) {
     this.fn = fn;
-    clearTimeout(this.timeoutId);
+    if (this.timeoutId) clearTimeout(this.timeoutId);
     this.timeoutId = setTimeout(this.fn);
   }
 
@@ -24,7 +23,7 @@ class EveryTick<Args extends unknown[] = []> {
 
   clearListener() {
     this.fn = noop;
-    clearTimeout(this.timeoutId);
+    if (this.timeoutId) clearTimeout(this.timeoutId);
   }
 
   trigger(...args: Args | []) {
@@ -47,7 +46,7 @@ class EveryTick<Args extends unknown[] = []> {
  * with here, and if necessary, the API updated.
  ************************************************/
 
-let saneKeyboardEvents = (function () {
+export let saneKeyboardEvents = (function () {
   // The following [key values][1] map was compiled from the
   // [DOM3 Events appendix section on key codes][2] and
   // [a widely cited report on cross-browser tests of key codes][3],
