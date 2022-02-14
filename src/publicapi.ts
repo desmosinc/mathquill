@@ -85,13 +85,13 @@ export type AutoDict = {
   [id: string]: any;
 };
 
+
 export class Options {
   constructor(public version: 1 | 2) {}
   ignoreNextMousedown: (_el: JQuery.Event) => boolean;
   substituteTextarea: () => HTMLElement;
-
   /** Only used in interface version 1. */
-  substituteKeyboardEvents: typeof saneKeyboardEvents;
+  substituteKeyboardEvents: SubstituteKeyboardEvents;
 
   restrictMismatchedBrackets?: boolean;
   typingSlashCreatesNewFraction?: boolean;
@@ -217,7 +217,7 @@ function getInterface(v: number) {
   MQ.L = L;
   MQ.R = R;
   if (v < 2) {
-    MQ.saneKeyboardEvents = saneKeyboardEvents;
+    MQ.saneKeyboardEvents = defaultSubstituteKeyboardEvents;
   }
 
   function config(
@@ -283,25 +283,23 @@ function getInterface(v: number) {
         el = ctrlr.container;
       ctrlr.createTextarea();
 
-      let contents = jQToDOMFragment(el)
-        .addClass(classNames)
-        .children()
-        .detach();
+      let contents = domFrag(el).addClass(classNames).children().detach();
 
       root.setDOMFrag(
         domFrag(
-          h('span', { class: 'mq-root-block', 'aria-hidden': 'true' })
-        ).appendTo(jQToDOMFragment(el).oneElement())
+          h('span', { class: 'mq-root-block', 'aria-hidden': true })
+        ).appendTo(el)
       );
       NodeBase.linkElementByBlockNode(root.domFrag().oneElement(), root);
       this.latex(contents.text());
 
       this.revert = function () {
-        const frag = jQToDOMFragment(el.unbind('.mathquill'))
+        ctrlr.removeMouseEventListener();
+        domFrag(el)
           .removeClass('mq-editable-field mq-math-mode mq-text-mode')
           .empty()
           .append(contents);
-        return v < 2 ? frag.toJQ() : frag.oneElement();
+        return v < 2 ? domFrag(el).toJQ() : el;
       };
     }
     config(opts: ConfigOptionsV1 | ConfigOptionsV2) {
@@ -309,7 +307,7 @@ function getInterface(v: number) {
       return this;
     }
     el() {
-      return this.__controller.container[0];
+      return this.__controller.container;
     }
     text() {
       return this.__controller.exportText();
@@ -349,7 +347,7 @@ function getInterface(v: number) {
     mathquillify(classNames: string) {
       super.mathquillify(classNames);
       this.__controller.editable = true;
-      this.__controller.delegateMouseEvents();
+      this.__controller.addMouseEventListener();
       this.__controller.editablesTextareaEvents();
       return this;
     }
@@ -497,7 +495,7 @@ function getInterface(v: number) {
         if (mq instanceof APIClass || !el || !el.nodeType) return mq;
         let ctrlr = new Controller(
           new APIClass.RootBlock() as ControllerRoot,
-          $(el),
+          el,
           new BaseOptions(v)
         );
         ctrlr.KIND_OF_MQ = kind;

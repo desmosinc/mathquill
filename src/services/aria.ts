@@ -36,8 +36,8 @@ export class Aria {
   }
 
   attach() {
-    const container = this.controller.container && this.controller.container[0];
-    if (container && this.span.parentNode !== container) {
+    const container = this.controller.container;
+    if (this.span.parentNode !== container) {
       domFrag(container).prepend(domFrag(this.span));
     }
   }

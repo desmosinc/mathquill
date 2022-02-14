@@ -40,106 +40,118 @@ let cancelSelectionOnEdit:
   });
 })();
 
+
 export class Controller_mouse extends Controller_latex {
-  delegateMouseEvents() {
-    let ultimateRootElement = this.root.domFrag().oneElement();
-    //drag-to-select event handling
-    this.container.bind('mousedown.mathquill', function (e) {
-      let closestRootBlock = closest(e.target, '.mq-root-block')
-      if (closestRootBlock == null) return
-      let rootjQ = $(closestRootBlock);
-      let root = (NodeBase.getNodeOfElement(rootjQ[0]) ||
-        NodeBase.getNodeOfElement(ultimateRootElement)) as ControllerRoot;
-      let ctrlr = root.controller,
-        cursor = ctrlr.cursor,
-        blink = cursor.blink;
-      let textareaSpan = ctrlr.getTextareaSpanOrThrow();
-      let textarea = ctrlr.getTextareaOrThrow();
+  private handleMouseDown = (e: MouseEvent) => {
+    const rootElement = closest(
+      e.target as HTMLElement | null,
+      '.mq-root-block'
+    ) as HTMLElement | null;
 
-      e.preventDefault(); // doesn't work in IE≤8, but it's a one-line fix:
-      (e.target as any).unselectable = true; // http://jsbin.com/yagekiji/1 // TODO - no idea what this unselectable property is
+    if (!rootElement) return;
 
-      if (cursor.options.ignoreNextMousedown(e)) return;
-      else cursor.options.ignoreNextMousedown = ignoreNextMouseDownNoop;
+    const ownerDocument = rootElement.ownerDocument;
 
-      let target: JQuery | undefined;
-      function mousemove(e) {
-        target = $(e.target);
+    let root = (NodeBase.getNodeOfElement(rootElement) ||
+      NodeBase.getNodeOfElement(
+        this.root.domFrag().oneElement()
+      )) as ControllerRoot;
+    let ctrlr = root.controller,
+      cursor = ctrlr.cursor,
+      blink = cursor.blink;
+    let textareaSpan = ctrlr.getTextareaSpanOrThrow();
+    let textarea = ctrlr.getTextareaOrThrow();
+
+    e.preventDefault(); // doesn't work in IE≤8, but it's a one-line fix:
+    (e.target as any).unselectable = true; // http://jsbin.com/yagekiji/1 // TODO - no idea what this unselectable property is
+
+    if (cursor.options.ignoreNextMousedown(e)) return;
+    else cursor.options.ignoreNextMousedown = ignoreNextMouseDownNoop;
+
+    let lastMousemoveTarget: $ | undefined;
+    function mousemove(e: Event) {
+      lastMousemoveTarget = $(e.target);
+    }
+    function onDocumentMouseMove(e: MouseEvent) {
+      if (!cursor.anticursor) cursor.startSelection();
+      ctrlr.seek(lastMousemoveTarget!, e.clientX, e.clientY).cursor.select();
+      if (cursor.selection)
+        cursor.controller.aria
+          .clear()
+          .queue(cursor.selection.join('mathspeak') + ' selected')
+          .alert();
+      lastMousemoveTarget = undefined;
+    }
+    // outside rootElement, the MathQuill node corresponding to the target (if any)
+    // won't be inside this root, so don't mislead Controller::seek with it
+
+    function unbindListeners() {
+      // delete the mouse handlers now that we're not dragging anymore
+      rootElement?.removeEventListener('mousemove', mousemove);
+      ownerDocument?.removeEventListener('mousemove', onDocumentMouseMove);
+      ownerDocument?.removeEventListener('mouseup', onDocumentMouseUp);
+      cancelSelectionOnEdit = undefined;
+    }
+
+    function updateCursor() {
+      if (ctrlr.editable) {
+        cursor.show();
+        cursor.controller.aria.queue(cursor.parent).alert();
+      } else {
+        jQToDOMFragment(textareaSpan).detach();
       }
-      function docmousemove(e: JQuery.Event) {
-        if (!cursor.anticursor) cursor.startSelection();
-        ctrlr.seek(target!, e.clientX, e.clientY).cursor.select();
-        if (cursor.selection)
-          cursor.controller.aria
-            .clear()
-            .queue(cursor.selection.join('mathspeak') + ' selected')
-            .alert();
-        target = undefined;
-      }
-      // outside rootjQ, the MathQuill node corresponding to the target (if any)
-      // won't be inside this root, so don't mislead Controller::seek with it
+    }
 
-      function unbindListeners(e: JQuery.Event) {
-        // delete the mouse handlers now that we're not dragging anymore
-        rootjQ.unbind('mousemove', mousemove);
+    function onDocumentMouseUp() {
+      cursor.blink = blink;
+      if (!cursor.selection) updateCursor();
+      unbindListeners();
+    }
 
-        const anyTarget = e.target as any; // TODO - why do we need to cast to any?
-        $(anyTarget.ownerDocument)
-          .unbind('mousemove', docmousemove)
-          .unbind('mouseup', mouseup);
-        cancelSelectionOnEdit = undefined;
-      }
-
-      function updateCursor() {
-        if (ctrlr.editable) {
-          cursor.show();
-          cursor.controller.aria.queue(cursor.parent).alert();
-        } else {
-          jQToDOMFragment(textareaSpan).detach();
-        }
-      }
-
-      function mouseup(e: MouseEvent) {
+    var wasEdited;
+    cancelSelectionOnEdit = {
+      cursor: cursor,
+      cb: function () {
+        // If an edit happens while the mouse is down, the existing
+        // selection is no longer valid. Clear it and unbind listeners,
+        // similar to what happens on mouseup.
+        wasEdited = true;
         cursor.blink = blink;
-        if (!cursor.selection) updateCursor();
-        unbindListeners(e);
-      }
+        cursor.clearSelection();
+        updateCursor();
+        unbindListeners();
+      },
+    };
 
-      let wasEdited;
-      cancelSelectionOnEdit = {
-        cursor: cursor,
-        cb: function () {
-          // If an edit happens while the mouse is down, the existing
-          // selection is no longer valid. Clear it and unbind listeners,
-          // similar to what happens on mouseup.
-          wasEdited = true;
-          cursor.blink = blink;
-          cursor.clearSelection();
-          updateCursor();
-          unbindListeners(e);
-        },
-      };
 
-      if (ctrlr.blurred) {
-        if (!ctrlr.editable)
-          jQToDOMFragment(rootjQ).prepend(jQToDOMFragment(textareaSpan));
-        textarea[0].focus();
-        // focus call may bubble to clients, who may then write to
-        // mathquill, triggering cancelSelectionOnEdit. If that happens, we
-        // don't want to stop the cursor blink or bind listeners,
-        // so return early.
-        if (wasEdited) return;
-      }
+    if (ctrlr.blurred) {
+      if (!ctrlr.editable)
+        domFrag(rootElement).prepend(jQToDOMFragment(textareaSpan));
+      textarea[0].focus();
+      // focus call may bubble to clients, who may then write to
+      // mathquill, triggering cancelSelectionOnEdit. If that happens, we
+      // don't want to stop the cursor blink or bind listeners,
+      // so return early.
+      if (wasEdited) return;
+    }
 
-      cursor.blink = noop;
-      ctrlr.seek($(e.target), e.clientX, e.clientY).cursor.startSelection();
+    cursor.blink = noop;
+    ctrlr.seek($(e.target), e.clientX, e.clientY).cursor.startSelection();
 
-      rootjQ.mousemove(mousemove);
-      const anyTarget = e.target as any; // TODO - why do we need to cast to any?
-      $(anyTarget.ownerDocument).mousemove(docmousemove).mouseup(mouseup);
-      // listen on document not just body to not only hear about mousemove and
-      // mouseup on page outside field, but even outside page, except iframes: https://github.com/mathquill/mathquill/commit/8c50028afcffcace655d8ae2049f6e02482346c5#commitcomment-6175800
-    });
+    rootElement.addEventListener('mousemove', mousemove);
+    ownerDocument?.addEventListener('mousemove', onDocumentMouseMove);
+    ownerDocument?.addEventListener('mouseup', onDocumentMouseUp);
+    // listen on document not just body to not only hear about mousemove and
+    // mouseup on page outside field, but even outside page, except iframes: https://github.com/mathquill/mathquill/commit/8c50028afcffcace655d8ae2049f6e02482346c5#commitcomment-6175800
+  };
+
+  addMouseEventListener() {
+    //drag-to-select event handling
+    this.container.addEventListener('mousedown', this.handleMouseDown);
+  }
+
+  removeMouseEventListener() {
+    this.container.removeEventListener('mousedown', this.handleMouseDown);
   }
 
   seek($target: JQuery, clientX: number, _clientY: number) {

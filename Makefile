@@ -29,6 +29,7 @@ BASE_SOURCES = \
   $(SRC_DIR)/dom.ts \
   $(SRC_DIR)/unicode.ts \
 	$(SRC_DIR)/browser.ts \
+  $(SRC_DIR)/animate.ts \
   $(SRC_DIR)/services/aria.ts \
   $(SRC_DIR)/domFragment.ts \
   $(SRC_DIR)/tree.ts \
@@ -68,7 +69,7 @@ CSS_SOURCES = $(shell find $(CSS_DIR) -name '*.less')
 FONT_SOURCE = $(SRC_DIR)/fonts
 FONT_TARGET = $(BUILD_DIR)/fonts
 
-TEST_SUPPORT = ./test/support/assert.ts
+TEST_SUPPORT = ./test/support/assert.ts ./test/support/trigger-event.ts
 UNIT_TESTS = ./test/unit/*.test.js ./test/unit/*.test.ts
 
 # outputs

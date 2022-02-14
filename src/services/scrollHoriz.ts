@@ -8,6 +8,7 @@ import { L, R } from "../utils"
 import { Controller_mouse } from "./mouse";
 
 export class Controller_scrollHoriz extends Controller_mouse {
+  private cancelScrollHoriz: (() => void) | undefined;
   setOverflowClasses() {
     let root = this.root.domFrag().oneElement();
     let shouldHaveOverflowRight = false;
@@ -36,12 +37,25 @@ export class Controller_scrollHoriz extends Controller_mouse {
     let scrollBy;
     let rootRect = getBoundingClientRect(this.root.domFrag().oneElement());
     if (cursor.domFrag().isEmpty() && !seln) {
-      this.root
-        .getJQ()
-        .stop()
-        .animate({ scrollLeft: 0 }, 100, () => {
+      if (this.cancelScrollHoriz) {
+        this.cancelScrollHoriz();
+        this.cancelScrollHoriz = undefined;
+      }
+
+      const rootElt = this.root.domFrag().oneElement();
+      const start = rootElt.scrollLeft;
+      animate(100, (progress, scheduleNext, cancel) => {
+        if (progress >= 1) {
+          this.cancelScrollHoriz = undefined;
+          rootElt.scrollLeft = 0;
           this.setOverflowClasses();
-        });
+        } else {
+          this.cancelScrollHoriz = cancel;
+          scheduleNext();
+          rootElt.scrollLeft = Math.round((1 - progress) * start);
+        }
+      });
+
       return;
     } else if (!seln) {
       let x = getBoundingClientRect(cursor.domFrag().oneElement()).left;
@@ -73,11 +87,24 @@ export class Controller_scrollHoriz extends Controller_mouse {
     if (scrollBy < 0 && root.scrollLeft === 0) return;
     if (scrollBy > 0 && root.scrollWidth <= root.scrollLeft + rootRect.width)
       return;
-    this.root
-      .getJQ()
-      .stop()
-      .animate({ scrollLeft: '+=' + scrollBy }, 100, () => {
+
+    if (this.cancelScrollHoriz) {
+      this.cancelScrollHoriz();
+      this.cancelScrollHoriz = undefined;
+    }
+
+    const rootElt = this.root.domFrag().oneElement();
+    const start = rootElt.scrollLeft;
+    animate(100, (progress, scheduleNext, cancel) => {
+      if (progress >= 1) {
+        this.cancelScrollHoriz = undefined;
+        rootElt.scrollLeft = Math.round(start + scrollBy);
         this.setOverflowClasses();
-      });
+      } else {
+        this.cancelScrollHoriz = cancel;
+        scheduleNext();
+        rootElt.scrollLeft = Math.round(start + progress * scrollBy);
+      }
+    });
   }
 }

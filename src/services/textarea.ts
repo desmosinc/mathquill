@@ -19,7 +19,10 @@ Options.prototype.substituteTextarea = function () {
     'x-palm-disable-ste-all': true,
   });
 };
-Options.prototype.substituteKeyboardEvents = saneKeyboardEvents;
+function defaultSubstituteKeyboardEvents(jq: $, controller: Controller) {
+  return saneKeyboardEvents(jq[0] as HTMLTextAreaElement, controller);
+}
+Options.prototype.substituteKeyboardEvents = defaultSubstituteKeyboardEvents;
 
 export class Controller extends Controller_scrollHoriz {
   selectFn: (text: string) => void;
@@ -41,6 +44,7 @@ export class Controller extends Controller_scrollHoriz {
       ctrlr.selectionChanged();
     };
   }
+
   selectionChanged() {
     let ctrlr = this;
 
@@ -55,6 +59,7 @@ export class Controller extends Controller_scrollHoriz {
       });
     }
   }
+
   setTextareaSelection() {
     this.textareaSelectionTimeout = null;
     let latex = '';
@@ -68,44 +73,35 @@ export class Controller extends Controller_scrollHoriz {
     }
     this.selectFn(latex);
   }
+
   staticMathTextareaEvents() {
     let ctrlr = this;
-    let cursor = ctrlr.cursor;
-    const textarea = ctrlr.getTextareaOrThrow();
-    const textareaSpan = ctrlr.getTextareaSpanOrThrow();
 
     this.mathspeakSpan = $(h('span', { class: 'mq-mathspeak' }));
-    jQToDOMFragment(this.container).prepend(
-      jQToDOMFragment(this.mathspeakSpan)
-    );
+    domFrag(this.container).prepend(jQToDOMFragment(this.mathspeakSpan));
     ctrlr.blurred = true;
-    textarea.bind('cut paste', false);
+    this.removeTextareaEventListener('cut');
+    this.removeTextareaEventListener('paste');
     if (ctrlr.options.disableCopyPaste) {
-      textarea.bind('copy', false);
+      this.removeTextareaEventListener('copy');
     } else {
-      textarea.bind('copy', function () {
-        ctrlr.setTextareaSelection();
+      this.addTextareaEventListeners({
+        copy: function () {
+          ctrlr.setTextareaSelection();
+        },
       });
-    }
-    textarea
-      .focus(function () {
-        ctrlr.blurred = false;
-      })
-      .blur(function () {
-        if (cursor.selection) cursor.selection.clear();
-        setTimeout(detach); //detaching during blur explodes in WebKit
-      });
-    function detach() {
-      jQToDOMFragment(textareaSpan).detach();
-      ctrlr.blurred = true;
     }
 
+    this.addStaticFocusBlurListeners();
+
     ctrlr.selectFn = function (text: string) {
+      const textarea = ctrlr.getTextareaOrThrow();
       textarea.val(text);
       if (text) textarea.select();
     };
     this.updateMathspeak();
   }
+
   editablesTextareaEvents() {
     let ctrlr = this;
     const textarea = ctrlr.getTextareaOrThrow();
@@ -120,12 +116,15 @@ export class Controller extends Controller_scrollHoriz {
         keyboardEventsShim.select(text);
       };
     } else {
-      const { select } = saneKeyboardEvents(textarea, this);
+      const { select } = saneKeyboardEvents(
+        jQToDOMFragment(textarea).oneElement() as HTMLTextAreaElement,
+        this
+      );
       this.selectFn = select;
     }
 
-    jQToDOMFragment(this.container).prepend(jQToDOMFragment(textareaSpan));
-    this.focusBlurEvents();
+    domFrag(this.container).prepend(jQToDOMFragment(textareaSpan));
+    this.addEditableFocusBlurListeners();
     this.updateMathspeak();
   }
   unbindEditablesEvents() {
@@ -139,10 +138,12 @@ export class Controller extends Controller_scrollHoriz {
     };
     jQToDOMFragment(textareaSpan).remove();
 
-    this.unbindFocusBlurEvents();
+    this.removeTextareaEventListener('focus');
+    this.removeTextareaEventListener('blur');
 
     ctrlr.blurred = true;
-    textarea.bind('cut paste', false);
+    this.removeTextareaEventListener('cut');
+    this.removeTextareaEventListener('paste');
   }
   typedText(ch: string) {
     if (ch === '\n') return this.handle('enter');
@@ -207,10 +208,10 @@ export class Controller extends Controller_scrollHoriz {
     // so it is not included for static math mathspeak calculations.
     // The mathspeakSpan should exist only for static math, so we use its presence to decide which approach to take.
     if (!!ctrlr.mathspeakSpan) {
-      textarea.attr('aria-label', '');
+      textarea[0].setAttribute('aria-label', '');
       ctrlr.mathspeakSpan.text((labelWithSuffix + ' ' + mathspeak).trim());
     } else {
-      textarea.attr(
+      textarea[0].setAttribute(
         'aria-label',
         (labelWithSuffix + ' ' + mathspeak + ' ' + ctrlr.ariaPostLabel).trim()
       );

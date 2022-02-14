@@ -5,19 +5,23 @@ import { Direction, L, R } from "./utils"
 import { KIND_OF_MQ } from "./publicapi"
 import { ControllerRoot, ControllerData, CursorOptions, HandlerName, ControllerEvent } from "./shared_types"
 
+type TextareaKeyboardEventListeners = Partial<{
+  [K in keyof HTMLElementEventMap]: (event: HTMLElementEventMap[K]) => any;
+}>;
+
 /*********************************************
  * Controller for a MathQuill instance
  ********************************************/
 export class ControllerBase {
   id: number;
   data: ControllerData;
-  root: ControllerRoot;
-  container: JQuery;
+  readonly root: ControllerRoot;
+  readonly container: HTMLElement;
   options: CursorOptions;
   aria: Aria;
   ariaLabel: string;
   ariaPostLabel: string;
-  cursor: Cursor;
+  readonly cursor: Cursor;
   editable: boolean | undefined;
   _ariaAlertTimeout: NodeJS.Timeout | null;
   KIND_OF_MQ: KIND_OF_MQ;
@@ -26,6 +30,20 @@ export class ControllerBase {
   mathspeakSpan: JQuery | undefined;
 
   constructor(root: ControllerRoot, container: JQuery, options: CursorOptions) {
+
+  textarea: $ | undefined;
+  private textareaEventListeners: Partial<{
+    [K in keyof HTMLElementEventMap]: (event: HTMLElementEventMap[K]) => any;
+  }> = {};
+
+  textareaSpan: $ | undefined;
+  mathspeakSpan: $ | undefined;
+
+  constructor(
+    root: ControllerRoot,
+    container: HTMLElement,
+    options: CursorOptions
+  ) {
     this.id = root.id;
     this.data = {};
 
@@ -130,10 +148,7 @@ export class ControllerBase {
   }
   containerHasFocus() {
     return (
-      document.activeElement &&
-      this.container &&
-      this.container[0] &&
-      this.container[0].contains(document.activeElement)
+      document.activeElement && this.container.contains(document.activeElement)
     );
   }
 
@@ -147,6 +162,25 @@ export class ControllerBase {
     let textareaSpan = this.textareaSpan;
     if (!textareaSpan) throw new Error('expected a textareaSpan');
     return textareaSpan;
+  }
+
+  /** Add the given event listeners on this.textarea, replacing the existing listener for that event if it exists. */
+  addTextareaEventListeners(listeners: TextareaKeyboardEventListeners) {
+    if (!this.textarea) return;
+    const textarea = jQToDOMFragment(this.textarea).oneElement();
+    for (const key in listeners) {
+      const event = key as keyof typeof listeners;
+      this.removeTextareaEventListener(event);
+      textarea.addEventListener(event, listeners[event] as EventListener);
+    }
+  }
+
+  protected removeTextareaEventListener(event: keyof HTMLElementEventMap) {
+    if (!this.textarea) return;
+    const textarea = jQToDOMFragment(this.textarea).oneElement();
+    const listener = this.textareaEventListeners[event];
+    if (!listener) return;
+    textarea.removeEventListener(event, listener as EventListener);
   }
 
   // based on http://www.gh-mathspeak.com/examples/quick-tutorial/

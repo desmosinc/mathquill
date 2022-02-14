@@ -158,26 +158,10 @@ export type JQSelector =
 
 export interface $ {
   (selector?: JQSelector): $;
-  attr(attr: string, val: string | number | null): $;
-  css(prop: string, val: string | number | null): $;
-  trigger(e: Event): $;
   select(): $;
   val(val: string): $;
-  stop(): $;
   html(t: string): $;
   text(str: string): $;
-  animate(
-    properties: Object,
-    duration?: string | number,
-    complete?: Function
-  ): $;
-  bind(opts: Record<string, boolean | ((evt: any) => any)>): $;
-  bind(evt: string, cb: boolean | ((evt: Event) => any)): $;
-  unbind(evt: string, cb?: Function, capture?: boolean): $;
-  mousemove(cb: (evt: MouseEvent) => any): $;
-  mouseup(cb: (evt: MouseEvent) => any): $;
-  focus(handler: (eventObject: Event) => any): $;
-  blur(handler: (eventObject: Event) => any): $;
   closest(selector: JQSelector): $;
   length: number;
   [index: number]: HTMLElement; // TODO - this can be undefined. Either fix uses or wait until removing jquery

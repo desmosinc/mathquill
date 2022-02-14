@@ -706,7 +706,7 @@ API.StaticMath = function (APIClasses: APIClasses) {
       this.config(opts);
       super.mathquillify('mq-math-mode');
       if (this.__options.mouseEvents) {
-        this.__controller.delegateMouseEvents();
+        this.__controller.removeMouseEventListener();
         this.__controller.staticMathTextareaEvents();
       }
       return this;
@@ -765,17 +765,13 @@ API.InnerMathField = function (APIClasses: APIClasses) {
       this.__controller.editable = false;
       this.__controller.root.blur();
       this.__controller.unbindEditablesEvents();
-      jQToDOMFragment(this.__controller.container).removeClass(
-        'mq-editable-field'
-      );
+      domFrag(this.__controller.container).removeClass('mq-editable-field');
     }
     makeEditable() {
       this.__controller.editable = true;
       this.__controller.editablesTextareaEvents();
       this.__controller.cursor.insAtRightEnd(this.__controller.root);
-      jQToDOMFragment(this.__controller.container).addClass(
-        'mq-editable-field'
-      );
+      domFrag(this.__controller.container).addClass('mq-editable-field');
     }
   };
 };
