@@ -5,7 +5,7 @@ import less from 'rollup-plugin-less';
 export default {
     input: 'src/main.ts',
     output: {
-      file: 'build/bundle.js',
+      file: 'build/mathquill.js',
       format: 'iife'
     },
     plugins: [
