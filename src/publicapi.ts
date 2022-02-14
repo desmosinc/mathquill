@@ -12,7 +12,6 @@ import { Direction, L, noop, R } from "./utils"
 import { getScrollX, getScrollY } from "./browser";
 import { MathBlock } from "./commands/math";
 import { h } from "./dom";
-import { saneKeyboardEvents } from "./services/saneKeyboardEvents.util";
 import { EmbedNode } from "./commands/math/commands";
 
 export type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';
