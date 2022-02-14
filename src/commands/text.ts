@@ -269,7 +269,8 @@ export class TextBlock extends MQNode {
             this.anticursorPosition! - cursorPosition!
           );
         }
-        cursor.anticursor = new Anticursor(this, newTextPc[L], newTextPc);
+        if (newTextPc)
+          cursor.anticursor = new Anticursor(this, newTextPc[L], newTextPc);
       }
     }
   }

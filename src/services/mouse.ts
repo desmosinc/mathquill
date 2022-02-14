@@ -4,7 +4,7 @@ import { Options } from "../publicapi"
 import { noop } from "../utils"
 import { ControllerRoot } from "../shared_types"
 import { ControllerBase } from "../controller"
-import { jQToDOMFragment } from "../domFragment"
+import { domFrag, jQToDOMFragment } from "../domFragment"
 import { Cursor } from "../cursor"
 import { closest } from "src/dom"
 
@@ -44,9 +44,9 @@ let cancelSelectionOnEdit:
 export class Controller_mouse extends Controller_latex {
   private handleMouseDown = (e: MouseEvent) => {
     const rootElement = closest(
-      e.target as HTMLElement | null,
+      e.target as Element,
       '.mq-root-block'
-    ) as HTMLElement | null;
+    ) as Element | null;
 
     if (!rootElement) return;
 
@@ -68,7 +68,7 @@ export class Controller_mouse extends Controller_latex {
     if (cursor.options.ignoreNextMousedown(e)) return;
     else cursor.options.ignoreNextMousedown = ignoreNextMouseDownNoop;
 
-    let lastMousemoveTarget: $ | undefined;
+    let lastMousemoveTarget: JQuery | undefined;
     function mousemove(e: Event) {
       lastMousemoveTarget = $(e.target);
     }

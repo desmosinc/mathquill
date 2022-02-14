@@ -9,7 +9,7 @@ import { API, APIClasses, Options, RootBlockMixin } from "../publicapi"
 import { Fragment, Ends, NodeBase, CharCmds, LatexCmds } from "../tree";
 import { Direction, pray, L, R, noop } from "../utils"
 import { Parser, } from "../services/parser.util";
-import { domFrag, jQToDOMFragment } from "../domFragment";
+import { domFrag } from "../domFragment";
 import { h } from "../dom";
 import { getBoundingClientRect } from "../browser";
 import { Controller } from "../services/textarea";

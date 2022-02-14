@@ -34,7 +34,7 @@ export class Controller_scrollHoriz extends Controller_mouse {
   scrollHoriz() {
     let cursor = this.cursor,
       seln = cursor.selection;
-    let scrollBy;
+    let scrollBy: number;
     let rootRect = getBoundingClientRect(this.root.domFrag().oneElement());
     if (cursor.domFrag().isEmpty() && !seln) {
       if (this.cancelScrollHoriz) {

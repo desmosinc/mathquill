@@ -1,7 +1,7 @@
 import { noop } from "../../utils";
 import { Cursor, Anticursor } from "src/cursor";
 import { h, HTMLTagName, parseHTML } from "src/dom";
-import { domFrag, DOMFragment, jQToDOMFragment } from "src/domFragment";
+import { domFrag, DOMFragment } from "src/domFragment";
 import { EMBEDS, Options, RootBlockMixin } from "src/publicapi";
 import { MQNode } from "src/services/keystroke";
 import { latexMathParser } from "src/services/latex";
