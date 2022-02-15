@@ -26,7 +26,7 @@
 const animate = (function () {
   // IIFE exists just to hang on to configured rafShim and cancelShim
   // functions
-  let rafShim: (cb: () => void) => number, cancelShim: (token: number) => void;
+  let rafShim: (cb: () => void) => NodeJS.Timeout | number, cancelShim: (token: number) => void;
   if (
     typeof requestAnimationFrame === 'function' &&
     typeof cancelAnimationFrame === 'function'

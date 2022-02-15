@@ -1,12 +1,12 @@
 import { Controller_latex } from "./latex"
 import { NodeBase } from "../tree"
-import { Options } from "../publicapi"
 import { noop } from "../utils"
 import { ControllerRoot } from "../shared_types"
 import { ControllerBase } from "../controller"
 import { domFrag, jQToDOMFragment } from "../domFragment"
 import { Cursor } from "../cursor"
 import { closest } from "src/dom"
+import { Options } from "src/options"
 
 /********************************************************
  * Deals with mouse events for clicking, drag-to-select

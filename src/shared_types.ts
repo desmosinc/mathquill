@@ -1,11 +1,11 @@
 import { MQNode } from "./services/keystroke"
-import { Options, AutoDict } from "./publicapi"
 import { TempSingleCharNode } from "./services/latex"
 import { saneKeyboardEvents } from "./services/saneKeyboardEvents.util"
 import { Cursor } from "./cursor"
 import { Controller } from "./services/textarea"
 import { L, R } from "./utils"
 import { LatexFragment } from "./commands/math/basicSymbols"
+import { AutoDict, HandlerOptions, Options } from "./options"
 
 export type NodeRef = MQNode | 0;
 export type ControllerEvent =
@@ -109,7 +109,6 @@ export type InequalityData = {
   mathspeakStrict: string;
 };
 
-export type HandlerOptions = any;
 export type ControllerData = any;
 export type ControllerRoot = MQNode & {
   controller: Controller;

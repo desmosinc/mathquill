@@ -1,7 +1,8 @@
 import { Cursor } from "src/cursor";
 import { h } from "src/dom";
 import { domFrag } from "src/domFragment";
-import { Options, optionProcessors, AutoDict } from "src/publicapi";
+import { AutoDict, Options } from "src/options";
+import { optionProcessors } from "src/publicapi";
 import { MQNode } from "src/services/keystroke";
 import { latexMathParser, TempSingleCharNode } from "src/services/latex";
 import { Parser } from "src/services/parser.util";

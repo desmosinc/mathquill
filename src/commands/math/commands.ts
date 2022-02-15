@@ -2,7 +2,7 @@ import { noop } from "../../utils";
 import { Cursor, Anticursor } from "src/cursor";
 import { h, HTMLTagName, parseHTML } from "src/dom";
 import { domFrag, DOMFragment } from "src/domFragment";
-import { EMBEDS, Options, RootBlockMixin } from "src/publicapi";
+import { EMBEDS, RootBlockMixin } from "src/publicapi";
 import { MQNode } from "src/services/keystroke";
 import { latexMathParser } from "src/services/latex";
 import { Parser } from "src/services/parser.util";
@@ -13,6 +13,7 @@ import { U_DOT_ABOVE, U_ZERO_WIDTH_SPACE, U_NARY_SUMMATION, U_NARY_PRODUCT, U_NA
 import { L, R, pray, Direction } from "src/utils";
 import { MathCommand, MathBlock, DOMView, MQSymbol, RootMathBlock, BinaryOperator } from "../math";
 import { Letter, Digit, Equality } from "./basicSymbols";
+import { Options } from "src/options";
 
 /***************************
  * Commands and Operators.

@@ -5,13 +5,14 @@
 import { domFrag } from "./domFragment"
 import { LatexCmds, NodeBase } from './tree';
 import { Controller, defaultSubstituteKeyboardEvents } from "./services/textarea"
-import { CursorOptions, ConfigOptionsV1, ConfigOptionsV2, EmbedOptionsData, EmbedOptions, ControllerRoot, HandlerOptions, LatexCmdsAny, RootBlockMixinInput, MQ } from "./shared_types";
+import { CursorOptions, ConfigOptionsV1, ConfigOptionsV2, EmbedOptionsData, EmbedOptions, ControllerRoot, LatexCmdsAny, RootBlockMixinInput, MQ } from "./shared_types";
 import { ControllerData } from "./shared_types";
 import { Direction, L, noop, R } from "./utils"
 import { getScrollX, getScrollY } from "./browser";
 import { MathBlock } from "./commands/math";
 import { h } from "./dom";
 import { EmbedNode } from "./commands/math/commands";
+import { Options } from "./options";
 
 export type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';
 
@@ -64,14 +65,6 @@ export let API: API = {};
 
 export let EMBEDS: Record<string, (data: EmbedOptionsData) => EmbedOptions> = {};
 
-export type SubstituteKeyboardEvents = (
-  el: JQuery,
-  controller: Controller
-) => {
-  select: (text: string) => void;
-};
-
-
 class OptionProcessors {
   maxDepth: (n: number) => CursorOptions['maxDepth'];
   leftRightIntoCmdGoes: (
@@ -86,47 +79,6 @@ class OptionProcessors {
 }
 
 export const optionProcessors = new OptionProcessors();
-export type AutoDict = {
-  _maxLength?: number;
-  [id: string]: any;
-};
-
-
-export class Options {
-  constructor(public version: 1 | 2) {}
-  ignoreNextMousedown: (_el: JQuery.Event) => boolean;
-  substituteTextarea: () => HTMLElement;
-  /** Only used in interface version 1. */
-  substituteKeyboardEvents: SubstituteKeyboardEvents;
-
-  restrictMismatchedBrackets?: boolean;
-  typingSlashCreatesNewFraction?: boolean;
-  charsThatBreakOutOfSupSub: string;
-  sumStartsWithNEquals?: boolean;
-  autoSubscriptNumerals?: boolean;
-  supSubsRequireOperand?: boolean;
-  spaceBehavesLikeTab?: boolean;
-  typingAsteriskWritesTimesSymbol?: boolean;
-  typingSlashWritesDivisionSymbol: boolean;
-  typingPercentWritesPercentOf?: boolean;
-  resetCursorOnBlur?: boolean | undefined;
-  leftRightIntoCmdGoes?: 'up' | 'down';
-  enableDigitGrouping?: boolean;
-  mouseEvents?: boolean;
-  maxDepth?: number;
-  disableCopyPaste?: boolean;
-  statelessClipboard?: boolean;
-  onPaste?: () => void;
-  onCut?: () => void;
-  overrideTypedText?: (text: string) => void;
-  overrideKeystroke: (key: string, event: KeyboardEvent) => void;
-  autoOperatorNames: AutoDict;
-  autoCommands: AutoDict;
-  autoParenthesizedFunctions: AutoDict;
-  quietEmptyDelimiters: { [id: string]: any };
-  disableAutoSubstitutionInSubscripts?: boolean;
-  handlers: HandlerOptions;
-}
 
 class Progenote {}
 
