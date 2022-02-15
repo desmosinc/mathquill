@@ -4,8 +4,7 @@
 
 import { domFrag } from "./domFragment"
 import { LatexCmds, NodeBase } from './tree';
-import { Controller } from "./services/textarea"
-import { jQToDOMFragment } from "./domFragment"
+import { Controller, defaultSubstituteKeyboardEvents } from "./services/textarea"
 import { CursorOptions, ConfigOptionsV1, ConfigOptionsV2, EmbedOptionsData, EmbedOptions, ControllerRoot, HandlerOptions, LatexCmdsAny, RootBlockMixinInput, MQ } from "./shared_types";
 import { ControllerData } from "./shared_types";
 import { Direction, L, noop, R } from "./utils"
@@ -64,6 +63,14 @@ export type API = {
 export let API: API = {};
 
 export let EMBEDS: Record<string, (data: EmbedOptionsData) => EmbedOptions> = {};
+
+export type SubstituteKeyboardEvents = (
+  el: JQuery,
+  controller: Controller
+) => {
+  select: (text: string) => void;
+};
+
 
 class OptionProcessors {
   maxDepth: (n: number) => CursorOptions['maxDepth'];
@@ -437,7 +444,8 @@ function getInterface(v: number) {
       let clientY = pageY - getScrollY();
 
       let el = document.elementFromPoint(clientX, clientY);
-      this.__controller.seek($(el), clientX, clientY);
+      if (!el) return
+      this.__controller.seek($(el as HTMLElement), clientX, clientY);
       let cmd = new EmbedNode().setOptions(options);
       cmd.createLeftOf(this.__controller.cursor);
     }

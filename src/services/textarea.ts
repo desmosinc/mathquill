@@ -19,7 +19,7 @@ Options.prototype.substituteTextarea = function () {
     'x-palm-disable-ste-all': true,
   });
 };
-function defaultSubstituteKeyboardEvents(jq: JQuery, controller: Controller) {
+export function defaultSubstituteKeyboardEvents(jq: JQuery, controller: Controller) {
   return saneKeyboardEvents(jq[0] as HTMLTextAreaElement, controller);
 }
 Options.prototype.substituteKeyboardEvents = defaultSubstituteKeyboardEvents;

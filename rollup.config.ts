@@ -20,6 +20,7 @@ export default {
           { src: "test/visual.html", dest: "build" },
           { src: "test/support", dest: "build" },
           { src: "src/fonts", dest: "build" },
+          
         ]
       }),
       less({

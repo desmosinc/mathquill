@@ -70,7 +70,7 @@ export class Controller_mouse extends Controller_latex {
 
     let lastMousemoveTarget: JQuery | undefined;
     function mousemove(e: Event) {
-      lastMousemoveTarget = $(e.target);
+      lastMousemoveTarget = $(e.target as HTMLElement);
     }
     function onDocumentMouseMove(e: MouseEvent) {
       if (!cursor.anticursor) cursor.startSelection();
@@ -136,7 +136,8 @@ export class Controller_mouse extends Controller_latex {
     }
 
     cursor.blink = noop;
-    ctrlr.seek($(e.target), e.clientX, e.clientY).cursor.startSelection();
+    if (!e.target) return
+    ctrlr.seek($(e.target as HTMLElement), e.clientX, e.clientY).cursor.startSelection();
 
     rootElement.addEventListener('mousemove', mousemove);
     ownerDocument?.addEventListener('mousemove', onDocumentMouseMove);
