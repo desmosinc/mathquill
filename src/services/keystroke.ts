@@ -7,19 +7,16 @@ import { ControllerBase } from '../controller';
 import { L, R, Direction, pray, prayDirection } from "../utils"
 import { Cursor } from "../cursor"
 import { Controller_focusBlur } from "./focusBlur"
-import { ControllerEvent } from "../shared_types"
 import { Controller } from "./textarea"
 import { optionProcessors } from '../publicapi';
-import { Fragment } from '../tree';
+import { Fragment, NodeBase } from '../tree';
 import { Anticursor } from '../cursor';
-
+import { ControllerEvent } from 'src/pure_types';
 /**
  * Only one incremental selection may be open at a time. Track whether
  * an incremental selection is open to help enforce this invariant.
  */
 let INCREMENTAL_SELECTION_OPEN = false;
-
-import { NodeBase } from '../tree';
 
 export class MQNode extends NodeBase {
   keystroke(key: string, e: KeyboardEvent, ctrlr: Controller) {

@@ -6,7 +6,8 @@ import { Cursor } from "src/cursor";
 import { h } from "src/dom";
 import { Parser } from "src/services/parser.util";
 import { MQNodeBuilderNoParam } from "src/shared_types";
-import { LatexCmds, isMQNodeClass } from "src/tree";
+import { isMQNodeClass } from "src/tree";
+import { LatexCmds } from "../list";
 import { bindBinaryOperator, MathCommand, bindVanillaSymbol, BinaryOperator } from "../math";
 
 LatexCmds.notin =

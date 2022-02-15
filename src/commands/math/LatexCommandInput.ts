@@ -6,8 +6,9 @@ import { Cursor } from "src/cursor";
 import { h } from "src/dom";
 import { MQNode } from "src/services/keystroke";
 import { TempSingleCharNode } from "src/services/latex";
-import { CharCmds, Fragment, LatexCmds, isMQNodeClass } from "src/tree";
+import { Fragment, isMQNodeClass } from "src/tree";
 import { L, R } from "src/utils";
+import { CharCmds, LatexCmds } from "../list";
 import { DOMView, MathCommand, VanillaSymbol } from "../math";
 import { TextBlock } from "../text";
 

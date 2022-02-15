@@ -11,8 +11,9 @@ import { MathspeakOptions } from "../shared_types"
 import { h, HTMLTagName } from "src/dom"
 import { Parser } from "src/services/parser.util"
 import { Controller } from "src/services/textarea"
-import { Fragment, NodeBase, LatexCmds } from "src/tree"
+import { Fragment, NodeBase } from "src/tree"
 import { MathCommand, MathBlock, DOMView, VanillaSymbol, RootMathBlock } from "./math"
+import { LatexCmds } from "./list"
 
 /**
  * Blocks of plain text, with one or two TextPiece's as children.

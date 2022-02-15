@@ -5,17 +5,10 @@ import { Cursor } from "./cursor"
 import { Controller } from "./services/textarea"
 import { L, R } from "./utils"
 import { LatexFragment } from "./commands/math/basicSymbols"
-import { AutoDict, HandlerOptions, Options } from "./options"
+import { Options } from "./options"
+import { AutoDict, HandlerOptions } from "./pure_types"
 
 export type NodeRef = MQNode | 0;
-export type ControllerEvent =
-  | 'move'
-  | 'upDown'
-  | 'replace'
-  | 'edit'
-  | 'select'
-  | undefined;
-export type JoinMethod = 'mathspeak' | 'latex' | 'text';
 
 export type CursorOptions = Options;
 
@@ -92,22 +85,6 @@ export type MathspeakOptions = {
   createdLeftOf?: Cursor;
   ignoreShorthand?: boolean;
 };
-export type EmbedOptions = {
-  latex?: () => string;
-  text?: () => string;
-  htmlString?: string;
-};
-
-export type InequalityData = {
-  ctrlSeq: string;
-  ctrlSeqStrict: string;
-  htmlEntity: string;
-  htmlEntityStrict: string;
-  text: string;
-  textStrict: string;
-  mathspeak: string;
-  mathspeakStrict: string;
-};
 
 export type ControllerData = any;
 export type ControllerRoot = MQNode & {
@@ -122,12 +99,6 @@ export type JQ_KeyboardEvent = KeyboardEvent & {
 export type RootBlockMixinInput = any;
 export type BracketSide = L | R | 0;
 
-export type InnerMathField = any;
-export type InnerFields = any;
-export type EmbedOptionsData = any;
-export type MQ = any;
-export type LatexCmdsAny = any;
-export type CharCmdsAny = any;
 export type LatexCmdsSingleCharBuilder = Record<string, (char: string) => MQNode>;
 export type LatexCmdsSingleChar = Record<
   string,
@@ -147,21 +118,10 @@ export type LatexCmdsType = Record<string, LatexCmd>;
 export type CharCmdsType = Record<string, LatexCmd>;
 
 export type JQSelector =
-  | $
+  | JQuery
   | HTMLElement
   | null
   | Window
   | NodeListOf<ChildNode>
   | HTMLElement[]
   | EventTarget;
-
-export interface $ {
-  (selector?: JQSelector): $;
-  select(): $;
-  val(val: string): $;
-  html(t: string): $;
-  text(str: string): $;
-  closest(selector: JQSelector): $;
-  length: number;
-  [index: number]: HTMLElement; // TODO - this can be undefined. Either fix uses or wait until removing jquery
-}

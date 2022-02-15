@@ -3,9 +3,9 @@
  ********************************************************/
 
 import { domFrag } from "./domFragment"
-import { LatexCmds, NodeBase } from './tree';
+import { NodeBase } from './tree';
 import { Controller, defaultSubstituteKeyboardEvents } from "./services/textarea"
-import { CursorOptions, ConfigOptionsV1, ConfigOptionsV2, EmbedOptionsData, EmbedOptions, ControllerRoot, LatexCmdsAny, RootBlockMixinInput, MQ } from "./shared_types";
+import { CursorOptions, ConfigOptionsV1, ConfigOptionsV2, ControllerRoot, RootBlockMixinInput } from "./shared_types";
 import { ControllerData } from "./shared_types";
 import { Direction, L, noop, R } from "./utils"
 import { getScrollX, getScrollY } from "./browser";
@@ -13,6 +13,8 @@ import { MathBlock } from "./commands/math";
 import { h } from "./dom";
 import { EmbedNode } from "./commands/math/commands";
 import { Options } from "./options";
+import { EmbedOptionsData, EmbedOptions, LatexCmdsAny, MQ } from "./pure_types";
+import { LatexCmds } from "./commands/list";
 
 export type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';
 

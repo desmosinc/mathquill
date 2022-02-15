@@ -13,96 +13,13 @@ import { MQNode } from "./services/keystroke"
 import { Cursor, MQSelection } from "./cursor"
 import { TextBlock } from "./commands/text"
 import { 
-	NodeRef, CursorOptions, InnerFields, 
-	InnerMathField, MathspeakOptions,
-  LatexCmdsType, CharCmdsType
+	NodeRef, CursorOptions, 
+	MathspeakOptions
 } from "./shared_types"
 import { Parser } from "./services/parser.util"
 import { MathCommand, MathBlock } from "./commands/math"
 import { SupSub } from "./commands/math/commands"
-
-/** A cursor-like location in an mq node tree. */
-export class Point {
-  /** The node to the left of this point (or 0 for the position before a first child) */
-  [L]: NodeRef;
-  /** The node to the right of this point (or 0 for the position after a last child) */
-  [R]: NodeRef;
-  parent: MQNode;
-
-  constructor(parent: MQNode, leftward: NodeRef, rightward: NodeRef) {
-    this.init(parent, leftward, rightward);
-  }
-
-  // keeping init around only for tests
-  init(parent: MQNode, leftward: NodeRef, rightward: NodeRef) {
-    this.parent = parent;
-    this[L] = leftward;
-    this[R] = rightward;
-  }
-
-  static copy(pt: Point) {
-    return new Point(pt.parent, pt[L], pt[R]);
-  }
-}
-
-function eachNode(
-  ends: Ends<NodeRef>,
-  yield_: (el: MQNode) => boolean | undefined | void
-) {
-  let el = ends[L];
-  if (!el) return;
-
-  let stop = ends[R];
-  if (!stop) return; //shouldn't happen because ends[L] is defined;
-  stop = stop[R];
-
-  // TODO - this cast as MQNode is actually important to keep tests passing. I went to
-  // fix this code to gracefully handle an undefined el and there are tests that actually
-  // verify that this will throw an error. So I'm keeping the behavior but ignoring the
-  // type error.
-  for (; el !== stop; el = (el as MQNode)[R]) {
-    let result = yield_(el as MQNode); // TODO - might be passing in 0 intead of a MQNode, but tests want this
-    if (result === false) break;
-  }
-}
-
-function foldNodes<T>(
-  ends: Ends<NodeRef>,
-  fold: T,
-  yield_: (fold: T, el: MQNode) => T
-): T {
-  let el = ends[L];
-  if (!el) return fold;
-
-  let stop = ends[R];
-  if (!stop) return fold; //shouldn't happen because ends[L] is defined;
-  stop = stop[R];
-
-  // TODO - this cast as MQNode is actually important to keep tests passing. I went to
-  // fix this code to gracefully handle an undefined el and there are tests that actually
-  // verify that this will throw an error. So I'm keeping the behavior but ignoring the
-  // type error.
-  for (; el !== stop; el = (el as MQNode)[R]) {
-    fold = yield_(fold, el as MQNode); // TODO - might be passing in 0 intead of a MQNode, but tests want this
-  }
-
-  return fold;
-}
-
-type ElementTrackingNode = {
-  mqBlockNode?: NodeBase;
-  mqCmdNode?: NodeBase;
-};
-
-export type Ends<T> = {
-  readonly [L]: T;
-  readonly [R]: T;
-};
-
-/**
- * MathQuill virtual-DOM tree-node abstract base class
- */
-export const defaultJQ = $();
+import { InnerFields, InnerMathField } from "./pure_types"
 
 export class NodeBase {
   static idCounter = 0;
@@ -372,6 +289,91 @@ export class NodeBase {
   write(_cursor: Cursor, _ch: string) {}
 }
 
+
+/** A cursor-like location in an mq node tree. */
+export class Point {
+  /** The node to the left of this point (or 0 for the position before a first child) */
+  [L]: NodeRef;
+  /** The node to the right of this point (or 0 for the position after a last child) */
+  [R]: NodeRef;
+  parent: MQNode;
+
+  constructor(parent: MQNode, leftward: NodeRef, rightward: NodeRef) {
+    this.init(parent, leftward, rightward);
+  }
+
+  // keeping init around only for tests
+  init(parent: MQNode, leftward: NodeRef, rightward: NodeRef) {
+    this.parent = parent;
+    this[L] = leftward;
+    this[R] = rightward;
+  }
+
+  static copy(pt: Point) {
+    return new Point(pt.parent, pt[L], pt[R]);
+  }
+}
+
+function eachNode(
+  ends: Ends<NodeRef>,
+  yield_: (el: MQNode) => boolean | undefined | void
+) {
+  let el = ends[L];
+  if (!el) return;
+
+  let stop = ends[R];
+  if (!stop) return; //shouldn't happen because ends[L] is defined;
+  stop = stop[R];
+
+  // TODO - this cast as MQNode is actually important to keep tests passing. I went to
+  // fix this code to gracefully handle an undefined el and there are tests that actually
+  // verify that this will throw an error. So I'm keeping the behavior but ignoring the
+  // type error.
+  for (; el !== stop; el = (el as MQNode)[R]) {
+    let result = yield_(el as MQNode); // TODO - might be passing in 0 intead of a MQNode, but tests want this
+    if (result === false) break;
+  }
+}
+
+function foldNodes<T>(
+  ends: Ends<NodeRef>,
+  fold: T,
+  yield_: (fold: T, el: MQNode) => T
+): T {
+  let el = ends[L];
+  if (!el) return fold;
+
+  let stop = ends[R];
+  if (!stop) return fold; //shouldn't happen because ends[L] is defined;
+  stop = stop[R];
+
+  // TODO - this cast as MQNode is actually important to keep tests passing. I went to
+  // fix this code to gracefully handle an undefined el and there are tests that actually
+  // verify that this will throw an error. So I'm keeping the behavior but ignoring the
+  // type error.
+  for (; el !== stop; el = (el as MQNode)[R]) {
+    fold = yield_(fold, el as MQNode); // TODO - might be passing in 0 intead of a MQNode, but tests want this
+  }
+
+  return fold;
+}
+
+type ElementTrackingNode = {
+  mqBlockNode?: NodeBase;
+  mqCmdNode?: NodeBase;
+};
+
+export type Ends<T> = {
+  readonly [L]: T;
+  readonly [R]: T;
+};
+
+/**
+ * MathQuill virtual-DOM tree-node abstract base class
+ */
+export const defaultJQ = $();
+
+
 function prayWellFormed(parent: MQNode, leftward: NodeRef, rightward: NodeRef) {
   pray('a parent is always present', parent);
   pray(
@@ -609,15 +611,6 @@ export class Fragment {
     return foldNodes(this.ends, fold, yield_);
   }
 }
-
-/**
- * Registry of LaTeX commands and commands created when typing
- * a single character.
- *
- * (Commands are all subclasses of Node.)
- */
-export let LatexCmds: LatexCmdsType = {};
-export let CharCmds: CharCmdsType = {};
 
 export function isMQNodeClass(cmd: any): cmd is typeof MQNode {
   return cmd && cmd.prototype instanceof MQNode;

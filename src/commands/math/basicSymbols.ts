@@ -1,15 +1,17 @@
 import { Cursor } from "src/cursor";
 import { h } from "src/dom";
 import { domFrag } from "src/domFragment";
-import { AutoDict, Options } from "src/options";
+import { Options } from "src/options";
 import { optionProcessors } from "src/publicapi";
+import { AutoDict, InequalityData, LatexCmdsAny } from "src/pure_types";
 import { MQNode } from "src/services/keystroke";
 import { latexMathParser, TempSingleCharNode } from "src/services/latex";
 import { Parser } from "src/services/parser.util";
-import { CursorOptions, NodeRef, MathspeakOptions, LatexCmdsAny, InequalityData } from "src/shared_types";
-import { LatexCmds, Fragment, isMQNodeClass, CharCmds } from "src/tree";
+import { CursorOptions, NodeRef, MathspeakOptions } from "src/shared_types";
+import { Fragment, isMQNodeClass } from "src/tree";
 import { U_NO_BREAK_SPACE } from "src/unicode";
 import { Direction, L, R } from "src/utils";
+import { LatexCmds, CharCmds } from "../list";
 import { MathBlock, MathCommand, bindVanillaSymbol, bindBinaryOperator, BinaryOperator, DOMView, MQSymbol, VanillaSymbol } from "../math";
 import { AnsBuilder, Bracket, PercentOfBuilder, SubscriptCommand, SummationNotation, SupSub } from "./commands";
 
@@ -927,7 +929,7 @@ LatexCmds.Gamma =
   LatexCmds.Psi =
   LatexCmds.Omega =
   LatexCmds.forall =
-    (latex) =>
+    (latex: string) =>
       new VanillaSymbol('\\' + latex + ' ', h.entityText('&' + latex + ';'));
 
 // symbols that aren't a single MathCommand, but are instead a whole

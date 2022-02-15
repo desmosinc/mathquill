@@ -1,6 +1,5 @@
+import { AutoDict, HandlerOptions } from "./pure_types";
 import { Controller } from "./services/textarea";
-
-export type HandlerOptions = any;
 
 export type SubstituteKeyboardEvents = (
     el: JQuery,
@@ -9,11 +8,6 @@ export type SubstituteKeyboardEvents = (
     select: (text: string) => void;
   };
   
-
-export type AutoDict = {
-    _maxLength?: number;
-    [id: string]: any;
-  };
 
 export class Options {
     constructor(public version: 1 | 2) {}
