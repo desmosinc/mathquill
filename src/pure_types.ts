@@ -1,3 +1,11 @@
+/**
+ * All types that derive from nothing or other pure modules.
+ */
+
+import { L, R } from "./utils";
+
+export type BracketSide = L | R | 0;
+
 export type HandlerOptions = any;
 
 export type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';

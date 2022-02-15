@@ -7,14 +7,14 @@ import { MQNode } from "src/services/keystroke";
 import { latexMathParser } from "src/services/latex";
 import { Parser } from "src/services/parser.util";
 import { Controller } from "src/services/textarea";
-import { MathspeakOptions, NodeRef, BracketSide, CursorOptions, ControllerRoot } from "src/shared_types";
+import { MathspeakOptions, NodeRef, CursorOptions, ControllerRoot } from "src/shared_types";
 import { Point } from "src/tree";
 import { U_DOT_ABOVE, U_ZERO_WIDTH_SPACE, U_NARY_SUMMATION, U_NARY_PRODUCT, U_NARY_COPRODUCT, U_INTEGRAL } from "src/unicode";
 import { L, R, pray, Direction } from "src/utils";
 import { MathCommand, MathBlock, DOMView, MQSymbol, RootMathBlock, BinaryOperator } from "../math";
 import { Letter, Digit, Equality } from "./basicSymbols";
 import { Options } from "src/options";
-import { InnerFields, InnerMathField, EmbedOptions } from "src/pure_types";
+import { InnerFields, InnerMathField, EmbedOptions, BracketSide } from "src/pure_types";
 import { LatexCmds, CharCmds } from "../list";
 import { NodeBase, Fragment, Ends } from "src/node";
 

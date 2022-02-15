@@ -3,7 +3,6 @@ import { TempSingleCharNode } from "./services/latex"
 import { saneKeyboardEvents } from "./services/saneKeyboardEvents.util"
 import { Cursor } from "./cursor"
 import { Controller } from "./services/textarea"
-import { L, R } from "./utils"
 import { LatexFragment } from "./commands/math/basicSymbols"
 import { Options } from "./options"
 import { AutoDict, HandlerOptions } from "./pure_types"
@@ -91,8 +90,6 @@ export type ControllerRoot = MQNode & {
   cursor?: Cursor;
   latex: () => string;
 };
-
-export type BracketSide = L | R | 0;
 
 export type LatexCmdsSingleCharBuilder = Record<string, (char: string) => MQNode>;
 export type LatexCmdsSingleChar = Record<
