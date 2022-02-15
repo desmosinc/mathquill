@@ -1,5 +1,5 @@
+import { Ends } from "./node";
 import { pray, L, R, Direction } from "./utils"
-import { Ends } from "./tree"
 
 /**
  * A `DOMFragment` represents a contiguous span of sibling DOM Nodes,
@@ -717,7 +717,7 @@ function _insAtDirEnd(
     parent.appendChild(source);
   }
 }
-export function jQToDOMFragment(jQ: JQuery) {
+export function jQToDOMFragment(jQ: JQuery): DOMFragment {
   if (jQ.length === 0) return domFrag();
   if (jQ.length === 1) return domFrag(jQ[0]);
 

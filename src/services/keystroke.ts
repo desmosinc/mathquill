@@ -9,9 +9,9 @@ import { Cursor } from "../cursor"
 import { Controller_focusBlur } from "./focusBlur"
 import { Controller } from "./textarea"
 import { optionProcessors } from '../publicapi';
-import { Fragment, NodeBase } from '../tree';
 import { Anticursor } from '../cursor';
 import { ControllerEvent } from 'src/pure_types';
+import { NodeBase, Fragment } from 'src/node';
 /**
  * Only one incremental selection may be open at a time. Track whether
  * an incremental selection is open to help enforce this invariant.

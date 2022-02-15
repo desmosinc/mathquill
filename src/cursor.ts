@@ -9,7 +9,7 @@ HTML DOM to match. */
 textbox, but any one HTML document can contain many such textboxes, so any one
 JS environment could actually contain many instances. */
 
-import { Point, Fragment, Ends } from './tree';
+import { Point } from './tree';
 import { L, R, Direction, prayDirection, pray } from './utils';
 import { h } from './dom';
 import { NodeRef, CursorOptions } from "./shared_types"
@@ -21,6 +21,7 @@ import { U_ZERO_WIDTH_SPACE } from './unicode';
 import { getBoundingClientRect } from './browser';
 import { MathBlock } from './commands/math';
 import { JoinMethod } from './pure_types';
+import { Ends, Fragment } from './node';
 
 //A fake cursor in the fake textbox that the math is rendered in.
 export class Anticursor extends Point {

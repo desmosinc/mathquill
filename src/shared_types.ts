@@ -86,17 +86,12 @@ export type MathspeakOptions = {
   ignoreShorthand?: boolean;
 };
 
-export type ControllerData = any;
 export type ControllerRoot = MQNode & {
   controller: Controller;
   cursor?: Cursor;
   latex: () => string;
 };
-export type HandlerName = any;
-export type JQ_KeyboardEvent = KeyboardEvent & {
-  originalEvent?: KeyboardEvent;
-};
-export type RootBlockMixinInput = any;
+
 export type BracketSide = L | R | 0;
 
 export type LatexCmdsSingleCharBuilder = Record<string, (char: string) => MQNode>;
@@ -114,14 +109,6 @@ export type LatexCmd =
   | MQNodeBuilderNoParam
   | MQNodeBuilderOneParam
   | LatexFragmentBuilderNoParam;
+
 export type LatexCmdsType = Record<string, LatexCmd>;
 export type CharCmdsType = Record<string, LatexCmd>;
-
-export type JQSelector =
-  | JQuery
-  | HTMLElement
-  | null
-  | Window
-  | NodeListOf<ChildNode>
-  | HTMLElement[]
-  | EventTarget;

@@ -4,9 +4,10 @@
 
 import { Cursor } from "src/cursor";
 import { h } from "src/dom";
+import { Fragment } from "src/node";
 import { MQNode } from "src/services/keystroke";
 import { TempSingleCharNode } from "src/services/latex";
-import { Fragment, isMQNodeClass } from "src/tree";
+import { isMQNodeClass } from "src/tree";
 import { L, R } from "src/utils";
 import { CharCmds, LatexCmds } from "../list";
 import { DOMView, MathCommand, VanillaSymbol } from "../math";

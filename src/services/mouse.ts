@@ -1,5 +1,4 @@
 import { Controller_latex } from "./latex"
-import { NodeBase } from "../tree"
 import { noop } from "../utils"
 import { ControllerRoot } from "../shared_types"
 import { ControllerBase } from "../controller"
@@ -7,6 +6,7 @@ import { domFrag, jQToDOMFragment } from "../domFragment"
 import { Cursor } from "../cursor"
 import { closest } from "src/dom"
 import { Options } from "src/options"
+import { NodeBase } from "src/node"
 
 /********************************************************
  * Deals with mouse events for clicking, drag-to-select

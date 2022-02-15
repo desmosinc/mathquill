@@ -1,5 +1,4 @@
 import { MQNode } from './keystroke';
-import { Fragment } from "../tree"
 import { L, R } from "../utils"
 import { Controller_keystroke } from './keystroke';
 import { MathBlock, VanillaSymbol } from '../commands/math';
@@ -10,6 +9,7 @@ import { jQToDOMFragment, domFrag } from 'src/domFragment';
 import { RootMathCommand } from 'src/commands/text';
 import { LatexCmdsSingleChar } from 'src/shared_types';
 import { LatexCmds } from 'src/commands/list';
+import { Fragment } from 'src/node';
 
 export class TempSingleCharNode extends MQNode {
   constructor(_char: string) {

@@ -2,21 +2,18 @@
  * The publicly exposed MathQuill API.
  ********************************************************/
 
-import { domFrag } from "./domFragment"
-import { NodeBase } from './tree';
-import { Controller, defaultSubstituteKeyboardEvents } from "./services/textarea"
-import { CursorOptions, ConfigOptionsV1, ConfigOptionsV2, ControllerRoot, RootBlockMixinInput } from "./shared_types";
-import { ControllerData } from "./shared_types";
-import { Direction, L, noop, R } from "./utils"
 import { getScrollX, getScrollY } from "./browser";
-import { MathBlock } from "./commands/math";
-import { h } from "./dom";
-import { EmbedNode } from "./commands/math/commands";
-import { Options } from "./options";
-import { EmbedOptionsData, EmbedOptions, LatexCmdsAny, MQ } from "./pure_types";
 import { LatexCmds } from "./commands/list";
-
-export type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';
+import { MathBlock } from "./commands/math";
+import { EmbedNode } from "./commands/math/commands";
+import { h } from "./dom";
+import { domFrag } from "./domFragment";
+import { NodeBase } from "./node";
+import { Options } from "./options";
+import { ControllerData, EmbedOptions, EmbedOptionsData, LatexCmdsAny, MQ, RootBlockMixinInput } from "./pure_types";
+import { Controller, defaultSubstituteKeyboardEvents } from "./services/textarea";
+import { ConfigOptionsV1, ConfigOptionsV2, ControllerRoot, CursorOptions } from "./shared_types";
+import { Direction, L, noop, R } from "./utils";
 
 interface IAbstractMathQuill {
   __controller: Controller;

@@ -14,10 +14,10 @@
 import { h } from "../dom"
 import { domFrag } from "../domFragment"
 import { prayDirection, Direction, L } from "../utils"
-import { Fragment } from "../tree"
 import { MQNode } from "./keystroke"
 import { Controller } from "./textarea"
 import { NodeRef } from "../shared_types"
+import { Fragment } from "src/node"
 
 type AriaQueueItem = NodeRef | Fragment | string;
 
