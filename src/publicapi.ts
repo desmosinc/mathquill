@@ -12,7 +12,7 @@ import { NodeBase } from "./node";
 import { Options } from "./options";
 import { ControllerData, EmbedOptions, EmbedOptionsData, LatexCmdsAny, MQ, RootBlockMixinInput } from "./pure_types";
 import { Controller, defaultSubstituteKeyboardEvents } from "./services/textarea";
-import { ConfigOptionsV1, ConfigOptionsV2, ControllerRoot, CursorOptions } from "./shared_types";
+import { ControllerRoot, CursorOptions } from "./shared_types";
 import { Direction, L, noop, R } from "./utils";
 
 interface IAbstractMathQuill {
@@ -179,7 +179,7 @@ function getInterface(v: number) {
 
   function config(
     currentOptions: CursorOptions,
-    newOptions: ConfigOptionsV1 | ConfigOptionsV2
+    newOptions: CursorOptions
   ) {
     if (newOptions && newOptions.handlers) {
       newOptions.handlers = {
@@ -196,7 +196,7 @@ function getInterface(v: number) {
   }
 
   const BaseOptions = v < 2 ? Options : class BaseOptions extends Options {};
-  MQ.config = function (opts: ConfigOptionsV1 | ConfigOptionsV2) {
+  MQ.config = function (opts: CursorOptions) {
     config(BaseOptions.prototype, opts);
     return this;
   };
@@ -259,7 +259,7 @@ function getInterface(v: number) {
         return v < 2 ? domFrag(el).toJQ() : el;
       };
     }
-    config(opts: ConfigOptionsV1 | ConfigOptionsV2) {
+    config(opts: CursorOptions) {
       config(this.__options, opts);
       return this;
     }
