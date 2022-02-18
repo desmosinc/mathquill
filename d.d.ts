@@ -1,4 +1,4 @@
-declare module "rollup-plugin-less" {
+declare module "rollup-plugin-serve" {
     
     function plugin(options: any): any
     export default plugin

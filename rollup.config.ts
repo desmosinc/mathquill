@@ -1,6 +1,7 @@
 import typescript from '@rollup/plugin-typescript';
 import copy from "rollup-plugin-copy"
 import less from 'rollup-plugin-less';
+import serve from 'rollup-plugin-serve'
 
 export default {
     input: 'src/main.ts',
@@ -25,6 +26,7 @@ export default {
       }),
       less({
         output: "mathquill.css"
-      })
+      }),
+	  serve("test")
     ]
 };
