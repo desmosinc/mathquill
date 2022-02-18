@@ -5,12 +5,12 @@
 
 import { ControllerBase } from '../controller';
 import { L, R, Direction, pray, prayDirection } from "../utils"
-import { Cursor } from "../cursor"
+import type { Cursor } from "../cursor"
 import { Controller_focusBlur } from "./focusBlur"
-import { Controller } from "./textarea"
+import type { Controller } from "./textarea"
 import { optionProcessors } from '../publicapi';
-import { Anticursor } from '../cursor';
-import { ControllerEvent } from 'src/pure_types';
+import type { Anticursor } from '../cursor';
+import type { ControllerEvent } from 'src/pure_types';
 import { NodeBase, Fragment } from 'src/node';
 /**
  * Only one incremental selection may be open at a time. Track whether

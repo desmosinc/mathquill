@@ -15,9 +15,9 @@ import { h } from "../dom"
 import { domFrag } from "../domFragment"
 import { prayDirection, Direction, L } from "../utils"
 import { MQNode } from "./keystroke"
-import { Controller } from "./textarea"
-import { NodeRef } from "../shared_types"
-import { Fragment } from "src/node"
+import type { Controller } from "./textarea"
+import type { NodeRef } from "../shared_types"
+import type { Fragment } from "src/node"
 
 type AriaQueueItem = NodeRef | Fragment | string;
 
