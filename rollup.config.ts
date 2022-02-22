@@ -28,7 +28,7 @@ export default {
       less({
         output: "mathquill.css"
       }),
-	  serve("test"),
+	  serve("build"),
 	  livereload()
     ]
 };
