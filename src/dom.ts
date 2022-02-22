@@ -1,5 +1,5 @@
 import { pray } from "./utils"
-import type { domFrag } from "./domFragment"
+import { domFrag } from "./domFragment"
 import type { MathBlock } from "./commands/math";
 import { NodeBase } from "./node";
 
