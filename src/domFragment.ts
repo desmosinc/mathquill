@@ -1,4 +1,4 @@
-import { Ends } from "./node";
+import type { Ends } from "./node";
 import { pray, L, R, Direction } from "./utils"
 
 /**

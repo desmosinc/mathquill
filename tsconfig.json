@@ -11,6 +11,7 @@
       "strictPropertyInitialization": false,
       "strict": true,
       "target": "ES5",
+	  "importsNotUsedAsValues": "error",
       "lib": ["ES5", "ScriptHost", "DOM", "ES2015.Collection"],
       "rootDir": ".",
       "baseUrl": ".",

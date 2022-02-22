@@ -2,7 +2,7 @@
  * All types that derive from nothing or other pure modules.
  */
 
-import { L, R } from "./utils";
+import type { L, R } from "./utils";
 
 export type BracketSide = L | R | 0;
 

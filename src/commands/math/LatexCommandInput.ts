@@ -2,11 +2,11 @@
  * Input box to type backslash commands
  ***************************************/
 
-import { Cursor } from "src/cursor";
+import type { Cursor } from "src/cursor";
 import { h } from "src/dom";
-import { Fragment } from "src/node";
-import { MQNode } from "src/services/keystroke";
-import { TempSingleCharNode } from "src/services/latex";
+import type { Fragment } from "src/node";
+import type { MQNode } from "src/services/keystroke";
+import type { TempSingleCharNode } from "src/services/latex";
 import { isMQNodeClass } from "src/tree";
 import { L, R } from "src/utils";
 import { CharCmds, LatexCmds } from "../list";

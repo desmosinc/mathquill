@@ -1,10 +1,10 @@
-import { MQNode } from "./services/keystroke"
-import { TempSingleCharNode } from "./services/latex"
-import { saneKeyboardEvents } from "./services/saneKeyboardEvents.util"
-import { Cursor } from "./cursor"
-import { Controller } from "./services/textarea"
-import { LatexFragment } from "./commands/math/basicSymbols"
-import { Options } from "./options"
+import type { MQNode } from "./services/keystroke"
+import type { TempSingleCharNode } from "./services/latex"
+import type { saneKeyboardEvents } from "./services/saneKeyboardEvents.util"
+import type { Cursor } from "./cursor"
+import type { Controller } from "./services/textarea"
+import type { LatexFragment } from "./commands/math/basicSymbols"
+import type { Options } from "./options"
 import type { AutoDict, HandlerOptions } from "./pure_types"
 
 export type NodeRef = MQNode | 0;

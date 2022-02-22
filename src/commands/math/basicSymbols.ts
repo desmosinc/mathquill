@@ -1,14 +1,14 @@
-import { Cursor } from "src/cursor";
+import type { Cursor } from "src/cursor";
 import { h } from "src/dom";
 import { domFrag } from "src/domFragment";
 import { Fragment } from "src/node";
 import { Options } from "src/options";
 import { optionProcessors } from "src/publicapi";
-import { AutoDict, InequalityData, LatexCmdsAny } from "src/pure_types";
-import { MQNode } from "src/services/keystroke";
+import type { AutoDict, InequalityData, LatexCmdsAny } from "src/pure_types";
+import type { MQNode } from "src/services/keystroke";
 import { latexMathParser, TempSingleCharNode } from "src/services/latex";
 import { Parser } from "src/services/parser.util";
-import { CursorOptions, NodeRef, MathspeakOptions } from "src/shared_types";
+import type { CursorOptions, NodeRef, MathspeakOptions } from "src/shared_types";
 import { isMQNodeClass } from "src/tree";
 import { U_NO_BREAK_SPACE } from "src/unicode";
 import { Direction, L, R } from "src/utils";
