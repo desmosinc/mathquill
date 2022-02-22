@@ -1,10 +1,9 @@
-import { Aria } from "./services/aria"
 import { Cursor } from "./cursor"
-import type { Controller } from "./services/textarea"
-import { Direction, L, R } from "./utils"
-import type { ControllerRoot, CursorOptions } from "./shared_types"
 import { jQToDOMFragment } from "./domFragment"
-import type { ControllerData, ControllerEvent, HandlerName, KIND_OF_MQ } from "./pure_types"
+import { Aria } from "./services/aria"
+import type { Controller } from "./services/textarea"
+import type { ControllerData, ControllerEvent, ControllerRoot, CursorOptions, HandlerName, KIND_OF_MQ } from "./shared_types"
+import { Direction, L, R } from "./utils"
 
 type TextareaKeyboardEventListeners = Partial<{
   [K in keyof HTMLElementEventMap]: (event: HTMLElementEventMap[K]) => any;

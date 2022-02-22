@@ -1,22 +1,21 @@
-import { noop } from "../../utils";
-import type { Cursor, Anticursor } from "src/cursor";
+import type { Anticursor, Cursor } from "src/cursor";
 import { h, HTMLTagName, parseHTML } from "src/dom";
 import { domFrag, DOMFragment } from "src/domFragment";
+import { Ends, Fragment, NodeBase } from "src/node";
+import { Options } from "src/options";
 import { EMBEDS, RootBlockMixin } from "src/publicapi";
 import { MQNode } from "src/services/keystroke";
 import { latexMathParser } from "src/services/latex";
 import { Parser } from "src/services/parser.util";
 import { Controller } from "src/services/textarea";
-import type { MathspeakOptions, NodeRef, CursorOptions, ControllerRoot } from "src/shared_types";
+import type { BracketSide, ControllerRoot, CursorOptions, EmbedOptions, InnerFields, InnerMathField, MathspeakOptions, NodeRef } from "src/shared_types";
 import { Point } from "src/tree";
-import { U_DOT_ABOVE, U_ZERO_WIDTH_SPACE, U_NARY_SUMMATION, U_NARY_PRODUCT, U_NARY_COPRODUCT, U_INTEGRAL } from "src/unicode";
-import { L, R, pray, Direction } from "src/utils";
-import { MathCommand, MathBlock, DOMView, MQSymbol, RootMathBlock, BinaryOperator } from "../math";
-import { Letter, Digit, Equality } from "./basicSymbols";
-import { Options } from "src/options";
-import type { InnerFields, InnerMathField, EmbedOptions, BracketSide } from "src/pure_types";
-import { LatexCmds, CharCmds } from "../list";
-import { NodeBase, Fragment, Ends } from "src/node";
+import { U_DOT_ABOVE, U_INTEGRAL, U_NARY_COPRODUCT, U_NARY_PRODUCT, U_NARY_SUMMATION, U_ZERO_WIDTH_SPACE } from "src/unicode";
+import { Direction, L, pray, R } from "src/utils";
+import { noop } from "../../utils";
+import { CharCmds, LatexCmds } from "../list";
+import { BinaryOperator, DOMView, MathBlock, MathCommand, MQSymbol, RootMathBlock } from "../math";
+import { Digit, Equality, Letter } from "./basicSymbols";
 
 /***************************
  * Commands and Operators.

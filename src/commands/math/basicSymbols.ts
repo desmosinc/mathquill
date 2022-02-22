@@ -4,16 +4,15 @@ import { domFrag } from "src/domFragment";
 import { Fragment } from "src/node";
 import { Options } from "src/options";
 import { optionProcessors } from "src/publicapi";
-import type { AutoDict, InequalityData, LatexCmdsAny } from "src/pure_types";
 import type { MQNode } from "src/services/keystroke";
 import { latexMathParser, TempSingleCharNode } from "src/services/latex";
 import { Parser } from "src/services/parser.util";
-import type { CursorOptions, NodeRef, MathspeakOptions } from "src/shared_types";
+import type { AutoDict, CursorOptions, InequalityData, LatexCmdsAny, MathspeakOptions, NodeRef } from "src/shared_types";
 import { isMQNodeClass } from "src/tree";
 import { U_NO_BREAK_SPACE } from "src/unicode";
 import { Direction, L, R } from "src/utils";
-import { LatexCmds, CharCmds } from "../list";
-import { MathBlock, MathCommand, bindVanillaSymbol, bindBinaryOperator, BinaryOperator, DOMView, MQSymbol, VanillaSymbol } from "../math";
+import { CharCmds, LatexCmds } from "../list";
+import { BinaryOperator, bindBinaryOperator, bindVanillaSymbol, DOMView, MathBlock, MathCommand, MQSymbol, VanillaSymbol } from "../math";
 import { AnsBuilder, Bracket, PercentOfBuilder, SubscriptCommand, SummationNotation, SupSub } from "./commands";
 
 /*********************************

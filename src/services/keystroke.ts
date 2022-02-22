@@ -3,15 +3,14 @@
  * interaction with the typist.
  ****************************************/
 
+import { Fragment, NodeBase } from 'src/node';
+import type { ControllerEvent } from 'src/shared_types';
 import { ControllerBase } from '../controller';
-import { L, R, Direction, pray, prayDirection } from "../utils"
-import type { Cursor } from "../cursor"
-import { Controller_focusBlur } from "./focusBlur"
-import type { Controller } from "./textarea"
+import type { Anticursor, Cursor } from "../cursor";
 import { optionProcessors } from '../publicapi';
-import type { Anticursor } from '../cursor';
-import type { ControllerEvent } from 'src/pure_types';
-import { NodeBase, Fragment } from 'src/node';
+import { Direction, L, pray, prayDirection, R } from "../utils";
+import { Controller_focusBlur } from "./focusBlur";
+import type { Controller } from "./textarea";
 /**
  * Only one incremental selection may be open at a time. Track whether
  * an incremental selection is open to help enforce this invariant.

@@ -11,7 +11,7 @@ import type {
 import type { Parser } from "./services/parser.util"
 import type { MathCommand, MathBlock } from "./commands/math"
 import { SupSub } from "./commands/math/commands"
-import type { InnerFields, InnerMathField } from "./pure_types"
+import type { InnerFields, InnerMathField } from "./shared_types"
 
 export type Ends<T> = {
     readonly [L]: T;

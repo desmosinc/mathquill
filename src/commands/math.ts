@@ -2,22 +2,22 @@
  * Abstract classes of math blocks and commands.
  ************************************************/
 
-import { MQNode } from "../services/keystroke";
-import type { CursorOptions, NodeRef, MathspeakOptions, LatexCmdsSingleCharBuilder } from "../shared_types";
-import { Anticursor, Cursor, MQSelection } from "../cursor"
-import { API, APIClasses, RootBlockMixin } from "../publicapi"
-import { Direction, pray, L, R, noop } from "../utils"
-import { Parser, } from "../services/parser.util";
-import { domFrag } from "../domFragment";
-import { h } from "../dom";
-import { getBoundingClientRect } from "../browser";
-import type { Controller } from "../services/textarea";
-import { latexMathParser } from "src/services/latex";
-import { Digit, Letter } from "./math/basicSymbols";
-import { Options } from "src/options";
-import type { CharCmdsAny, InnerFields, JoinMethod, LatexCmdsAny } from "src/pure_types";
-import { LatexCmds, CharCmds } from "./list";
 import { Ends, Fragment, NodeBase } from "src/node";
+import { Options } from "src/options";
+import { latexMathParser } from "src/services/latex";
+import type { CharCmdsAny, InnerFields, JoinMethod, LatexCmdsAny } from "src/shared_types";
+import { getBoundingClientRect } from "../browser";
+import { Anticursor, Cursor, MQSelection } from "../cursor";
+import { h } from "../dom";
+import { domFrag } from "../domFragment";
+import { API, APIClasses, RootBlockMixin } from "../publicapi";
+import { MQNode } from "../services/keystroke";
+import { Parser } from "../services/parser.util";
+import type { Controller } from "../services/textarea";
+import type { CursorOptions, LatexCmdsSingleCharBuilder, MathspeakOptions, NodeRef } from "../shared_types";
+import { Direction, L, noop, pray, R } from "../utils";
+import { CharCmds, LatexCmds } from "./list";
+import { Digit, Letter } from "./math/basicSymbols";
 
 /**
  * Math tree node base class.

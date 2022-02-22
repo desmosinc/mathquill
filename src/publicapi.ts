@@ -10,9 +10,8 @@ import { h } from "./dom";
 import { domFrag } from "./domFragment";
 import { NodeBase } from "./node";
 import { Options } from "./options";
-import type { ControllerData, EmbedOptions, EmbedOptionsData, LatexCmdsAny, MQ, RootBlockMixinInput } from "./pure_types";
 import { Controller, defaultSubstituteKeyboardEvents } from "./services/textarea";
-import type { ControllerRoot, CursorOptions } from "./shared_types";
+import type { ControllerRoot, CursorOptions, ControllerData, EmbedOptions, EmbedOptionsData, LatexCmdsAny, MQ, RootBlockMixinInput } from "./shared_types";
 import { Direction, L, noop, R } from "./utils";
 
 interface IAbstractMathQuill {
