@@ -1,5 +1,5 @@
 import { Aria } from "./services/aria"
-import { Cursor } from "./cursor"
+import type { Cursor } from "./cursor"
 import type { Controller } from "./services/textarea"
 import { Direction, L, R } from "./utils"
 import type { ControllerRoot, CursorOptions } from "./shared_types"

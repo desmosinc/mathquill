@@ -4,15 +4,15 @@
 
 import { getScrollX, getScrollY } from "./browser";
 import { LatexCmds } from "./commands/list";
-import { MathBlock } from "./commands/math";
+import type { MathBlock } from "./commands/math";
 import { EmbedNode } from "./commands/math/commands";
 import { h } from "./dom";
 import { domFrag } from "./domFragment";
 import { NodeBase } from "./node";
 import { Options } from "./options";
-import { ControllerData, EmbedOptions, EmbedOptionsData, LatexCmdsAny, MQ, RootBlockMixinInput } from "./pure_types";
+import type { ControllerData, EmbedOptions, EmbedOptionsData, LatexCmdsAny, MQ, RootBlockMixinInput } from "./pure_types";
 import { Controller, defaultSubstituteKeyboardEvents } from "./services/textarea";
-import { ControllerRoot, CursorOptions } from "./shared_types";
+import type { ControllerRoot, CursorOptions } from "./shared_types";
 import { Direction, L, noop, R } from "./utils";
 
 interface IAbstractMathQuill {

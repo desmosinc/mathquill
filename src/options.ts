@@ -1,5 +1,5 @@
-import { AutoDict, HandlerOptions } from "./pure_types";
-import { Controller } from "./services/textarea";
+import type { AutoDict, HandlerOptions } from "./pure_types";
+import type { Controller } from "./services/textarea";
 
 export type SubstituteKeyboardEvents = (
     el: JQuery,

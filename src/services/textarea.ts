@@ -7,7 +7,7 @@ import { h } from "../dom"
 import { domFrag, jQToDOMFragment } from "../domFragment"
 import { Controller_scrollHoriz } from "./scrollHoriz"
 import { saneKeyboardEvents } from "./saneKeyboardEvents.util"
-import { MQNode } from "./keystroke"
+import type { MQNode } from "./keystroke"
 import { Options } from "src/options"
 
 Options.prototype.substituteTextarea = function () {

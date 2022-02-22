@@ -12,15 +12,15 @@ JS environment could actually contain many instances. */
 import { Point } from './tree';
 import { L, R, Direction, prayDirection, pray } from './utils';
 import { h } from './dom';
-import { NodeRef, CursorOptions } from "./shared_types"
-import { ControllerBase } from "./controller"
+import type { NodeRef, CursorOptions } from "./shared_types"
+import type { ControllerBase } from "./controller"
 import { DOMFragment, domFrag } from './domFragment';
-import { MQNode } from './services/keystroke';
-import { Controller } from './services/textarea';
+import type { MQNode } from './services/keystroke';
+import type { Controller } from './services/textarea';
 import { U_ZERO_WIDTH_SPACE } from './unicode';
 import { getBoundingClientRect } from './browser';
 import { MathBlock } from './commands/math';
-import { JoinMethod } from './pure_types';
+import type { JoinMethod } from './pure_types';
 import { Ends, Fragment } from './node';
 
 //A fake cursor in the fake textbox that the math is rendered in.

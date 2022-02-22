@@ -5,7 +5,7 @@ import { Cursor } from "./cursor"
 import { Controller } from "./services/textarea"
 import { LatexFragment } from "./commands/math/basicSymbols"
 import { Options } from "./options"
-import { AutoDict, HandlerOptions } from "./pure_types"
+import type { AutoDict, HandlerOptions } from "./pure_types"
 
 export type NodeRef = MQNode | 0;
 

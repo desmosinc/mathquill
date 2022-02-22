@@ -3,15 +3,15 @@ import { DOMFragment, domFrag } from "./domFragment"
 import { pray, prayDirection } from "./utils"
 import { MQNode } from "./services/keystroke"
 import { Cursor, MQSelection } from "./cursor"
-import { TextBlock } from "./commands/text"
-import { 
+import type { TextBlock } from "./commands/text"
+import type { 
 	NodeRef, CursorOptions, 
 	MathspeakOptions
 } from "./shared_types"
-import { Parser } from "./services/parser.util"
-import { MathCommand, MathBlock } from "./commands/math"
+import type { Parser } from "./services/parser.util"
+import type { MathCommand, MathBlock } from "./commands/math"
 import { SupSub } from "./commands/math/commands"
-import { InnerFields, InnerMathField } from "./pure_types"
+import type { InnerFields, InnerMathField } from "./pure_types"
 
 export type Ends<T> = {
     readonly [L]: T;

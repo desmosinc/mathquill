@@ -1,4 +1,4 @@
-import { LatexCmdsType, CharCmdsType } from "src/shared_types";
+import type { LatexCmdsType, CharCmdsType } from "src/shared_types";
 
 /**
  * Registry of LaTeX commands and commands created when typing

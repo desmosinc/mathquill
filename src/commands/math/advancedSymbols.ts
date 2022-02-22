@@ -2,10 +2,10 @@
  * Symbols for Advanced Mathematics
  ***********************************/
 
-import { Cursor } from "src/cursor";
+import type { Cursor } from "src/cursor";
 import { h } from "src/dom";
 import { Parser } from "src/services/parser.util";
-import { MQNodeBuilderNoParam } from "src/shared_types";
+import type { MQNodeBuilderNoParam } from "src/shared_types";
 import { isMQNodeClass } from "src/tree";
 import { LatexCmds } from "../list";
 import { bindBinaryOperator, MathCommand, bindVanillaSymbol, BinaryOperator } from "../math";

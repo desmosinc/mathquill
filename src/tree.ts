@@ -8,7 +8,7 @@
 
 import { L, R } from "./utils"
 import { MQNode } from "./services/keystroke"
-import { NodeRef } from "./shared_types"
+import type { NodeRef } from "./shared_types"
 
 
 /** A cursor-like location in an mq node tree. */

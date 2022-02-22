@@ -1,5 +1,5 @@
 
-import { Controller } from "./textarea"
+import type { Controller } from "./textarea"
 import { noop } from "../utils"
 
 /** Poller that fires once every tick. */
