@@ -228,7 +228,12 @@ suite('latex', function () {
 
       test('many trig functions', function () {
         mq.latex('\\sin\\cos\\tan\\sec');
-        assert.equal('\\sin\\cos\\tan\\sec', mq.latex(), 'trig functions');
+        assert.equal(
+          '\\sin \\cos \\tan \\sec ',
+          mq.__controller.root.latex(),
+          'not cleaned latex'
+        );
+        assert.equal('\\sin\\cos\\tan\\sec', mq.latex(), 'cleaned latex');
       });
 
       test('empty LaTeX', function () {
