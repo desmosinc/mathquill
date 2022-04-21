@@ -228,7 +228,6 @@ suite('latex', function () {
 
       test('many trig functions', function () {
         mq.latex('\\sin\\cos\\tan\\sec');
-        mq.keystroke('Left Left Left Left');
         assert.equal('\\sin\\cos\\tan\\sec', mq.latex(), 'trig functions');
       });
 
