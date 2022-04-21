@@ -226,14 +226,17 @@ suite('latex', function () {
         );
       });
 
-      test('many trig functions', function () {
+      test('many trig functions', function (done) {
         mq.latex('\\sin\\cos\\tan\\sec');
-        assert.equal(
-          '\\sin \\cos \\tan \\sec ',
-          mq.__controller.root.latex(),
-          'not cleaned latex'
-        );
-        assert.equal('\\sin\\cos\\tan\\sec', mq.latex(), 'cleaned latex');
+        setTimeout(function () {
+          assert.equal(
+            '\\sin \\cos \\tan \\sec ',
+            mq.__controller.root.latex(),
+            'not cleaned latex'
+          );
+          assert.equal('\\sin\\cos\\tan\\sec', mq.latex(), 'cleaned latex');
+          done();
+        }, 1500);
       });
 
       test('empty LaTeX', function () {
