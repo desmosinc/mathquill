@@ -202,6 +202,12 @@ suite('latex', function () {
     var mq;
     setup(function () {
       mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+      $('#mock').css({
+        position: 'fixed',
+        top: 0,
+        left: 0,
+      });
     });
 
     suite('.latex(...)', function () {
