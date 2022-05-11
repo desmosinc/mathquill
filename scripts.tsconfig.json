@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "es6",
+    "target": "es5",
+    "moduleResolution": "node",
+    "outDir": "script/dist"
+  },
+  "include": ["script/**/*.ts"]
+}

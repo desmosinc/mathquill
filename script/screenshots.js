@@ -12,8 +12,8 @@
 //   node screenshots.js http://localhost:9292/test/visual.html
 //   node screenshots.js http://google.com
 
-var wd = require('wd');
-var fs = require('fs');
+import { promiseChainRemote } from 'wd';
+import { mkdirSync, writeFile } from 'fs';
 var url = process.argv[2];
 var username = process.env.SAUCE_USERNAME;
 var accessKey = process.env.SAUCE_ACCESS_KEY;
@@ -25,9 +25,9 @@ if (!baseDir) {
   );
   process.exit(1);
 }
-fs.mkdirSync(baseDir + '/imgs');
-fs.mkdirSync(baseDir + '/imgs/pieces');
-fs.mkdirSync(baseDir + '/browser_logs');
+mkdirSync(baseDir + '/imgs');
+mkdirSync(baseDir + '/imgs/pieces');
+mkdirSync(baseDir + '/browser_logs');
 
 var browsers = [
   {
@@ -84,7 +84,7 @@ browsers.forEach(function (browser) {
     ' on ' +
     browser.config.platform;
   browser.config.customData = { build_url: process.env.CIRCLE_BUILD_URL };
-  var browserDriver = wd.promiseChainRemote(
+  var browserDriver = promiseChainRemote(
     'ondemand.saucelabs.com',
     80,
     username,
@@ -155,7 +155,7 @@ browsers.forEach(function (browser) {
             // take screenshots of each piece; circle.yml will stitch them together
           } else {
             var piecesDir = baseDir + '/imgs/pieces/' + fileName + '/';
-            fs.mkdirSync(piecesDir);
+            mkdirSync(piecesDir);
 
             var scrollTop = 0;
             var index = 1;
@@ -217,7 +217,7 @@ browsers.forEach(function (browser) {
                 sessionName.replace(/ /g, '_') +
                 '.log';
               return new Promise(function (resolve, reject) {
-                fs.writeFile(
+                writeFile(
                   logfile,
                   JSON.stringify(logs, null, 2),
                   function (err) {

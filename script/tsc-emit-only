@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-var ts = require('typescript');
+import { transpileModule } from 'typescript';
 
 function compileTypescript (tsSource) {
   compilerOptions = {
     target: 'es5'
   };
 
-  var jsSource = ts.transpileModule(tsSource, {
+  const jsSource = transpileModule(tsSource, {
     compilerOptions: compilerOptions
   }).outputText;
 
@@ -21,7 +21,7 @@ process.stdin.on('data', function(data) {
     contents += data;
 });
 process.stdin.on('end', function () {
-    var ts = compileTypescript(contents);
+    const ts = compileTypescript(contents);
     console.log(ts);
 })
 process.stdin.resume();

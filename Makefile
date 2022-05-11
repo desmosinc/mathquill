@@ -108,7 +108,7 @@ BUILD_DIR_EXISTS = $(BUILD_DIR)/.exists--used_by_Makefile
 # -*- Build tasks -*-
 #
 
-.PHONY: all basic dev js uglify css font clean setup-gitconfig prettify-all
+.PHONY: all basic dev js uglify css font clean setup-gitconfig
 all: font css uglify
 basic: $(UGLY_BASIC_JS) $(BASIC_CSS)
 unminified_basic: $(BASIC_JS) $(BASIC_CSS)
@@ -126,8 +126,6 @@ clean:
 # that tells git to include the additional configuration specified inside the .gitconfig file that's checked in here.
 setup-gitconfig:
 	@git config --local include.path ../.gitconfig
-prettify-all:
-	npx prettier --write '**/*.{ts,js,css,html}'
 
 $(BUILD_JS): $(INTRO) $(SOURCES_FULL) $(OUTRO) $(BUILD_DIR_EXISTS)
 	cat $^ | ./script/escape-non-ascii | ./script/tsc-emit-only > $@
@@ -173,13 +171,11 @@ $(FONT_TARGET): $(FONT_SOURCE) $(BUILD_DIR_EXISTS)
 #
 .PHONY:
 lint:
-	npx tsc --noEmit
-  # Make sure that the public, standalone type definitions do not depend on any internal sources.
-	npx tsc --noEmit -p test/tsconfig.public-types-test.json
+	npm run lint
 
 .PHONY: test server benchmark
 server:
-	node script/test_server.js
+	npm run server
 test: dev $(BUILD_TEST) $(BASIC_JS) $(BASIC_CSS)
 	@echo
 	@echo "** now open test/{unit,visual}.html in your browser to run the {unit,visual} tests. **"
