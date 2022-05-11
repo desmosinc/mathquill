@@ -85,7 +85,7 @@ UGLY_JS = $(BUILD_DIR)/mathquill.min.js
 UGLY_BASIC_JS = $(BUILD_DIR)/mathquill-basic.min.js
 
 # programs and flags
-UGLIFY ?= ./node_modules/.bin/uglifyjs
+UGLIFY ?= ./node_modules/.bin/terser
 UGLIFY_OPTS ?= --mangle --compress hoist_vars=true --comments /maintainers@mathquill.com/
 
 LESSC ?= ./node_modules/.bin/lessc
@@ -128,7 +128,7 @@ setup-gitconfig:
 	@git config --local include.path ../.gitconfig
 
 $(BUILD_JS): $(INTRO) $(SOURCES_FULL) $(OUTRO) $(BUILD_DIR_EXISTS)
-	cat $^ | ./script/escape-non-ascii | ./script/tsc-emit-only > $@
+	cat $^ | node ./script/dist/escape-non-ascii.js | node ./script/dist/tsc-emit-only.js > $@
 	perl -pi -e s/mq-/$(MQ_CLASS_PREFIX)mq-/g $@
 	perl -pi -e s/{VERSION}/v$(VERSION)/ $@
 
@@ -136,7 +136,7 @@ $(UGLY_JS): $(BUILD_JS) $(NODE_MODULES_INSTALLED)
 	$(UGLIFY) $(UGLIFY_OPTS) < $< > $@
 
 $(BASIC_JS): $(INTRO) $(SOURCES_BASIC) $(OUTRO) $(BUILD_DIR_EXISTS)
-	cat $^ | ./script/escape-non-ascii | ./script/tsc-emit-only > $@
+	cat $^ | node ./script/dist/escape-non-ascii | node ./script/dist/tsc-emit-only > $@
 	perl -pi -e s/mq-/$(MQ_CLASS_PREFIX)mq-/g $@
 	perl -pi -e s/{VERSION}/v$(VERSION)/ $@
 
@@ -184,5 +184,5 @@ benchmark: dev $(BUILD_TEST) $(BASIC_JS) $(BASIC_CSS)
 	@echo "** now open benchmark/{render,select,update}.html in your browser. **"
 
 $(BUILD_TEST): $(INTRO) $(SOURCES_FULL) $(TEST_SUPPORT) $(UNIT_TESTS) $(OUTRO) $(BUILD_DIR_EXISTS)
-	cat $^ | ./script/tsc-emit-only > $@
+	cat $^ | node ./script/dist/tsc-emit-only > $@
 	perl -pi -e s/{VERSION}/v$(VERSION)/ $@

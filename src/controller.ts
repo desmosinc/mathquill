@@ -24,7 +24,7 @@ class ControllerBase {
   ariaPostLabel: string;
   readonly cursor: Cursor;
   editable: boolean | undefined;
-  _ariaAlertTimeout: number;
+  _ariaAlertTimeout: NodeJS.Timeout | null;
   KIND_OF_MQ: KIND_OF_MQ;
 
   textarea: HTMLElement | undefined;

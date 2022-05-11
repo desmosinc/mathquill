@@ -5,4 +5,4 @@
 npx lint-staged
 
 # typecheck
-make lint
+npm run lint

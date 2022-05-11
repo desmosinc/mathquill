@@ -38,7 +38,7 @@ class Cursor extends Point {
   );
   private _domFrag = domFrag();
   selection: MQSelection | undefined;
-  intervalId: number;
+  intervalId: null | NodeJS.Timeout;
   anticursor: Anticursor | undefined;
 
   constructor(
@@ -89,7 +89,7 @@ class Cursor extends Point {
   }
   hide() {
     if (this.intervalId) clearInterval(this.intervalId);
-    this.intervalId = 0;
+    this.intervalId = null;
     this.domFrag().detach();
     this.setDOMFrag(domFrag());
     return this;

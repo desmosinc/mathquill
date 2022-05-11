@@ -1,3 +1,5 @@
+#!/bin/node
+
 // escape all non-ASCII characters with JS unicode escapes \u####, for #284
 
 process.stdin.setEncoding('utf8');

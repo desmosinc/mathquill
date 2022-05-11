@@ -17,8 +17,8 @@ ControllerBase.onNotify(function (cursor, e) {
 
 class Controller_focusBlur extends Controller_exportText {
   blurred: boolean;
-  __disableGroupingTimeout: number;
-  textareaSelectionTimeout: number;
+  __disableGroupingTimeout: NodeJS.Timeout;
+  textareaSelectionTimeout: NodeJS.Timeout | null;
 
   disableGroupingForSeconds(seconds: number) {
     clearTimeout(this.__disableGroupingTimeout);
@@ -32,7 +32,7 @@ class Controller_focusBlur extends Controller_exportText {
     }
   }
 
-  private blurTimeout: number;
+  private blurTimeout: NodeJS.Timeout;
 
   private handleTextareaFocusEditable = () => {
     const cursor = this.cursor;
@@ -53,7 +53,7 @@ class Controller_focusBlur extends Controller_exportText {
   private handleTextareaBlurEditable = () => {
     if (this.textareaSelectionTimeout) {
       clearTimeout(this.textareaSelectionTimeout);
-      this.textareaSelectionTimeout = 0;
+      this.textareaSelectionTimeout = null;
     }
     this.disableGroupingForSeconds(0);
     this.blurred = true;

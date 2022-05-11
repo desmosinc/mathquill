@@ -51,7 +51,7 @@ class Controller extends Controller_scrollHoriz {
   }
 
   setTextareaSelection() {
-    this.textareaSelectionTimeout = 0;
+    this.textareaSelectionTimeout = null;
     var latex = '';
     if (this.cursor.selection) {
       //cleanLatex prunes unnecessary spaces. defined in latex.js

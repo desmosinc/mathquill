@@ -3,7 +3,8 @@
     "module": "es6",
     "target": "es5",
     "moduleResolution": "node",
-    "outDir": "script/dist"
+    "outDir": "script/dist",
+    "allowSyntheticDefaultImports": true
   },
   "include": ["script/**/*.ts"]
 }
