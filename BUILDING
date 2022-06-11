@@ -8,16 +8,15 @@ You will then need to update the dependencies with `npm`, like so:
 
 If this installs properly, you should simply be able to run `make`,
 and mathquill will be built in the `build/` directory.  Alternatively,
-for development, you can run `make server`, which will automatically
+for development, you can run `npm run dev`, which will automatically
 re-make, and also serve the demo, the unit tests, and the visual tests.
 
-            demo -> http://localhost:9292/test/demo.html
-      unit tests -> http://localhost:9292/test/unit.html
-    visual tests -> http://localhost:9292/test/visual.html
+            demo -> http://localhost:8080/test/demo.html
+      unit tests -> http://localhost:8080/test/unit.html
+    visual tests -> http://localhost:8080/test/visual.html
 
 If building on Windows:
-    1.  Install GNU Make from http://gnuwin32.sourceforge.net/packages/make.htm. Do not use make derivitives from mSYS or MinGW. Ensure the location of make.exe is added to your PATH environment variable.
-    2.  Grab the latest Git for Windows from https://git-scm.com/download/win. When installing, add Git and its optional shell tools to your PATH environment variable (these questions are asked during setup).
+    Grab the latest Git for Windows from https://git-scm.com/download/win. When installing, add Git and its optional shell tools to your PATH environment variable (these questions are asked during setup).
 
 If any of this does not work, please let us know!  We want to make
 hacking on mathquill as easy as possible.
