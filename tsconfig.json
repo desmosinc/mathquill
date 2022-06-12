@@ -20,6 +20,8 @@
     "importHelpers": true,
     "noEmit": true,
     "pretty": true,
-    "typeRoots": ["./node_modules/@types"]
-  }
+    "typeRoots": ["./node_modules/@types"],
+    "types": ["mocha", "node"]
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts"],
 }

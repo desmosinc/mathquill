@@ -73,53 +73,69 @@ const basicSources = [
 async function buildJS(
   origin: string[],
   out: string,
-  shouldMinify: boolean
+  andMinify: boolean,
+  useIntroOutro = true
 ) {
   const sources: string[] = (
     await Promise.all([
-      await readFile('src/intro.js', 'utf8'),
+      useIntroOutro ? await readFile('src/intro.js', 'utf8') : '',
       ...origin.map(async (it) => {
         if (it.endsWith('.ts')) {
-          return ts.transpileModule(await readFile(it, 'utf-8'), {
-            compilerOptions: {
-              module: 0,
-            },
-          }).outputText;
+          return ts.transpileModule(await readFile(it, 'utf-8'), {}).outputText;
         } else {
           return await readFile(it, 'utf-8');
         }
       }),
-      await readFile('src/outro.js', 'utf8'),
+      useIntroOutro ? await readFile('src/outro.js', 'utf8') : '',
     ])
   ).filter(Boolean);
 
-  if (shouldMinify) {
+  await writeFile(`build/${out}.js`, sources.join('\n'), 'utf-8');
+
+  if (andMinify) {
     await writeFile(
-      `build/${out}.js`,
-      (await minify(sources.join('\n'))).code,
+      `build/${out}.min.js`,
+      (
+        await minify(sources.join('\n'))
+      ).code,
       'utf-8'
     );
-  } else {
-    await writeFile(`build/${out}.js`, sources.join('\n'), 'utf-8');
   }
 }
 
-await rm('build', { recursive: true, force: true });
-await mkdir('build');
-await copyDir('src/fonts', 'build/fonts');
-await buildCSS();
-await buildJS(fullSources, 'mathquill', false);
-await buildJS(fullSources, 'mathquill.min', true);
-await buildJS(basicSources, 'mathquill-basic', false);
-await buildJS(basicSources, 'mathquill-basic.min', true);
-await buildJS(
-  [
-    ...fullSources,
-    'test/support/assert.ts',
-    'test/support/trigger-event.ts',
-    'test/support/jquery-stub.ts',
-    ...[...(await readdir('test/unit'))].map((it) => 'test/unit/' + it),
-  ],
-  'mathquill.test',
-  false
-);
+async function main() {
+  console.log('Cleaning directories...');
+
+  await rm('build', { recursive: true, force: true });
+  await mkdir('build');
+
+  console.log('Copying fonts...');
+
+  await copyDir('src/fonts', 'build/fonts');
+
+  console.log('Bulding CSS...');
+  await buildCSS();
+
+  console.log('Building JS files...');
+
+  await buildJS(fullSources, 'mathquill', true);
+  await buildJS(basicSources, 'mathquill-basic', true);
+
+  console.log('Building tests...');
+
+  await buildJS(
+    [
+      ...fullSources,
+      'test/support/assert.ts',
+      'test/support/trigger-event.ts',
+      'test/support/jquery-stub.ts',
+      ...[...(await readdir('test/unit'))].map((it) => 'test/unit/' + it),
+    ],
+    'mathquill.test',
+    false
+  );
+
+  console.log('Finished!');
+}
+
+await main();
