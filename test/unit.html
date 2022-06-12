@@ -48,9 +48,15 @@
       });
     </script>
 
-    <!-- include the library with the tests inlined -->
+    <!-- include the library & tests -->
     <script
       id="mathquill"
+      type="text/javascript"
+      src="../build/mathquill.js"
+    ></script>
+
+    <script
+      id="mathquill-tests"
       type="text/javascript"
       src="../build/mathquill.test.js"
       onerror="alert('couldn\'t find `build/mathquill.test.js`. Please run `npm run build` OR `npm run dev` before opening this file.')"

@@ -130,7 +130,6 @@ async function main() {
 
   await buildJS(
     [
-      ...fullSources,
       'test/support/assert.ts',
       'test/support/trigger-event.ts',
       'test/support/jquery-stub.ts',
