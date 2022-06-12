@@ -27,7 +27,9 @@ async function buildCSS(basic = true) {
 }
 
 const licenseNotification = `/**
-* MathQuill {VERSION}, by Han, Jeanine, and Mary
+* MathQuill {${
+  JSON.parse(await readFile('package.json', 'utf-8')).version
+}}, by Han, Jeanine, and Mary
 * http://mathquill.com | maintainers@mathquill.com
 *
 * This Source Code Form is subject to the terms of the

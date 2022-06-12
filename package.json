@@ -9,8 +9,7 @@
     "url": "https://github.com/mathquill/mathquill.git"
   },
   "files": [
-    "build/mathquill.{css,js,min.js}",
-    "build/fonts/Symbola.*",
+    "build/*",
     "quickstart.html"
   ],
   "devDependencies": {
@@ -37,8 +36,9 @@
     "prettify": "npx prettier --write '**/*.{ts,js,css,html}'",
     "build": "npm run build:scripts && node script/dist/build.js",
     "build:scripts": "tsc -p script/tsconfig.json",
-    "start": "npm run build && http-server",
+    "start": "npm run build && http-server -c-1",
     "dev": "nodemon --watch src --watch script --watch test --ignore script/dist -e ts,js,html --exec \"npm run start\"",
-    "lint": "npx tsc --noEmit && npx tsc --noEmit -p test/tsconfig.public-types-test.json"
+    "lint": "npx tsc --noEmit && npx tsc --noEmit -p test/tsconfig.public-types-test.json",
+    "prepublishOnly": "npm run build && npm run lint && npm run prettify"
   }
 }
