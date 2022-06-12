@@ -3,6 +3,10 @@ import less from 'less';
 import path from 'path';
 import { minify } from 'terser';
 import ts from 'typescript';
+import postcss from 'postcss';
+import nano from 'cssnano';
+
+const postCSS = postcss([nano({ preset: 'default' })]);
 
 async function copyDir(src: string, dest: string) {
   await mkdir(dest, { recursive: true });
@@ -19,16 +23,20 @@ async function copyDir(src: string, dest: string) {
 }
 
 async function buildCSS(basic = true) {
+  const content = (
+    await less.render(await readFile('src/css/main.less', 'utf-8'), {
+      paths: ['src/css'],
+      globalVars: {
+        basic: basic.toString(),
+      },
+    })
+  ).css;
+
+  writeFile(`build/mathquill${basic ? '-basic' : ''}.css`, content, 'utf-8');
+
   writeFile(
-    `build/mathquill${basic ? '-basic' : ''}.css`,
-    (
-      await less.render(await readFile('src/css/main.less', 'utf-8'), {
-        paths: ['src/css'],
-        globalVars: {
-          basic: basic.toString(),
-        },
-      })
-    ).css,
+    `build/mathquill${basic ? '-basic' : ''}.min.css`,
+    (await postCSS.process(content, { from: undefined })).css,
     'utf-8'
   );
 }
