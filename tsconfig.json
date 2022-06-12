@@ -15,11 +15,11 @@
     "rootDir": ".",
     "baseUrl": ".",
     "paths": {
-      "tslib": ["node_modules/tslib/tslib"],
+      "tslib": ["node_modules/tslib/tslib"]
     },
     "importHelpers": true,
     "noEmit": true,
     "pretty": true,
-    "typeRoots": ["./node_modules/@types"],
-  },
+    "typeRoots": ["./node_modules/@types"]
+  }
 }

@@ -44,8 +44,8 @@ echo "1. Bumped package.json version to \""$(node -p 'require("./package.json").
 #
 # 2. Build
 #
-echo '2. make:'
-make 2>&1 | sed 's/^/     /'
+echo '2. npm run build:'
+npm run build 2>&1 | sed 's/^/     /'
 
 #
 # 3. Package as tarball + zipfile

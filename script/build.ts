@@ -73,31 +73,30 @@ const basicSources = [
 async function buildJS(
   origin: string[],
   out: string,
-  useIntroOutro: boolean,
   shouldMinify: boolean
 ) {
   const sources: string[] = (
     await Promise.all([
-      useIntroOutro ? await readFile('src/intro.js', 'utf8') : '',
+      await readFile('src/intro.js', 'utf8'),
       ...origin.map(async (it) => {
         if (it.endsWith('.ts')) {
           return ts.transpileModule(await readFile(it, 'utf-8'), {
-            compilerOptions: { declarationDir: 'src' },
+            compilerOptions: {
+              module: 0,
+            },
           }).outputText;
         } else {
           return await readFile(it, 'utf-8');
         }
       }),
-      useIntroOutro ? await readFile('src/outro.js', 'utf8') : '',
+      await readFile('src/outro.js', 'utf8'),
     ])
   ).filter(Boolean);
 
   if (shouldMinify) {
     await writeFile(
       `build/${out}.js`,
-      (
-        await minify(sources.join('\n'))
-      ).code,
+      (await minify(sources.join('\n'))).code,
       'utf-8'
     );
   } else {
@@ -105,25 +104,22 @@ async function buildJS(
   }
 }
 
-(async () => {
-  await rm('build', { recursive: true, force: true });
-  await mkdir('build');
-  await copyDir('src/fonts', 'build/fonts');
-  await buildCSS();
-  await buildJS(fullSources, 'mathquill', true, false);
-  await buildJS(fullSources, 'mathquill.min', true, true);
-  await buildJS(basicSources, 'mathquill-basic', true, false);
-  await buildJS(basicSources, 'mathquill-basic.min', true, true);
-  await buildJS(
-    [
-      ...fullSources,
-      'test/support/assert.ts',
-      'test/support/trigger-event.ts',
-      'test/support/jquery-stub.ts',
-      ...[...(await readdir('test/unit'))].map((it) => 'test/unit/' + it),
-    ],
-    'mathquill.test',
-    true,
-    false
-  );
-})();
+await rm('build', { recursive: true, force: true });
+await mkdir('build');
+await copyDir('src/fonts', 'build/fonts');
+await buildCSS();
+await buildJS(fullSources, 'mathquill', false);
+await buildJS(fullSources, 'mathquill.min', true);
+await buildJS(basicSources, 'mathquill-basic', false);
+await buildJS(basicSources, 'mathquill-basic.min', true);
+await buildJS(
+  [
+    ...fullSources,
+    'test/support/assert.ts',
+    'test/support/trigger-event.ts',
+    'test/support/jquery-stub.ts',
+    ...[...(await readdir('test/unit'))].map((it) => 'test/unit/' + it),
+  ],
+  'mathquill.test',
+  false
+);
