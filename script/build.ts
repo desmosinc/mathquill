@@ -1,26 +1,11 @@
-import { rm, mkdir, readdir, copyFile, readFile, writeFile } from 'fs/promises';
+import { rm, mkdir, readdir, cp, readFile, writeFile } from 'fs/promises';
 import less from 'less';
-import path from 'path';
 import { minify } from 'terser';
 import ts from 'typescript';
 import postcss from 'postcss';
 import nano from 'cssnano';
 
 const postCSS = postcss([nano({ preset: 'default' })]);
-
-async function copyDir(src: string, dest: string) {
-  await mkdir(dest, { recursive: true });
-  const entries = await readdir(src, { withFileTypes: true });
-
-  for (const entry of entries) {
-    const srcPath = path.join(src, entry.name);
-    const destPath = path.join(dest, entry.name);
-
-    entry.isDirectory()
-      ? await copyDir(srcPath, destPath)
-      : await copyFile(srcPath, destPath);
-  }
-}
 
 async function buildCSS(basic = true) {
   const content = (
@@ -40,6 +25,18 @@ async function buildCSS(basic = true) {
     'utf-8'
   );
 }
+
+const licenseNotification = `/**
+* MathQuill {VERSION}, by Han, Jeanine, and Mary
+* http://mathquill.com | maintainers@mathquill.com
+*
+* This Source Code Form is subject to the terms of the
+* Mozilla Public License, v. 2.0. If a copy of the MPL
+* was not distributed with this file, You can obtain
+* one at http://mozilla.org/MPL/2.0/.
+*/
+
+`;
 
 const baseSources = [
   'src/utils.ts',
@@ -102,14 +99,16 @@ async function buildJS(
     ])
   ).filter(Boolean);
 
-  await writeFile(`build/${out}.js`, sources.join('\n'), 'utf-8');
+  await writeFile(
+    `build/${out}.js`,
+    licenseNotification + sources.join('\n'),
+    'utf-8'
+  );
 
   if (andMinify) {
     await writeFile(
       `build/${out}.min.js`,
-      (
-        await minify(sources.join('\n'))
-      ).code,
+      licenseNotification + (await minify(sources.join('\n'))).code,
       'utf-8'
     );
   }
@@ -123,7 +122,7 @@ async function main() {
 
   console.log('Copying fonts...');
 
-  await copyDir('src/fonts', 'build/fonts');
+  await cp('src/fonts', 'build/fonts', { recursive: true, force: true });
 
   console.log('Bulding CSS...');
   await buildCSS(true); // Basic CSS
@@ -138,6 +137,7 @@ async function main() {
 
   await buildJS(
     [
+      ...fullSources,
       'test/support/assert.ts',
       'test/support/trigger-event.ts',
       'test/support/jquery-stub.ts',
