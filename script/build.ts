@@ -18,12 +18,15 @@ async function copyDir(src: string, dest: string) {
   }
 }
 
-async function buildCSS() {
+async function buildCSS(basic = true) {
   writeFile(
-    'build/mathquill.css',
+    `build/mathquill${basic ? '-basic' : ''}.css`,
     (
       await less.render(await readFile('src/css/main.less', 'utf-8'), {
         paths: ['src/css'],
+        globalVars: {
+          basic: basic.toString(),
+        },
       })
     ).css,
     'utf-8'
@@ -81,6 +84,7 @@ async function buildJS(
       useIntroOutro ? await readFile('src/intro.js', 'utf8') : '',
       ...origin.map(async (it) => {
         if (it.endsWith('.ts')) {
+          // Transpile typescript files
           return ts.transpileModule(await readFile(it, 'utf-8'), {}).outputText;
         } else {
           return await readFile(it, 'utf-8');
@@ -114,7 +118,8 @@ async function main() {
   await copyDir('src/fonts', 'build/fonts');
 
   console.log('Bulding CSS...');
-  await buildCSS();
+  await buildCSS(true); // Basic CSS
+  await buildCSS(false); // NON-Basic CSS
 
   console.log('Building JS files...');
 
