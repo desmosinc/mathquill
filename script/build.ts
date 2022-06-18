@@ -1,9 +1,13 @@
-import { rm, mkdir, readdir, cp, readFile, writeFile } from 'fs/promises';
+import { readdir, cp, readFile, writeFile } from 'fs/promises';
 import less from 'less';
 import { minify } from 'terser';
 import ts from 'typescript';
 import postcss from 'postcss';
 import nano from 'cssnano';
+import http from 'http';
+import serve from 'serve-handler';
+
+const useServer = process.argv.indexOf('--server') !== -1;
 
 const postCSS = postcss([nano({ preset: 'default' })]);
 
@@ -117,11 +121,6 @@ async function buildJS(
 }
 
 async function main() {
-  console.log('Cleaning directories...');
-
-  await rm('build', { recursive: true, force: true });
-  await mkdir('build');
-
   console.log('Copying fonts...');
 
   await cp('src/fonts', 'build/fonts', { recursive: true, force: true });
@@ -142,14 +141,30 @@ async function main() {
       ...fullSources,
       'test/support/assert.ts',
       'test/support/trigger-event.ts',
-      'test/support/jquery-stub.ts',
       ...[...(await readdir('test/unit'))].map((it) => 'test/unit/' + it),
     ],
     'mathquill.test',
     false
   );
 
-  console.log('Finished!');
+  if (useServer) {
+    const server = http.createServer((request, response) =>
+      serve(request, response, {
+        public: './',
+        cleanUrls: true,
+      })
+    );
+
+    server.listen(3000, () => {
+      console.log('Running at http://localhost:3000');
+    });
+
+    process.once('SIGUSR2', () => {
+      server.close(() => process.kill(process.pid, 'SIGUSR2'));
+    });
+  } else {
+    console.log('Finished!');
+  }
 }
 
 await main();
