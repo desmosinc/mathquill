@@ -1,4 +1,4 @@
-import { readdir, cp, readFile, writeFile } from 'fs/promises';
+import { readdir, readFile, writeFile } from 'fs/promises';
 import less from 'less';
 import { minify } from 'terser';
 import ts from 'typescript';
@@ -85,7 +85,7 @@ const basicSources = [
 ];
 
 async function buildJS(
-  origin: string[],
+  origins: string[],
   out: string,
   andMinify: boolean,
   useIntroOutro = true
@@ -93,12 +93,13 @@ async function buildJS(
   const sources: string[] = (
     await Promise.all([
       useIntroOutro ? await readFile('src/intro.js', 'utf8') : '',
-      ...origin.map(async (it) => {
-        if (it.endsWith('.ts')) {
+      ...origins.map(async (origin) => {
+        if (origin.endsWith('.ts')) {
           // Transpile typescript files
-          return ts.transpileModule(await readFile(it, 'utf-8'), {}).outputText;
+          return ts.transpileModule(await readFile(origin, 'utf-8'), {})
+            .outputText;
         } else {
-          return await readFile(it, 'utf-8');
+          return await readFile(origin, 'utf-8');
         }
       }),
       useIntroOutro ? await readFile('src/outro.js', 'utf8') : '',
@@ -121,10 +122,6 @@ async function buildJS(
 }
 
 async function main() {
-  console.log('Copying fonts...');
-
-  await cp('src/fonts', 'build/fonts', { recursive: true, force: true });
-
   console.log('Bulding CSS...');
   await buildCSS(true); // Basic CSS
   await buildCSS(false); // NON-Basic CSS
@@ -141,7 +138,7 @@ async function main() {
       ...fullSources,
       'test/support/assert.ts',
       'test/support/trigger-event.ts',
-      ...[...(await readdir('test/unit'))].map((it) => 'test/unit/' + it),
+      ...(await readdir('test/unit')).map((name) => `test/unit/${name}`),
     ],
     'mathquill.test',
     false
