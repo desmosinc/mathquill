@@ -16,12 +16,6 @@
     <script type="text/javascript" src="support/jquery-1.5.2.js"></script>
     <script type="text/javascript">
       window.test_only_jquery = window.jQuery;
-      function resetJQueryGlobals() {
-        window.jQuery = window.$ = function () {
-          throw new Error(`Unexpected call to JQuery constructor.`);
-        };
-      }
-      resetJQueryGlobals();
     </script>
 
     <!-- mocha test framework -->
@@ -80,7 +74,6 @@
     <script type="text/javascript">
       teardown(function () {
         document.querySelector('#mock').innerHTML = '';
-        resetJQueryGlobals();
       });
 
       function runXUnit() {

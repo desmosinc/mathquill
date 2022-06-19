@@ -1,103 +1,5 @@
 suite('Public API', function () {
   const $ = window.test_only_jquery;
-  suite('global functions', function () {
-    test('null', function () {
-      assert.equal(MQ(), null);
-      assert.equal(MQ(0), null);
-      assert.equal(MQ('<span/>'), null);
-      assert.equal(MQ($('<span/>')[0]), null);
-      assert.equal(MQ.MathField(), null);
-      assert.equal(MQ.MathField(0), null);
-      assert.equal(MQ.MathField('<span/>'), null);
-    });
-
-    test('MQ.MathField()', function () {
-      var el = $('<span>x^2</span>');
-      var mathField = MQ.MathField(el[0]);
-      assert.ok(mathField instanceof MQ.MathField);
-      assert.ok(mathField instanceof MQ.EditableField);
-      assert.ok(mathField instanceof MQ);
-      assert.ok(mathField instanceof MathQuill);
-    });
-
-    test('interface versioning isolates prototype chain', function () {
-      var mathFieldSpan = $('<span/>')[0];
-      var mathField = MQ.MathField(mathFieldSpan);
-
-      var MQ1 = MathQuill.getInterface(1);
-      assert.ok(!(mathField instanceof MQ1.MathField));
-      assert.ok(!(mathField instanceof MQ1.EditableField));
-      assert.ok(!(mathField instanceof MQ1));
-    });
-
-    test('interface version < 3 throws an error if jQuery is not present', function () {
-      window.$ = window.jQuery = undefined;
-      assert.throws(
-        () => MathQuill.getInterface(1),
-        'MathQuill.getInterface(1) throws if jquery is not present'
-      );
-      assert.throws(
-        () => MathQuill.getInterface(2),
-        'MathQuill.getInterface(2) throws if jquery is not present'
-      );
-      assert.ok(
-        MathQuill.getInterface(3),
-        'MathQuill.getInterface(3) succeeds without jquery present'
-      );
-      setupJqueryStub();
-      assert.ok(
-        MathQuill.getInterface(1),
-        'MathQuill.getInterface(1) succeeds when jquery is present'
-      );
-      assert.ok(
-        MathQuill.getInterface(2),
-        'MathQuill.getInterface(1) succeeds when jquery is present'
-      );
-    });
-
-    test('identity of API object returned by MQ()', function () {
-      var mathFieldSpan = $('<span/>')[0];
-      var mathField = MQ.MathField(mathFieldSpan);
-
-      assert.ok(MQ(mathFieldSpan) !== mathField);
-
-      assert.equal(MQ(mathFieldSpan).id, mathField.id);
-      assert.equal(MQ(mathFieldSpan).id, MQ(mathFieldSpan).id);
-
-      assert.equal(MQ(mathFieldSpan).data, mathField.data);
-      assert.equal(MQ(mathFieldSpan).data, MQ(mathFieldSpan).data);
-    });
-
-    test('blurred when created', function () {
-      var el = $('<span/>');
-      MQ.MathField(el[0]);
-      var rootBlock = el.find('.mq-root-block');
-      assert.ok(rootBlock.hasClass('mq-empty'));
-      assert.ok(!rootBlock.hasClass('mq-hasCursor'));
-    });
-  });
-
-  suite('mathquill-basic', function () {
-    var mq;
-    setup(function () {
-      mq = MQBasic.MathField($('<span></span>').appendTo('#mock')[0]);
-    });
-
-    test('typing \\', function () {
-      mq.typedText('\\');
-      assert.equal(mq.latex(), '\\backslash');
-    });
-
-    test('typing $', function () {
-      mq.typedText('$');
-      assert.equal(mq.latex(), '\\$');
-    });
-
-    test('parsing of advanced symbols', function () {
-      mq.latex('\\oplus');
-      assert.equal(mq.latex(), ''); // TODO: better LaTeX parse error behavior
-    });
-  });
 
   suite('basic API methods', function () {
     var mq;
@@ -112,7 +14,6 @@ suite('Public API', function () {
 
     test('interface v1 and v2 .revert() return jquery colletion', function () {
       // interface version 1
-      setupJqueryStub();
       var MQ1 = MathQuill.getInterface(1);
       var mq = MQ1.MathField($('<span>some <code>HTML</code></span>')[0]);
       assert.equal(mq.revert().html(), 'some <code>HTML</code>');
@@ -303,9 +204,106 @@ suite('Public API', function () {
     });
   });
 
+  suite('global functions', function () {
+    test('null', function () {
+      assert.equal(MQ(), null);
+      assert.equal(MQ(0), null);
+      assert.equal(MQ('<span/>'), null);
+      assert.equal(MQ($('<span/>')[0]), null);
+      assert.equal(MQ.MathField(), null);
+      assert.equal(MQ.MathField(0), null);
+      assert.equal(MQ.MathField('<span/>'), null);
+    });
+
+    test('MQ.MathField()', function () {
+      var el = $('<span>x^2</span>');
+      var mathField = MQ.MathField(el[0]);
+      assert.ok(mathField instanceof MQ.MathField);
+      assert.ok(mathField instanceof MQ.EditableField);
+      assert.ok(mathField instanceof MQ);
+      assert.ok(mathField instanceof MathQuill);
+    });
+
+    test('interface versioning isolates prototype chain', function () {
+      var mathFieldSpan = $('<span/>')[0];
+      var mathField = MQ.MathField(mathFieldSpan);
+
+      var MQ1 = MathQuill.getInterface(1);
+      assert.ok(!(mathField instanceof MQ1.MathField));
+      assert.ok(!(mathField instanceof MQ1.EditableField));
+      assert.ok(!(mathField instanceof MQ1));
+    });
+
+    test('interface version < 3 throws an error if jQuery is not present', function () {
+      assert.ok(
+        MathQuill.getInterface(3),
+        'MathQuill.getInterface(3) succeeds without jquery present'
+      );
+      assert.ok(
+        MathQuill.getInterface(1),
+        'MathQuill.getInterface(1) succeeds when jquery is present'
+      );
+      assert.ok(
+        MathQuill.getInterface(2),
+        'MathQuill.getInterface(2) succeeds when jquery is present'
+      );
+      window.$ = window.jQuery = undefined;
+      assert.throws(
+        () => MathQuill.getInterface(1),
+        'MathQuill.getInterface(1) throws if jquery is not present'
+      );
+      assert.throws(
+        () => MathQuill.getInterface(2),
+        'MathQuill.getInterface(2) throws if jquery is not present'
+      );
+    });
+
+    test('identity of API object returned by MQ()', function () {
+      var mathFieldSpan = $('<span/>')[0];
+      var mathField = MQ.MathField(mathFieldSpan);
+
+      assert.ok(MQ(mathFieldSpan) !== mathField);
+
+      assert.equal(MQ(mathFieldSpan).id, mathField.id);
+      assert.equal(MQ(mathFieldSpan).id, MQ(mathFieldSpan).id);
+
+      assert.equal(MQ(mathFieldSpan).data, mathField.data);
+      assert.equal(MQ(mathFieldSpan).data, MQ(mathFieldSpan).data);
+    });
+
+    test('blurred when created', function () {
+      var el = $('<span/>');
+      MQ.MathField(el[0]);
+      var rootBlock = el.find('.mq-root-block');
+      assert.ok(rootBlock.hasClass('mq-empty'));
+      assert.ok(!rootBlock.hasClass('mq-hasCursor'));
+    });
+  });
+
+  suite('mathquill-basic', function () {
+    var mq;
+    setup(function () {
+      mq = MQBasic.MathField($('<span></span>').appendTo('#mock')[0]);
+    });
+
+    test('typing \\', function () {
+      mq.typedText('\\');
+      assert.equal(mq.latex(), '\\backslash');
+    });
+
+    test('typing $', function () {
+      mq.typedText('$');
+      assert.equal(mq.latex(), '\\$');
+    });
+
+    test('parsing of advanced symbols', function () {
+      mq.latex('\\oplus');
+      assert.equal(mq.latex(), ''); // TODO: better LaTeX parse error behavior
+    });
+  });
+
   test('edit handler interface versioning', function () {
     var count = 0;
-    setupJqueryStub();
 
     // interface version 2 (latest)
     var mq2 = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
@@ -1108,7 +1106,6 @@ suite('Public API', function () {
 
   suite('substituteKeyboardEvents (interface versions 1 and 2)', function () {
     for (const v of [1, 2]) {
-      setupJqueryStub();
       const MQ_old = MathQuill.getInterface(v);
       test('can intercept key events, interface version ' + v, function () {
         var mq = MQ_old.MathField($('<span>').appendTo('#mock')[0], {

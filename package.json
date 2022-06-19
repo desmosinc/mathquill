@@ -42,6 +42,7 @@
     "build": "node script/dist/build.js",
     "prestart": "npm run prebuild",
     "start": "node script/dist/build.js -- --server",
+    "poststart": "fuser -k 3000/tcp",
     "dev": "nodemon --watch src --watch script --watch test --ignore script/dist -e ts,js,html --exec \"npm run start\"",
     "lint": "npx tsc --noEmit && npx tsc --noEmit -p test/tsconfig.public-types-test.json",
     "prepublishOnly": "npm run build && npm run lint && npm run prettify"
