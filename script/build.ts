@@ -8,6 +8,10 @@ import http from 'http';
 import serve from 'serve-handler';
 
 const useServer = process.argv.indexOf('--server') !== -1;
+const port =
+  parseInt(
+    process.argv.find((arg) => arg.startsWith('--port'))?.split('=')[1]
+  ) || 8080;
 
 const postCSS = postcss([nano({ preset: 'default' })]);
 
@@ -152,8 +156,8 @@ async function main() {
       })
     );
 
-    server.listen(3000, () => {
-      console.log('Running at http://localhost:3000');
+    server.listen(port, () => {
+      console.log(`Running at http://localhost:${port}`);
     });
 
     process.once('SIGUSR2', () => {

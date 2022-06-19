@@ -1,5 +1,4 @@
 suite('saneKeyboardEvents', function () {
-  const $ = window.test_only_jquery;
   var el;
 
   function supportsSelectionAPI() {

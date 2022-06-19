@@ -1,5 +1,4 @@
 suite('quietEmptyDelimiters', function () {
-  const $ = window.test_only_jquery;
   test('transparent class properly applied to empty delimiters when typing', function () {
     var el = $('<span></span>');
     var mq = MQ.MathField(el.appendTo('#mock')[0]);

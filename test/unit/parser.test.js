@@ -1,5 +1,4 @@
 suite('parser', function () {
-  const $ = window.test_only_jquery;
   var string = Parser.string;
   var regex = Parser.regex;
   var letter = Parser.letter;

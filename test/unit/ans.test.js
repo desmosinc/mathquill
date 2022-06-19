@@ -1,5 +1,4 @@
 suite('ans command', function () {
-  const $ = window.test_only_jquery;
   var mq;
   setup(function () {
     MQ.config({ autoCommands: 'ans' });

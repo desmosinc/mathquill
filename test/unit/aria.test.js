@@ -1,5 +1,4 @@
 suite('aria', function () {
-  const $ = window.test_only_jquery;
   var mathField;
   var container;
   setup(function () {

@@ -1,6 +1,4 @@
 suite('Public API', function () {
-  const $ = window.test_only_jquery;
-
   suite('basic API methods', function () {
     var mq;
     setup(function () {
@@ -247,7 +245,9 @@ suite('Public API', function () {
         MathQuill.getInterface(2),
         'MathQuill.getInterface(2) succeeds when jquery is present'
       );
-      window.$ = window.jQuery = undefined;
+      var jQueryBackup = window.$;
+      delete window.$;
+      delete window.jQuery;
       assert.throws(
         () => MathQuill.getInterface(1),
         'MathQuill.getInterface(1) throws if jquery is not present'
@@ -256,6 +256,7 @@ suite('Public API', function () {
         () => MathQuill.getInterface(2),
         'MathQuill.getInterface(2) throws if jquery is not present'
       );
+      window.$ = window.jQuery = jQueryBackup;
     });
 
     test('identity of API object returned by MQ()', function () {

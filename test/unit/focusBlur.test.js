@@ -1,5 +1,4 @@
 suite('focusBlur', function () {
-  const $ = window.test_only_jquery;
   function assertHasFocus(mq, name, invert) {
     assert.ok(
       !!invert ^ ($(mq.el()).find('textarea')[0] === document.activeElement),

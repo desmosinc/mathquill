@@ -1,5 +1,4 @@
 suite('CSS', function () {
-  const $ = window.test_only_jquery;
   test("math field doesn't fuck up ancestor's .scrollWidth", function () {
     var container = $('<div>')
       .css({

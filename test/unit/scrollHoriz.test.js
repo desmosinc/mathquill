@@ -1,5 +1,4 @@
 suite('scrollHoriz', function () {
-  const $ = window.test_only_jquery;
   var mq;
   var $el;
   setup(function () {
