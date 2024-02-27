@@ -621,12 +621,6 @@ LatexCmds.Im =
   LatexCmds.Imaginary =
     bindVanillaSymbol('\\Im ', '&image;', 'imaginary');
 
-LatexCmds.part = LatexCmds.partial = bindVanillaSymbol(
-  '\\partial ',
-  '&part;',
-  'partial'
-);
-
 LatexCmds.pounds = bindVanillaSymbol('\\pounds ', '&pound;');
 
 LatexCmds.alef =

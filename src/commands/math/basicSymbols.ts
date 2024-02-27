@@ -1318,3 +1318,9 @@ baseOptionProcessors.interpretTildeAsSim = function (val: boolean | undefined) {
   }
   return interpretAsSim;
 };
+
+LatexCmds.part = LatexCmds.partial = bindVanillaSymbol(
+  '\\partial ',
+  '&part;',
+  'partial'
+);
