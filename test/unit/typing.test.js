@@ -417,7 +417,7 @@ suite('typing with auto-replaces', function () {
         });
       });
 
-      test('restrictMismatchedBrackets: "none"', function () {
+      suite('restrictMismatchedBrackets: "none"', function () {
         setup(function () {
           mq.config({ restrictMismatchedBrackets: 'none' });
         });
@@ -438,7 +438,7 @@ suite('typing with auto-replaces', function () {
         test('[a,b) and (a,b] do not match', function () {
           mq.typedText('[a,b) + (a,b]');
           assertLatex(
-            '\\left[\\left(x\\right)\\right]\\ +\\ \\left(\\left[x\\right]\\right)'
+            '\\left[\\left(a,b\\right)\\ +\\ \\left(\\left[a,b\\right]\\right)\\right]'
           );
         });
       });
