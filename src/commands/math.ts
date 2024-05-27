@@ -617,8 +617,23 @@ class MathBlock extends MathElement {
   }
   chToCmd(ch: string, options: CursorOptions) {
     var cons;
-    // exclude f because it gets a dedicated command with more spacing
-    if (ch.match(/^[a-eg-zA-Z]$/)) return new Letter(ch);
+    // extract customLetters early so we can easily default it to 'f'
+    var customLetters =
+      options.customLetters == null ? 'f' : options.customLetters;
+    if (
+      customLetters.indexOf(ch) >= 0 &&
+      (cons = (CharCmds as CharCmdsAny)[ch] || (LatexCmds as LatexCmdsAny)[ch])
+    ) {
+      if (cons.constructor) {
+        return new cons(ch);
+      } else {
+        return cons(ch);
+      }
+    } else if (
+      // the patch to exclude 'f' is no longer needed since we use customLetters
+      ch.match(/^[a-zA-Z]$/)
+    )
+      return new Letter(ch);
     else if (/^\d$/.test(ch)) return new Digit(ch);
     else if (options && options.typingSlashWritesDivisionSymbol && ch === '/')
       return (LatexCmds as LatexCmdsSingleCharBuilder)['÷'](ch);

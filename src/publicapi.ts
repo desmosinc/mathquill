@@ -102,6 +102,7 @@ class Options {
   typingAsteriskWritesTimesSymbol?: boolean;
   typingSlashWritesDivisionSymbol: boolean;
   typingPercentWritesPercentOf?: boolean;
+  customLetters?: string | readonly string[];
   resetCursorOnBlur?: boolean | undefined;
   leftRightIntoCmdGoes?: 'up' | 'down';
   enableDigitGrouping?: boolean;
