@@ -617,11 +617,11 @@ class MathBlock extends MathElement {
   }
   chToCmd(ch: string, options: CursorOptions) {
     var cons;
-    // extract customLetters early so we can easily default it to 'f'
-    var customLetters =
-      options.customLetters == null ? 'f' : options.customLetters;
+    // extract customCharacters early so we can easily default it to 'f'
+    var customCharacters =
+      options.customCharacters == null ? 'f' : options.customCharacters;
     if (
-      customLetters.indexOf(ch) >= 0 &&
+      customCharacters.indexOf(ch) >= 0 &&
       (cons = (CharCmds as CharCmdsAny)[ch] || (LatexCmds as LatexCmdsAny)[ch])
     ) {
       if (cons.constructor) {
@@ -630,7 +630,8 @@ class MathBlock extends MathElement {
         return cons(ch);
       }
     } else if (
-      // the patch to exclude 'f' is no longer needed since we use customLetters
+      // the patch to exclude 'f' from this regex is no longer needed since we
+      // use customCharacters
       ch.match(/^[a-zA-Z]$/)
     )
       return new Letter(ch);
