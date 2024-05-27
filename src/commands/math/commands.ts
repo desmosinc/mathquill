@@ -953,6 +953,7 @@ var LiveFraction =
                   leftward._groupingClass === 'mq-ellipsis-end') ||
                 leftward instanceof (LatexCmds.text || noop) ||
                 leftward instanceof SummationNotation ||
+                leftward instanceof Limit ||
                 leftward.ctrlSeq === '\\ ' ||
                 /^[,;:]$/.test(leftward.ctrlSeq as string)
               ) //lookbehind for operator
@@ -1869,3 +1870,40 @@ class EmbedNode extends MQSymbol {
   }
 }
 LatexCmds.embed = EmbedNode;
+class Limit extends MathCommand {
+  constructor(ctrlSeq?: string, domView?: DOMView, textTemplate?: string[]) {
+    super(ctrlSeq, domView, textTemplate);
+    this.ctrlSeq = '\\lim';
+    this.domView = new DOMView(1, function (blocks) {
+      return h('span', { class: 'mq-limit mq-non-leaf' }, [
+        h('span', { class: 'mq-limit-label' }, [h.text('lim')]),
+        h.block('span', { class: 'mq-limit-sub mq-non-leaf' }, blocks[0]),
+      ]);
+    });
+    this.textTemplate = ['lim(', ')'];
+    this.mathspeakTemplate = ['Limit', 'EndLimit'];
+  }
+
+  override latexRecursive(ctx: LatexContext) {
+    this.checkCursorContextOpen(ctx);
+    ctx.latex += '\\lim_{';
+    this.getEnd(L).latexRecursive(ctx);
+    ctx.latex += '}';
+    this.checkCursorContextClose(ctx);
+  }
+
+  override parser() {
+    return Parser.string('_')
+      .then(function () {
+        return latexMathParser;
+      })
+      .map(function (block) {
+        const limit = new Limit('\\lim', undefined!, undefined!);
+        limit.blocks = [block];
+        block.adopt(limit, 0, 0);
+        return limit;
+      })
+      .or(super.parser());
+  }
+}
+LatexCmds.limit = LatexCmds.lim = Limit;
