@@ -1617,7 +1617,7 @@ LatexCmds.left = class extends MathCommand {
     var optWhitespace = Parser.optWhitespace;
 
     return optWhitespace
-      .then(regex(/^(?:[([|]|\\\{|\\langle(?![a-zA-Z])|\\lVert(?![a-zA-Z]))/))
+      .then(regex(/^(?:[([|]|\\\{|\\[a-zA-z]+)/))
       .then(function (ctrlSeq) {
         var open = ctrlSeq.replace(/^\\/, '');
         if (ctrlSeq == '\\langle') {
@@ -1631,9 +1631,7 @@ LatexCmds.left = class extends MathCommand {
         return latexMathParser.then(function (block) {
           return string('\\right')
             .skip(optWhitespace)
-            .then(
-              regex(/^(?:[\])|]|\\\}|\\rangle(?![a-zA-Z])|\\rVert(?![a-zA-Z]))/)
-            )
+            .then(regex(/^(?:[\])|]|\\\}|\\[a-zA-z]+)/))
             .map(function (end) {
               var close = end.replace(/^\\/, '');
               if (end == '\\rangle') {
