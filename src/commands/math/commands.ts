@@ -1617,7 +1617,7 @@ LatexCmds.left = class extends MathCommand {
     var optWhitespace = Parser.optWhitespace;
 
     return optWhitespace
-      .then(regex(/^(?:[([|]|\\\{|\\[a-zA-z]+)/))
+      .then(regex(/^(?:[([|]|\\\{|\\(lfloor|lceil|langle|lVert)[^a-zA-z])/))
       .then(function (ctrlSeq) {
         var open = ctrlSeq.replace(/^\\/, '');
         if (ctrlSeq == '\\langle') {
