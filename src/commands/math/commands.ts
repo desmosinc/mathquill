@@ -955,6 +955,7 @@ var LiveFraction =
                 leftward instanceof SummationNotation ||
                 leftward instanceof Limit ||
                 leftward.ctrlSeq === '\\ ' ||
+                leftward.ctrlSeq === '&' ||
                 /^[,;:]$/.test(leftward.ctrlSeq as string)
               ) //lookbehind for operator
             )
