@@ -287,19 +287,23 @@ var saneKeyboardEvents = (function () {
 
       // In Linux and Chrome or Chrome OS, users may issue the Ctrl-Shift-U command to input a Unicode character.
       // Unfortunately, when the system is in this state, Chrome sends a keydown of "Ctrl-Shift-Unidentified" in Linux, "Ctrl-Shift-U" on Windows/Mac, or "Ctrl-Shift-Process" in the latest Chrome OS.
+      // A keydown of "Unidentified" without modifiers has also been observed in some circumstanced from Chrome under ChromeOS.
       // Equally vexing is that the keyup correctly comes back as Ctrl-Shift-U.
       // Furthermore, an input event with the value "u" is still processed in Linux and Chrome OS due to the down/up mismatch.
       // The end result is that a spurious "u" is sent followed by the intended character.
       // Due to how this feature works, it's vital to completely ignore Ctrl-Shift-U no matter how the input event appears to Mathquill as clearing the textarea by mistake breaks the expected input flow.
       if (
         keydown &&
-        !keydown.altKey &&
-        keydown.ctrlKey &&
-        !keydown.metaKey &&
-        keydown.shiftKey &&
-        (keydown.key === 'U' ||
-          keydown.key === 'Unidentified' ||
-          keydown.key === 'Process')
+        (
+          keydown.key == 'Unidentified' ||
+          (
+            !keydown.altKey &&
+            keydown.ctrlKey &&
+            !keydown.metaKey &&
+            keydown.shiftKey &&
+            (keydown.key === 'U' || keydown.key === 'Process')
+          )
+        )
       )
         return;
       if (text.length === 1) {
