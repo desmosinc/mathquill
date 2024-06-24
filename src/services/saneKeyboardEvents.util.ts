@@ -295,7 +295,7 @@ var saneKeyboardEvents = (function () {
       if (
         keydown &&
         (
-          keydown.key == 'Unidentified' ||
+          keydown.key === 'Unidentified' ||
           (
             !keydown.altKey &&
             keydown.ctrlKey &&
