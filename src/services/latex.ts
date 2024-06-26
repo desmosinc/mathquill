@@ -67,7 +67,26 @@ var latexMathParser = (function () {
         return fail('unknown command: \\' + ctrlSeq);
       }
     });
-  var command = controlSequence.or(variable).or(number).or(symbol);
+  var loneAmpersand = regex(/^&/).then(() => {
+    // TODO - is Parser<MQNode> correct?
+    var cmdKlass = CharCmds['&'] || LatexCmds['&'];
+    if (cmdKlass) {
+      if (cmdKlass.constructor) {
+        var actualClass = cmdKlass as typeof TempSingleCharNode; // TODO - figure out how to know the difference
+        return new actualClass('&').parser();
+      } else {
+        var builder = cmdKlass as (c: string) => TempSingleCharNode; // TODO - figure out how to know the difference
+        return builder('&').parser();
+      }
+    } else {
+      return fail('unknown command: \\&');
+    }
+  });
+  var command = loneAmpersand
+    .or(controlSequence)
+    .or(variable)
+    .or(number)
+    .or(symbol);
   // Parsers yielding MathBlocks
   var mathGroup: Parser<MathBlock> = string('{')
     .then(function () {
