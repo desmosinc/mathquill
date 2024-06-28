@@ -749,6 +749,48 @@ suite('Digit Grouping', function () {
     });
   });
 
+  test('Digit spacing with non-digit before ellipsis', function () {
+    var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+      enableDigitGrouping: true,
+      tripleDotsAreEllipsis: true,
+    });
+    mq.latex('1234-...');
+    assertClasses(mq, {
+      latex: '1234-...',
+      tree: {
+        classes: 'mq-root-block',
+        content: [
+          { classes: 'mq-digit mq-group-leading-1', content: '1' },
+          { classes: 'mq-digit mq-group-start', content: '2' },
+          { classes: 'mq-digit mq-group-other', content: '3' },
+          { classes: 'mq-digit mq-group-other', content: '4' },
+          { classes: 'mq-binary-operator', content: '−' },
+          { classes: 'mq-digit mq-ellipsis-start', content: '.' },
+          { classes: 'mq-digit mq-ellipsis-middle', content: '.' },
+          { classes: 'mq-digit mq-ellipsis-end', content: '.' },
+        ],
+      },
+    });
+    mq.latex('1234,\\ ...');
+    assertClasses(mq, {
+      latex: '1234,\\ ...',
+      tree: {
+        classes: 'mq-root-block',
+        content: [
+          { classes: 'mq-digit mq-group-leading-1', content: '1' },
+          { classes: 'mq-digit mq-group-start', content: '2' },
+          { classes: 'mq-digit mq-group-other', content: '3' },
+          { classes: 'mq-digit mq-group-other', content: '4' },
+          { content: ',' },
+          { content: '&nbsp;' },
+          { classes: 'mq-digit mq-ellipsis-start', content: '.' },
+          { classes: 'mq-digit mq-ellipsis-middle', content: '.' },
+          { classes: 'mq-digit mq-ellipsis-end', content: '.' },
+        ],
+      },
+    });
+  });
+
   test('efficient latex updates - grouping disabled', function () {
     var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
     assertClasses(mq, {

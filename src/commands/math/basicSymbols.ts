@@ -43,6 +43,7 @@ class DigitGroupingChar extends MQSymbol {
     } while ((node = left[L]));
 
     // Traverse right from the left node.
+    // 'left' is the leftmost 0-9, SPACE, or DOT contiguous from this.
     DigitGroupingChar.fixDigitGroupingFromLeft(opts, left);
   }
 
@@ -54,6 +55,11 @@ class DigitGroupingChar extends MQSymbol {
       left = left[R];
     }
 
+    if (!(left instanceof DigitGroupingChar)) {
+      // Trimmed off all spaces, and left with non-digit, e.g. `\\ a`
+      return;
+    }
+
     var node: NodeRef = left;
     pray('node', node);
     var right: NodeRef = left;
@@ -62,6 +68,7 @@ class DigitGroupingChar extends MQSymbol {
     var dots: DigitGroupingChar[] = [];
     // traverse right as far as possible (starting to right of this char)
     do {
+      // Invariant: "right" is a DigitGroupingChar
       if (/^[0-9]$/.test(node.ctrlSeq!)) {
         right = node;
         dotStreak = 0;
@@ -97,6 +104,13 @@ class DigitGroupingChar extends MQSymbol {
       middleDot.setGroupingClass('mq-ellipsis-middle');
       leftDot.setGroupingClass('mq-ellipsis-start');
       right = leftDot[L];
+      if (left === leftDot) {
+        // e.g. `[-...5]` afer typing the `-`.
+        // `left` is the left `.`, and `right` is the `-`.
+        return;
+      }
+      // Else, fallthrough. `left` through `right` (inclusive) is a sequence of
+      // `DigitGroupingChar`s containing no three consecutive dots.
     }
     // 2. `!right[R]` or `right[R]` is not a digit grouping char.
     // In this case, `right` is the rightmost digit of the number.
@@ -140,12 +154,14 @@ class DigitGroupingChar extends MQSymbol {
   }
 
   // Works right-to-left, so `start` is the rightmost, and `end` is the leftmost.
+  // Assumes all nodes from `end` to `start` are `DigitGroupingChar`s.
   static addGroupingBetween(start: NodeRef, end: NodeRef) {
     var node = start;
     var count = 0;
     var totalDigits = 0;
     while (node) {
       totalDigits += 1;
+      pray('digit', node instanceof DigitGroupingChar);
 
       if (node === end) break;
       node = node[L];
