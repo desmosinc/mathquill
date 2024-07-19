@@ -410,11 +410,16 @@ function letterSequenceEndingAtNode(node: NodeRef, maxLength: number) {
 
 class Letter extends Variable {
   letter: string;
-  /** If this is the last letter of an operatorname (`\operatorname{arcsinh}`)
+  /**
+   * If this is the last letter of an operatorname (`\operatorname{arcsinh}`)
    * or builtin (`\sin`), give its category, based on infixOperatorNames
    * and prefixOperatorNames. E.g. "for" may be infix and "sin" may be prefix.
    */
   endsCategory?: undefined | 'infix' | 'prefix';
+  /**
+   * Similarly to endsCategory, give the string name, e.g. "sin" or "arcsinh".
+   */
+  endsWord?: string;
 
   constructor(ch: string) {
     super(ch);
@@ -502,7 +507,10 @@ class Letter extends Variable {
   italicize(bool: boolean) {
     this.isItalic = bool;
     this.isPartOfOperator = !bool;
-    if (bool) delete this.endsCategory;
+    if (bool) {
+      delete this.endsCategory;
+      delete this.endsWord;
+    }
     this.domFrag().toggleClass('mq-operator-name', !bool);
     return this;
   }
@@ -584,6 +592,7 @@ class Letter extends Variable {
           first.ctrlSeq =
             (isBuiltIn ? '\\' : '\\operatorname{') + first.ctrlSeq;
           last.ctrlSeq += isBuiltIn ? ' ' : '}';
+          last.endsWord = word;
           if (opts.infixOperatorNames[word]) {
             last.endsCategory = 'infix';
           } else if (opts.prefixOperatorNames[word]) {
@@ -739,6 +748,17 @@ baseOptionProcessors.infixOperatorNames = splitWordsIntoDict;
 
 Options.prototype.prefixOperatorNames = {};
 baseOptionProcessors.prefixOperatorNames = splitWordsIntoDict;
+
+Options.prototype.disableAutoSubstitutionInSubscripts = false;
+baseOptionProcessors.disableAutoSubstitutionInSubscripts = function (
+  opt: unknown
+) {
+  if (typeof opt === 'boolean') return opt;
+  if (typeof opt !== 'object' || opt === null || !('except' in opt)) {
+    throw '"' + opt + '" not an object with property "except"';
+  }
+  return { except: splitWordsIntoDict((opt as any).except) };
+};
 
 function splitWordsIntoDict(cmds: unknown) {
   if (typeof cmds !== 'string') {

@@ -292,9 +292,21 @@ class NodeBase {
   }
 
   shouldIgnoreSubstitutionInSimpleSubscript(options: CursorOptions) {
-    if (!options.disableAutoSubstitutionInSubscripts) return false;
+    const opt = options.disableAutoSubstitutionInSubscripts;
+    if (!opt) return false;
     if (!this.parent) return false;
     if (!(this.parent.parent instanceof SupSub)) return false;
+
+    // Allow substitution in e.g. log subscripts
+    const before = this.parent.parent[L];
+    if (
+      typeof opt === 'object' &&
+      before instanceof Letter &&
+      before.endsWord &&
+      opt.except[before.endsWord]
+    ) {
+      return false;
+    }
 
     // Mathquill is gross. There are many different paths that
     // create subscripts and sometimes we don't even construct

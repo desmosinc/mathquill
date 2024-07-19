@@ -121,6 +121,13 @@ You can also specify a speech-friendly representation of the operator name by su
 `substituteTextarea` is a function that creates a focusable DOM element that is called when setting up a math field. Overwriting this may be useful for hacks like suppressing built-in virtual keyboards. It defaults to `<textarea autocorrect=off .../>`.
 For example, [Desmos](https://www.desmos.com/calculator) substitutes `<span tabindex=0></span>` on iOS to suppress the built-in virtual keyboard in favor of a custom math keypad that calls the MathQuill API. Unfortunately there's no universal [check for a virtual keyboard](http://stackoverflow.com/q/2593139/362030) or [way to detect a touchscreen](http://www.stucox.com/blog/you-cant-detect-a-touchscreen/), and even if you could, a touchscreen ≠ virtual keyboard (Windows 8 and ChromeOS devices have both physical keyboards and touchscreens and iOS and Android devices can have Bluetooth keyboards). Desmos currently sniffs the user agent for iOS, so Bluetooth keyboards just don't work in Desmos on iOS. The tradeoffs are up to you.
 
+## disableAutoSubstitutionInSubscripts
+
+If `disableAutoSubstitutionInSubscripts` is `false` (default), then typing auto command names such as `int` will expand to `\int`, even in subscripts.
+
+If `disableAutoSubstitutionInSubscripts` is `true`, then such expansions are disabled in all subscripts, so users can type `A_{point}` without getting `A_{po\int}`.
+
+If `disableAutoSubstitutionInSubscripts` is `{except: "log"}`, then such expansions are disabled in all subscripts, _except_ for after `\log`, so users can type `\log_{\pi}(x)` again. Just like [`autoCommands`](#autocommands) above, the `except` property should be a string formatted as a space-delimited list of LaTeX commands.
 
 # Handlers
 

@@ -138,7 +138,7 @@ declare namespace MathQuill {
       logAriaAlerts?: boolean;
       autoParenthesizedFunctions?: string;
       quietEmptyDelimiters?: string;
-      disableAutoSubstitutionInSubscripts?: boolean;
+      disableAutoSubstitutionInSubscripts?: boolean | { except: string };
       interpretTildeAsSim?: boolean;
       handlers?: HandlerOptions<BaseMathQuill<$>>;
     }
