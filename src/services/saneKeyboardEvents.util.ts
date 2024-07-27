@@ -150,6 +150,7 @@ var saneKeyboardEvents = (function () {
   ) {
     var keydown: KeyboardEvent | null = null;
     var keypress: KeyboardEvent | null = null;
+    var isComposing: boolean = false;
 
     // everyTick.listen() is called after key or clipboard events to
     // say "Hey, I think something was just typed" or "pasted" etc,
@@ -264,6 +265,7 @@ var saneKeyboardEvents = (function () {
     }
 
     function typedText() {
+      if (isComposing) return;
       // If there is a selection, the contents of the textarea couldn't
       // possibly have just been typed in.
       // This happens in browsers like Firefox and Opera that fire
@@ -360,6 +362,24 @@ var saneKeyboardEvents = (function () {
       everyTick.trigger(e);
     }
 
+    function onCompositionStart(e: CompositionEvent) {
+      everyTick.trigger(e);
+      isComposing = true;
+    }
+
+    function onCompositionEnd(e: CompositionEvent) {
+      // Handle composed input events, such as those which come from dictation in Chrome.
+      everyTick.trigger(e);
+      isComposing = false;
+      if (!(textarea instanceof HTMLTextAreaElement) || e.target !== textarea)
+        return;
+      const text = e.data;
+      if (text.length === 0) return;
+      textarea.value = '';
+      controller.writeLatex(text);
+      controller.scrollHoriz();
+    }
+
     if (controller.options && controller.options.disableCopyPaste) {
       controller.addTextareaEventListeners({
         keydown: onKeydown,
@@ -377,6 +397,8 @@ var saneKeyboardEvents = (function () {
           e.preventDefault();
         },
         input: onInput,
+        compositionstart: onCompositionStart,
+        compositionend: onCompositionEnd,
       });
     } else {
       controller.addTextareaEventListeners({
@@ -396,6 +418,8 @@ var saneKeyboardEvents = (function () {
         },
         paste: onPaste,
         input: onInput,
+        compositionstart: onCompositionStart,
+        compositionend: onCompositionEnd,
       });
     }
 
