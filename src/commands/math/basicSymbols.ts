@@ -857,7 +857,11 @@ if (!CharCmds['\\']) CharCmds['\\'] = LatexCmds.backslash;
 
 LatexCmds.$ = bindVanillaSymbol('\\$', '$', 'dollar');
 
-LatexCmds.square = bindVanillaSymbol('\\square ', '\u25A1', 'square');
+LatexCmds['□'] = LatexCmds.square = bindVanillaSymbol(
+  '\\square ',
+  '\u25A1',
+  'square'
+);
 LatexCmds.mid = bindVanillaSymbol('\\mid ', '\u2223', 'mid');
 
 // does not use Symbola font
