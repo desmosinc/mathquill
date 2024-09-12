@@ -2,13 +2,14 @@
  * Manage the MathQuill instance's textarea
  * (as owned by the Controller)
  ********************************************/
-Options.prototype.substituteTextarea = function () {
+Options.prototype.substituteTextarea = function (isStatic?: boolean) {
   return h('textarea', {
     autocapitalize: 'off',
     autocomplete: 'off',
     autocorrect: 'off',
     spellcheck: false,
-    'x-palm-disable-ste-all': true
+    'x-palm-disable-ste-all': true,
+    tabindex: isStatic ? '-1' : undefined
   });
 };
 function defaultSubstituteKeyboardEvents(jq: $, controller: Controller) {
@@ -21,7 +22,7 @@ class Controller extends Controller_scrollHoriz {
 
   createTextarea() {
     this.textareaSpan = h('span', { class: 'mq-textarea' });
-    const textarea = this.options.substituteTextarea();
+    const textarea = this.options.substituteTextarea(this.KIND_OF_MQ === 'StaticMath');
     if (!textarea.nodeType) {
       throw 'substituteTextarea() must return a DOM element, got ' + textarea;
     }
