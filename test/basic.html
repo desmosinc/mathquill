@@ -31,6 +31,10 @@
       <p><span id="basic">\sqrt{2}</span></p>
 
       <p><textarea id="basic-latex"></textarea></p>
+
+      <p><span id="static">\sqrt{3}</span></p>
+
+
     </div>
 
     <script type="text/javascript" src="support/jquery-1.5.2.js"></script>
@@ -56,6 +60,11 @@
           }
         }
       });
+
+      var staticmq = MQ.StaticMath($('#static')[0], {});
+      staticmq.focus().select();
+      console.log(document.activeElement);
+
       latex.val(mq.latex());
     </script>
   </body>
