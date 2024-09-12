@@ -75,14 +75,15 @@ class Controller_focusBlur extends Controller_exportText {
   };
 
   private handleTextareaBlurStatic = () => {
-    if (this.cursor.selection) {
-      this.cursor.selection.clear();
-    }
+    // if (this.cursor.selection) {
+    //   this.cursor.selection.clear();
+    // }
+    console.log('blur');
     //detaching during blur explodes in WebKit
-    setTimeout(() => {
-      domFrag(this.getTextareaSpanOrThrow()).detach();
-      this.blurred = true;
-    });
+    // setTimeout(() => {
+    //   domFrag(this.getTextareaSpanOrThrow()).detach();
+    //   this.blurred = true;
+    // });
   };
 
   private handleWindowBlur = () => {

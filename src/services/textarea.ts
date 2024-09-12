@@ -80,6 +80,9 @@ class Controller extends Controller_scrollHoriz {
 
     this.addStaticFocusBlurListeners();
 
+    const textareaSpan = ctrlr.getTextareaSpanOrThrow();
+    domFrag(this.container).prepend(domFrag(textareaSpan));
+
     ctrlr.selectFn = function (text: string) {
       const textarea = ctrlr.getTextareaOrThrow();
       if (!(textarea instanceof HTMLTextAreaElement)) return;
@@ -111,6 +114,7 @@ class Controller extends Controller_scrollHoriz {
     this.addEditableFocusBlurListeners();
     this.updateMathspeak();
   }
+
   unbindEditablesEvents() {
     var ctrlr = this;
     const textarea = ctrlr.getTextareaOrThrow();
