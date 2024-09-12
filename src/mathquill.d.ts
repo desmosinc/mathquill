@@ -33,6 +33,8 @@ declare namespace MathQuill {
       html: () => string;
       mathspeak: () => string;
       text(): string;
+      blur: () => this;
+      focus: () => this;
     }
 
     interface EditableMathQuill {
@@ -63,8 +65,8 @@ declare namespace MathQuill {
       keystroke: (key: string, evt?: KeyboardEvent) => EditableMathQuill;
       typedText: (text: string) => EditableMathQuill;
       clearSelection: () => EditableMathQuill;
-      blur: () => EditableMathQuill;
-      focus: () => EditableMathQuill;
+      blur: () => this;
+      focus: () => this;
       getAriaPostLabel: () => string;
       setAriaPostLabel: (str: string, timeout?: number) => EditableMathQuill;
       ignoreNextMousedown: (func: () => boolean) => EditableMathQuill;

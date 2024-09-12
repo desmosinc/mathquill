@@ -358,6 +358,15 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
       });
       return this;
     }
+    focus() {
+      this.__controller.getTextareaOrThrow().focus();
+      this.__controller.scrollHoriz();
+      return this;
+    }
+    blur() {
+      this.__controller.getTextareaOrThrow().blur();
+      return this;
+    }
   }
 
   abstract class EditableField
@@ -369,15 +378,6 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
       this.__controller.editable = true;
       this.__controller.addMouseEventListener();
       this.__controller.editablesTextareaEvents();
-      return this;
-    }
-    focus() {
-      this.__controller.getTextareaOrThrow().focus();
-      this.__controller.scrollHoriz();
-      return this;
-    }
-    blur() {
-      this.__controller.getTextareaOrThrow().blur();
       return this;
     }
     write(latex: string) {
