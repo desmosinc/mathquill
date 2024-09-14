@@ -102,4 +102,23 @@ suite('focusBlur', function () {
       done();
     });
   });
+
+  test('full range selected on focusing tabbable static math', function () {
+    var mq = MQ.StaticMath(
+      $('<span>1234\\times 10^{23}</span>').appendTo('#mock')[0],
+      { tabbable: true }
+    );
+
+    mq.focus();
+
+    assertHasFocus(mq, 'math field');
+    assert.equal(
+      mq.selection().latex,
+      '1234\\times10^{23}',
+      'full textarea selected'
+    );
+
+    mq.blur();
+    assertHasFocus(mq, 'math field', 'not');
+  });
 });
