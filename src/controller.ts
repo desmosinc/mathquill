@@ -23,9 +23,21 @@ class ControllerBase {
   ariaLabel: string;
   ariaPostLabel: string;
   readonly cursor: Cursor;
-  editable: boolean | undefined;
   _ariaAlertTimeout: number;
   KIND_OF_MQ: KIND_OF_MQ;
+  /**
+   * If `editable` is true, then show a blinking cursor, and change ARIA.
+   * There is no other difference; the methods
+   * `unbindEditablesEvents` and `editablesTextareaEvents`
+   * serve to actually disable/enable editing.
+   */
+  editable: boolean | undefined;
+  /**
+   * If this returns true, then detach the textarea when unfocused.
+   */
+  isTextareaTemporary() {
+    return !this.editable && !this.options.tabbable;
+  }
 
   textarea: HTMLElement | undefined;
   private textareaEventListeners: Partial<{

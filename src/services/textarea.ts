@@ -180,6 +180,10 @@ class Controller extends Controller_scrollHoriz {
   setupStaticField() {
     this.mathspeakSpan = h('span', { class: 'mq-mathspeak' });
     domFrag(this.container).prepend(domFrag(this.mathspeakSpan));
+    // Untabble fields need to keep the textarea removed,
+    // but tabbable static fields need the textarea attached.
+    if (!this.isTextareaTemporary())
+      domFrag(this.container).prepend(domFrag(this.textareaSpan));
     this.updateMathspeak();
     this.blurred = true;
     this.cursor.hide().parent.blur(this.cursor);

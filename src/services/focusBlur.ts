@@ -78,11 +78,14 @@ class Controller_focusBlur extends Controller_exportText {
     if (this.cursor.selection) {
       this.cursor.selection.clear();
     }
-    //detaching during blur explodes in WebKit
-    setTimeout(() => {
-      domFrag(this.getTextareaSpanOrThrow()).detach();
-      this.blurred = true;
-    });
+    if (this.isTextareaTemporary()) {
+      // Untabbable fields should have the textarea removed when blurred.
+      setTimeout(() => {
+        //detaching during blur explodes in WebKit
+        domFrag(this.getTextareaSpanOrThrow()).detach();
+        this.blurred = true;
+      });
+    }
   };
 
   private handleWindowBlur = () => {

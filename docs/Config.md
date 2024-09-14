@@ -121,6 +121,14 @@ You can also specify a speech-friendly representation of the operator name by su
 `substituteTextarea` is a function that creates a focusable DOM element that is called when setting up a math field. Overwriting this may be useful for hacks like suppressing built-in virtual keyboards. It defaults to `<textarea autocorrect=off .../>`.
 For example, [Desmos](https://www.desmos.com/calculator) substitutes `<span tabindex=0></span>` on iOS to suppress the built-in virtual keyboard in favor of a custom math keypad that calls the MathQuill API. Unfortunately there's no universal [check for a virtual keyboard](http://stackoverflow.com/q/2593139/362030) or [way to detect a touchscreen](http://www.stucox.com/blog/you-cant-detect-a-touchscreen/), and even if you could, a touchscreen ≠ virtual keyboard (Windows 8 and ChromeOS devices have both physical keyboards and touchscreens and iOS and Android devices can have Bluetooth keyboards). Desmos currently sniffs the user agent for iOS, so Bluetooth keyboards just don't work in Desmos on iOS. The tradeoffs are up to you.
 
+## tabbable
+
+The `tabbable` boolean has no effect for editable math fields.
+
+For static math fields, when `tabbable` is false (the default), the math field is not part of the page's tab order. Despite that, the math field can still be focused when selected by a mouse.
+
+When `tabbable` is set to true on a static math field, the textarea is permanently present and part of the page's tab order.
+
 # Handlers
 
 Handlers are called after a specified event. They are called directly on the `handlers` object passed in, preserving the `this` value, so you can do stuff like:

@@ -91,7 +91,7 @@ class Controller_mouse extends Controller_latex {
       if (ctrlr.editable) {
         cursor.show();
         cursor.controller.aria.queue(cursor.parent).alert();
-      } else {
+      } else if (ctrlr.isTextareaTemporary()) {
         domFrag(textareaSpan).detach();
       }
     }
@@ -118,7 +118,7 @@ class Controller_mouse extends Controller_latex {
     };
 
     if (ctrlr.blurred) {
-      if (rootElement && !ctrlr.editable) {
+      if (rootElement && this.isTextareaTemporary()) {
         domFrag(rootElement).prepend(domFrag(textareaSpan));
       }
       textarea.focus();

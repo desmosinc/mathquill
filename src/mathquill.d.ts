@@ -123,6 +123,7 @@ declare namespace MathQuill {
       leftRightIntoCmdGoes?: 'up' | 'down';
       enableDigitGrouping?: boolean;
       tripleDotsAreEllipsis?: boolean;
+      tabbable?: boolean;
       mouseEvents?: boolean;
       maxDepth?: number;
       disableCopyPaste?: boolean;

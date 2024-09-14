@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8" />
@@ -11,9 +11,7 @@
 
     <style type="text/css">
       code span {
-        font:
-          90% Verdana,
-          sans-serif;
+        font: 90% Verdana, sans-serif;
       }
       #codecogsimg {
         vertical-align: middle;
@@ -110,6 +108,13 @@
       </p>
 
       <p>
+        On the other hand, you can make static math tabbable to appear in the
+        tab order despite being non-editable. The entire field is selected when
+        tabbed into:
+        <span class="static-math-tabbable">1234.5678</span>.
+      </p>
+
+      <p>
         Note that if you're only rendering static math,
         <a href="http://mathjax.org">MathJax</a> supports more of LaTeX and
         renders better.
@@ -160,6 +165,9 @@
         });
         $('.static-math-no-mouse-events').each(function () {
           MQ.StaticMath(this, { mouseEvents: false });
+        });
+        $('.static-math-tabbable').each(function () {
+          MQ.StaticMath(this, { tabbable: true });
         });
         $('.mathquill-math-field').each(function () {
           MQ.MathField(this);
