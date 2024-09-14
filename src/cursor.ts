@@ -40,6 +40,8 @@ class Cursor extends Point {
   selection: MQSelection | undefined;
   intervalId: number;
   anticursor: Anticursor | undefined;
+  /** `midSelection` is true while the user is selecting a range with the mouse. */
+  midSelection: boolean = false;
 
   constructor(
     initParent: MQNode,

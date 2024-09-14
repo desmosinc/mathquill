@@ -72,6 +72,14 @@ class Controller_focusBlur extends Controller_exportText {
 
   private handleTextareaFocusStatic = () => {
     this.blurred = false;
+    if (!this.cursor.midSelection) {
+      if (!(this instanceof Controller_keystroke)) return;
+      // The textarea got focus without being `midSelection`, so
+      // this is the user pressing tab, not clicking/dragging.
+      // Select the whole text area. This is only possible when
+      // the API configuration option `tabbable` is set to true.
+      this.selectAll();
+    }
   };
 
   private handleTextareaBlurStatic = () => {

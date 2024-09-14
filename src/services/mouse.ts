@@ -98,6 +98,7 @@ class Controller_mouse extends Controller_latex {
 
     function onDocumentMouseUp() {
       cursor.blink = blink;
+      cursor.midSelection = false;
       if (!cursor.selection) updateCursor();
       unbindListeners();
     }
@@ -130,6 +131,7 @@ class Controller_mouse extends Controller_latex {
     }
 
     cursor.blink = noop;
+    cursor.midSelection = true;
     ctrlr
       .seek(e.target as HTMLElement | null, e.clientX, e.clientY)
       .cursor.startSelection();
