@@ -42,17 +42,17 @@ declare namespace MathQuill {
       setAriaLabel(str: string): this;
       blur(): this;
       focus(): this;
+      select: () => this;
+      clearSelection: () => this;
     }
 
     interface EditableMathQuill extends BaseMathQuill {
-      select: () => EditableMathQuill;
       moveToRightEnd: () => EditableMathQuill;
       moveToLeftEnd: () => EditableMathQuill;
       cmd: (latex: string) => EditableMathQuill;
       write: (latex: string) => EditableMathQuill;
       keystroke: (key: string, evt?: KeyboardEvent) => EditableMathQuill;
       typedText: (text: string) => EditableMathQuill;
-      clearSelection: () => EditableMathQuill;
       getAriaPostLabel: () => string;
       setAriaPostLabel: (str: string, timeout?: number) => EditableMathQuill;
       ignoreNextMousedown: (func: () => boolean) => EditableMathQuill;

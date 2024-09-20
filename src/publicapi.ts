@@ -360,6 +360,14 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
       this.__controller.getTextarea().blur();
       return this;
     }
+    select() {
+      this.__controller.selectAll();
+      return this;
+    }
+    clearSelection() {
+      this.__controller.cursor.clearSelection();
+      return this;
+    }
   }
 
   abstract class EditableField
@@ -371,14 +379,6 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
       this.__controller.editable = true;
       this.__controller.addMouseEventListener();
       this.__controller.editablesTextareaEvents();
-      return this;
-    }
-    select() {
-      this.__controller.selectAll();
-      return this;
-    }
-    clearSelection() {
-      this.__controller.cursor.clearSelection();
       return this;
     }
 
