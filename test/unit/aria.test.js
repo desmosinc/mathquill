@@ -46,6 +46,17 @@ suite('aria', function () {
       ariaHiddenChildren.hasClass('mq-root-block'),
       'aria-hidden is set on mq-root-block'
     );
+    var mathspeak = $(container).find('.mq-mathspeak');
+    assert.equal(mathspeak.length, 1, 'One mathspeak region');
+    var mathspeakId = mathspeak[0].getAttribute('id');
+    assert.ok(!!mathspeakId, 'mathspeak element assigned an id');
+    var textarea = $(container).find('textarea');
+    assert.equal(textarea.length, 1, 'One textarea');
+    assert.equal(
+      textarea[0].getAttribute('aria-labelledby'),
+      mathspeakId,
+      'textarea is aria-labelledby mathspeak region'
+    );
   });
 
   test('MathQuillMathField aria-hidden', function () {
@@ -68,11 +79,11 @@ suite('aria', function () {
       'Textarea has one aria-hidden parent'
     );
     var mathSpeak = $(container).find('.mq-mathspeak');
-    assert.equal(mathSpeak.length, 1, 'One mathspeak region');
+    assert.equal(mathSpeak.length, 2, 'Two mathspeak regions');
     assert.equal(
       mathSpeak.closest('[aria-hidden]="true"').length,
       0,
-      'Textarea has no aria-hidden parent'
+      'Mathspeak has no aria-hidden parent'
     );
     var nHiddenTexts = 0;
     var allChildren = $(container).find('*');
@@ -249,7 +260,7 @@ suite('aria', function () {
     mathField.blur();
     setTimeout(function () {
       assert.equal(
-        mathField.__controller.textarea.getAttribute('aria-label'),
+        mathField.__controller.mathspeakSpan.textContent,
         'Math Input: "s" "q" "r" "t" left parenthesis, "x" , right parenthesis'
       );
       done();

@@ -34,6 +34,7 @@ class ControllerBase {
 
   textareaSpan: HTMLElement | undefined;
   mathspeakSpan: HTMLElement | undefined;
+  mathspeakId: string | undefined;
 
   constructor(
     root: ControllerRoot,
