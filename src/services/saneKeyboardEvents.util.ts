@@ -302,6 +302,16 @@ var saneKeyboardEvents = (function () {
             (keydown.key === 'U' || keydown.key === 'Process')))
       )
         return;
+      if (keydown?.key === 'Process') {
+        // Force the current composition session of the input method editor to be cleared
+        textarea.blur();
+        setTimeout(() => {
+          textarea.value = '';
+          textarea.focus();
+        });
+        return;
+      }
+
       if (text.length === 1) {
         textarea.value = '';
         if (controller.options && controller.options.overrideTypedText) {
