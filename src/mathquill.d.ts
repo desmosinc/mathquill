@@ -42,10 +42,10 @@ declare namespace MathQuill {
       setAriaLabel(str: string): this;
       blur(): this;
       focus(): this;
+      select(): this;
     }
 
     interface EditableMathQuill extends BaseMathQuill {
-      select: () => EditableMathQuill;
       moveToRightEnd: () => EditableMathQuill;
       moveToLeftEnd: () => EditableMathQuill;
       cmd: (latex: string) => EditableMathQuill;

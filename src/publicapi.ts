@@ -359,6 +359,10 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
       if (this.__controller.editable) this.__controller.scrollHoriz();
       return this;
     }
+    select() {
+      this.__controller.selectAll();
+      return this;
+    }
     blur() {
       this.__controller.getTextarea().blur();
       return this;
@@ -374,10 +378,6 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
       this.__controller.editable = true;
       this.__controller.addMouseEventListener();
       this.__controller.editablesTextareaEvents();
-      return this;
-    }
-    select() {
-      this.__controller.selectAll();
       return this;
     }
     clearSelection() {
