@@ -113,6 +113,7 @@ class Cursor extends Point {
   /** Place the cursor before or after `el`, according the side specified by `dir`. */
   insDirOf(dir: Direction, el: MQNode) {
     prayDirection(dir);
+    if (!el.parent) return this.hide();
     this.domFrag().insDirOf(dir, el.domFrag());
     this.withDirInsertAt(dir, el.parent, el[dir], el);
     this.parent.domFrag().addClass('mq-hasCursor');
@@ -182,9 +183,9 @@ class Cursor extends Point {
       right
     };
   }
-  unwrapGramp() {
-    var gramp = this.parent.parent;
-    var greatgramp = gramp.parent;
+  unwrapGramp(gramp: MQNode) {
+    var greatgramp = gramp.parent as MQNode;
+    pray('greatgramp exists', greatgramp);
     var rightward = gramp[R];
     var cursor = this;
 
@@ -366,7 +367,7 @@ class Cursor extends Point {
     return seln;
   }
   depth() {
-    var node: MQNode | Point = this;
+    var node: NodeRef | Point = this;
     var depth = 0;
     while ((node = node.parent)) {
       depth += node instanceof MathBlock ? 1 : 0;
