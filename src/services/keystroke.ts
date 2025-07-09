@@ -352,11 +352,11 @@ class Controller_keystroke extends Controller_focusBlur {
   deleteDir(dir: Direction) {
     prayDirection(dir);
     var cursor = this.cursor;
-    var cursorEl = cursor[dir] as MQNode;
+    var cursorEl = cursor[dir];
     var cursorElParent = cursor.parent.parent;
     var ctrlr = cursor.controller;
 
-    if (cursorEl && cursorEl instanceof MQNode) {
+    if (cursorEl && cursorEl.parent && cursorEl instanceof MQNode) {
       if (cursorEl.sides) {
         ctrlr.aria.queue(
           cursorEl.parent
@@ -369,7 +369,11 @@ class Controller_keystroke extends Controller_focusBlur {
       } else if (!cursorEl.blocks && cursorEl.parent.ctrlSeq !== '\\text') {
         ctrlr.aria.queue(cursorEl);
       }
-    } else if (cursorElParent && cursorElParent instanceof MQNode) {
+    } else if (
+      cursorElParent &&
+      cursorElParent.parent &&
+      cursorElParent instanceof MQNode
+    ) {
       if (cursorElParent.sides) {
         ctrlr.aria.queue(
           cursorElParent.parent
