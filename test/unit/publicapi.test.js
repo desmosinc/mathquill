@@ -1376,7 +1376,7 @@ suite('Public API', function () {
     assert.equal(mq.text(), 'sqrt(embedded text)');
     assert.equal(mq.latex(), '\\sqrt{embedded latex}');
 
-    mq.latex('\\sqrt{\\embed{thing}[data]}');
+    mq.latex('\\sqrt{\\embed[data]{thing}}');
     assert.equal(calls, 2);
     assert.equal(data, 'data');
 
