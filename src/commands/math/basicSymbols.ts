@@ -2,6 +2,8 @@
  * Symbols for Basic Mathematics
  ********************************/
 
+// Note: getLocalization function is available globally from services/localization.ts
+
 const SPACE = '\\ ';
 const DOT = '.';
 
@@ -760,6 +762,25 @@ baseOptionProcessors.disableAutoSubstitutionInSubscripts = function (
   return { except: splitWordsIntoDict((opt as any).except) };
 };
 
+Options.prototype.language = 'en';
+baseOptionProcessors.language = function (lang: unknown) {
+  if (typeof lang !== 'string') {
+    throw '"' + lang + '" not a valid language code';
+  }
+  // Validate language code (basic check for 2-letter ISO codes)
+  if (!/^[a-z]{2}(-[a-z]{2})?$/i.test(lang)) {
+    throw (
+      '"' +
+      lang +
+      '" not a valid language code (expected format: "en" or "en-US")'
+    );
+  }
+
+  // The language will be resolved to the best available match during loading
+  // This validation just ensures the format is correct
+  return lang;
+};
+
 function splitWordsIntoDict(cmds: unknown) {
   if (typeof cmds !== 'string') {
     throw '"' + cmds + '" not a space-delimited list';
@@ -1265,7 +1286,10 @@ LatexCmds['+'] = class extends PlusMinus {
     super('+', h.text('+'));
   }
   mathspeak(): string {
-    return plusMinusIsBinaryOperator(this) ? 'plus' : 'positive';
+    const localization = getLocalization();
+    return plusMinusIsBinaryOperator(this)
+      ? localization.formatMessage('plus')
+      : localization.formatMessage('positive');
   }
 };
 
@@ -1275,7 +1299,10 @@ class MinusNode extends PlusMinus {
     super('-', h.entityText('&minus;'));
   }
   mathspeak(): string {
-    return plusMinusIsBinaryOperator(this) ? 'minus' : 'negative';
+    const localization = getLocalization();
+    return plusMinusIsBinaryOperator(this)
+      ? localization.formatMessage('minus')
+      : localization.formatMessage('negative');
   }
 }
 LatexCmds['−'] = LatexCmds['—'] = LatexCmds['–'] = LatexCmds['-'] = MinusNode;
@@ -1290,10 +1317,15 @@ LatexCmds.mp =
   LatexCmds.minusplus =
     () => new PlusMinus('\\mp ', h.entityText('&#8723;'), 'minus-or-plus');
 
-CharCmds['*'] =
-  LatexCmds.sdot =
-  LatexCmds.cdot =
-    bindBinaryOperator('\\cdot ', '&middot;', '*', 'times'); //semantically should be &sdot;, but &middot; looks better
+class TimesOperator extends BinaryOperator {
+  constructor() {
+    super('\\cdot ', h.entityText('&middot;'), '*');
+  }
+  mathspeak(): string {
+    return getLocalization().formatMessage('times');
+  }
+}
+CharCmds['*'] = LatexCmds.sdot = LatexCmds.cdot = () => new TimesOperator(); //semantically should be &sdot;, but &middot; looks better
 
 class To extends BinaryOperator {
   constructor() {

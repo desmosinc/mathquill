@@ -2,6 +2,8 @@
  * Abstract classes of math blocks and commands.
  ************************************************/
 
+// Note: getLocalization function is available globally from services/localization.ts
+
 /**
  * Math tree node base class.
  * Some math-tree-specific extensions to MQNode.
@@ -528,7 +530,15 @@ class MathBlock extends MathElement {
           if (tempOp !== '') {
             if (autoOps._maxLength! > 0) {
               var x = autoOps[tempOp.toLowerCase()];
-              if (typeof x === 'string') tempOp = x;
+              if (typeof x === 'string') {
+                tempOp = x;
+                // Check if there's a localized version of this auto operator
+                const localization = getLocalization();
+                const localizedOp = localization.formatAutoOperator(tempOp);
+                if (localizedOp !== tempOp) {
+                  tempOp = localizedOp;
+                }
+              }
             }
             speechArray.push(tempOp + ' ');
             tempOp = '';

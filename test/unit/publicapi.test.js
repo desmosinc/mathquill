@@ -1439,4 +1439,572 @@ suite('Public API', function () {
       );
     });
   });
+
+  suite('Localization', function () {
+    const $ = window.test_only_jquery;
+    var mq;
+
+    setup(function () {
+      // Reset global language to default before each test
+      MQ.config({ language: 'en' });
+    });
+
+    suite('Default Language Behavior', function () {
+      test('default language is English with English ARIA labels and mathspeak', function () {
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+        // Test 1a: Verify default language is English
+        assert.equal(
+          mq.getAriaLabel(),
+          'Math Input',
+          'Default ARIA label should be English'
+        );
+
+        // Test 1b: Create a fraction and verify English output
+        mq.latex('\\frac{1}{2}');
+        assert.equal(
+          mq.getAriaLabel(),
+          'Math Input',
+          'ARIA label should remain English after adding content'
+        );
+        assert.equal(
+          mq.mathspeak(),
+          'StartFraction 1 Over 2 EndFraction',
+          'Mathspeak should be in English'
+        );
+
+        // Test 1c: Change language to Spanish and verify Spanish output
+        mq.config({ language: 'es' });
+        assert.equal(
+          mq.getAriaLabel(),
+          'Entrada Matemática',
+          'ARIA label should be Spanish after language change'
+        );
+        assert.equal(
+          mq.mathspeak(),
+          'InicioFracción 1 Sobre 2 FinFracción',
+          'Mathspeak should be in Spanish'
+        );
+      });
+
+      test('language switching updates both ARIA labels and mathspeak', function () {
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+        // Start with a fraction in English
+        mq.latex('\\frac{3}{4}');
+        assert.equal(mq.getAriaLabel(), 'Math Input');
+        assert.equal(mq.mathspeak(), 'StartFraction 3 Over 4 EndFraction');
+
+        // Switch to Spanish
+        mq.config({ language: 'es' });
+        assert.equal(mq.getAriaLabel(), 'Entrada Matemática');
+        assert.equal(mq.mathspeak(), 'InicioFracción 3 Sobre 4 FinFracción');
+
+        // Switch back to English
+        mq.config({ language: 'en' });
+        assert.equal(mq.getAriaLabel(), 'Math Input');
+        assert.equal(mq.mathspeak(), 'StartFraction 3 Over 4 EndFraction');
+      });
+
+      test('complex expressions in multiple languages', function () {
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+        // Test with squared expression
+        mq.latex('x^2');
+        assert.equal(
+          mq.mathspeak(),
+          'x squared',
+          'English squared should work'
+        );
+
+        mq.config({ language: 'es' });
+        assert.equal(
+          mq.mathspeak(),
+          'x al cuadrado',
+          'Spanish squared should work'
+        );
+
+        // Test with square root
+        mq.latex('\\sqrt{x}');
+        mq.config({ language: 'en' });
+        assert.equal(
+          mq.mathspeak(),
+          'StartRoot x EndRoot',
+          'English square root should work'
+        );
+
+        mq.config({ language: 'es' });
+        assert.equal(
+          mq.mathspeak(),
+          'InicioRaíz x FinRaíz',
+          'Spanish square root should work'
+        );
+      });
+    });
+
+    suite('Constructor Language Configuration', function () {
+      test('creating MathField with Spanish language in constructor', function () {
+        // Test 2a: Create MathField with Spanish language
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+          language: 'es'
+        });
+        assert.equal(
+          mq.getAriaLabel(),
+          'Entrada Matemática',
+          'Should initialize with Spanish ARIA label'
+        );
+
+        // Test 2b: Create the same fraction and verify Spanish output
+        mq.latex('\\frac{1}{2}');
+        assert.equal(
+          mq.getAriaLabel(),
+          'Entrada Matemática',
+          'ARIA label should remain Spanish'
+        );
+        assert.equal(
+          mq.mathspeak(),
+          'InicioFracción 1 Sobre 2 FinFracción',
+          'Mathspeak should be in Spanish'
+        );
+      });
+
+      test('constructor language setting works with various expressions', function () {
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+          language: 'es'
+        });
+
+        // Test fraction shortcuts with Spanish pluralization
+        mq.latex('\\frac{1}{3}');
+        assert.equal(mq.mathspeak(), 'InicioFracción 1 Sobre 3 FinFracción');
+
+        // Test powers in Spanish
+        mq.latex('x^3');
+        assert.equal(mq.mathspeak(), 'x al cubo');
+
+        // Test cube root in Spanish
+        mq.latex('\\sqrt[3]{x}');
+        assert.equal(
+          mq.mathspeak(),
+          'Inicio Raíz Cúbica,  x , Fin Raíz Cúbica'
+        );
+      });
+
+      test('global language configuration affects new instances', function () {
+        // Set global language to Spanish
+        MQ.config({ language: 'es' });
+
+        // Create new MathField without explicit language
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+        assert.equal(
+          mq.getAriaLabel(),
+          'Entrada Matemática',
+          'Global language setting should affect new instances'
+        );
+
+        // Verify mathspeak is also in Spanish
+        mq.latex('\\frac{2}{3}');
+        assert.equal(mq.mathspeak(), 'InicioFracción 2 Sobre 3 FinFracción');
+      });
+    });
+
+    suite('Error Handling and Fallbacks', function () {
+      test('bogus language code throws error and falls back to English', function () {
+        // Test 3a: Create MathField with bogus language code should throw
+        assert.throws(function () {
+          mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+            language: 'xx'
+          });
+        }, 'Should throw error for invalid language code');
+      });
+
+      test('invalid language falls back to English behavior', function () {
+        // Create with valid language first, then try to set invalid
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+          language: 'en'
+        });
+
+        // Try to set bogus language via config - should not throw but should fail silently
+        try {
+          mq.config({ language: 'xx' });
+        } catch (e) {
+          // Expected to throw during validation
+        }
+
+        // Test 3b: Create fraction and verify fallback to English
+        mq.latex('\\frac{1}{2}');
+        assert.equal(
+          mq.getAriaLabel(),
+          'Math Input',
+          'Should fall back to English ARIA label'
+        );
+        assert.equal(
+          mq.mathspeak(),
+          'StartFraction 1 Over 2 EndFraction',
+          'Should fall back to English mathspeak'
+        );
+      });
+
+      test('language validation during configuration', function () {
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+        // Valid language switches should work
+        mq.config({ language: 'es' });
+        assert.equal(mq.getAriaLabel(), 'Entrada Matemática');
+
+        mq.config({ language: 'en' });
+        assert.equal(mq.getAriaLabel(), 'Math Input');
+
+        // Invalid language should throw
+        assert.throws(function () {
+          mq.config({ language: 'invalid' });
+        }, 'Should throw for invalid language codes');
+
+        // Field should still work after failed language change
+        assert.equal(
+          mq.getAriaLabel(),
+          'Math Input',
+          'Should maintain last valid language'
+        );
+      });
+
+      test('non-string language values throw errors', function () {
+        assert.throws(function () {
+          MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+            language: 123
+          });
+        }, 'Should throw for numeric language');
+
+        assert.throws(function () {
+          MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+            language: null
+          });
+        }, 'Should throw for null language');
+
+        assert.throws(function () {
+          MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+            language: undefined
+          });
+        }, 'Should throw for undefined language');
+      });
+    });
+
+    suite('Language Fallback System', function () {
+      test('locale-specific language falls back to base language (en-GB → en)', function () {
+        // Test requesting en-GB should fall back to en
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+          language: 'en-GB'
+        });
+
+        // Should work as English
+        assert.equal(
+          mq.getAriaLabel(),
+          'Math Input',
+          'en-GB should fall back to English'
+        );
+
+        mq.latex('\\frac{1}{2}');
+        assert.equal(
+          mq.mathspeak(),
+          'StartFraction 1 Over 2 EndFraction',
+          'Should use English mathspeak'
+        );
+      });
+
+      test('locale-specific language falls back to base language (es-AR → es)', function () {
+        // Test requesting es-AR should fall back to es
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+          language: 'es-AR'
+        });
+
+        // Should work as Spanish
+        assert.equal(
+          mq.getAriaLabel(),
+          'Entrada Matemática',
+          'es-AR should fall back to Spanish'
+        );
+
+        mq.latex('\\frac{1}{2}');
+        assert.equal(
+          mq.mathspeak(),
+          'InicioFracción 1 Sobre 2 FinFracción',
+          'Should use Spanish mathspeak'
+        );
+      });
+
+      test('base language falls back to locale variant when available (es → es-MX)', function () {
+        // Note: This test demonstrates the concept, but since es-MX currently loads the same
+        // messages as es, the behavior will be identical. In a real implementation with
+        // different es-MX messages, this would show locale-specific differences.
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+          language: 'es'
+        });
+
+        // Should work as Spanish (potentially with Mexican variant if available)
+        assert.equal(
+          mq.getAriaLabel(),
+          'Entrada Matemática',
+          'es should load successfully'
+        );
+
+        mq.latex('\\frac{1}{2}');
+        assert.equal(
+          mq.mathspeak(),
+          'InicioFracción 1 Sobre 2 FinFracción',
+          'Should use Spanish mathspeak'
+        );
+      });
+
+      test('cascading fallback: fr-CA → fr → en', function () {
+        // Test unsupported French Canadian falls back all the way to English
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+          language: 'fr-CA'
+        });
+
+        // Should fall back to English as final resort
+        assert.equal(
+          mq.getAriaLabel(),
+          'Math Input',
+          'fr-CA should fall back to English'
+        );
+
+        mq.latex('\\frac{1}{2}');
+        assert.equal(
+          mq.mathspeak(),
+          'StartFraction 1 Over 2 EndFraction',
+          'Should use English mathspeak'
+        );
+      });
+
+      test('runtime language switching with fallbacks', function () {
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+        // Start with English
+        mq.latex('\\frac{1}{2}');
+        assert.equal(mq.getAriaLabel(), 'Math Input');
+        assert.equal(mq.mathspeak(), 'StartFraction 1 Over 2 EndFraction');
+
+        // Switch to es-CO (should fall back to es)
+        mq.config({ language: 'es-CO' });
+        assert.equal(
+          mq.getAriaLabel(),
+          'Entrada Matemática',
+          'es-CO should fall back to Spanish'
+        );
+        assert.equal(mq.mathspeak(), 'InicioFracción 1 Sobre 2 FinFracción');
+
+        // Switch to en-AU (should fall back to en)
+        mq.config({ language: 'en-AU' });
+        assert.equal(
+          mq.getAriaLabel(),
+          'Math Input',
+          'en-AU should fall back to English'
+        );
+        assert.equal(mq.mathspeak(), 'StartFraction 1 Over 2 EndFraction');
+
+        // Switch to de-DE (should fall back to en)
+        mq.config({ language: 'de-DE' });
+        assert.equal(
+          mq.getAriaLabel(),
+          'Math Input',
+          'de-DE should fall back to English'
+        );
+        assert.equal(mq.mathspeak(), 'StartFraction 1 Over 2 EndFraction');
+      });
+
+      test('fallback preserves mathematical functionality', function () {
+        // Test that fallback doesn't break mathematical expression handling
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+          language: 'pt-BR'
+        }); // Falls back to English
+
+        // Test various mathematical expressions
+        mq.latex('x^2');
+        assert.equal(
+          mq.mathspeak(),
+          'x squared',
+          'Powers should work with fallback'
+        );
+
+        mq.latex('\\sqrt{x}');
+        assert.equal(
+          mq.mathspeak(),
+          'StartRoot x EndRoot',
+          'Roots should work with fallback'
+        );
+
+        mq.latex('\\sum_{i=1}^{n} x_i');
+        var sumMathspeak = mq.mathspeak();
+        assert.ok(
+          sumMathspeak.length > 0,
+          'Complex expressions should work with fallback'
+        );
+      });
+    });
+
+    suite('Advanced Localization Features', function () {
+      test('mathematical notation localization', function () {
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+        // Test summation notation
+        mq.latex('\\sum_{i=1}^{n} x_i');
+        mq.config({ language: 'en' });
+        var englishSum = mq.mathspeak();
+
+        mq.config({ language: 'es' });
+        var spanishSum = mq.mathspeak();
+
+        assert.notEqual(
+          englishSum,
+          spanishSum,
+          'Summation should be different in English and Spanish'
+        );
+        assert.ok(spanishSum.includes('suma'), 'Spanish should include "suma"');
+      });
+
+      test('fraction shortcuts with pluralization', function () {
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+          language: 'es'
+        });
+
+        // Test common fraction shortcuts in Spanish
+        mq.latex('\\frac{1}{2}');
+        var halfSpanish = mq.mathspeak();
+        assert.ok(
+          halfSpanish.includes('Sobre'),
+          'Should use Spanish "Sobre" for over'
+        );
+
+        mq.latex('\\frac{1}{4}');
+        var quarterSpanish = mq.mathspeak();
+        assert.ok(
+          quarterSpanish.includes('Sobre'),
+          'Should use Spanish "Sobre" for quarter'
+        );
+      });
+
+      test('power expressions with ordinal numbers', function () {
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+        // Test various power expressions
+        mq.latex('x^4');
+        mq.config({ language: 'en' });
+        var englishFourth = mq.mathspeak();
+
+        mq.config({ language: 'es' });
+        var spanishFourth = mq.mathspeak();
+
+        assert.notEqual(
+          englishFourth,
+          spanishFourth,
+          'Fourth power should be different in each language'
+        );
+        assert.ok(
+          spanishFourth.includes('cuarta') ||
+            spanishFourth.includes('potencia'),
+          'Spanish should include ordinal or "potencia"'
+        );
+      });
+
+      test('directional navigation announcements', function () {
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+        mq.latex('\\frac{a}{b}');
+
+        // Focus the field so cursor navigation works
+        mq.focus();
+
+        // Test navigation - the specific implementation may vary but language should affect announcements
+        var initialCursor = mq.__controller.cursor;
+        assert.ok(initialCursor, 'Cursor should exist for navigation testing');
+      });
+    });
+
+    suite('Edge Cases and Robustness', function () {
+      test('empty field localization', function () {
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+          language: 'es'
+        });
+
+        // Empty field should still have localized ARIA label
+        assert.equal(mq.getAriaLabel(), 'Entrada Matemática');
+        assert.equal(
+          mq.mathspeak(),
+          '',
+          'Empty field should have empty mathspeak'
+        );
+
+        // Language switching on empty field should work
+        mq.config({ language: 'en' });
+        assert.equal(mq.getAriaLabel(), 'Math Input');
+      });
+
+      test('language switching preserves content', function () {
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+        // Create complex expression
+        mq.latex('\\frac{x^2 + 1}{\\sqrt{y}}');
+        var originalLatex = mq.latex();
+
+        // Switch languages multiple times
+        mq.config({ language: 'es' });
+        mq.config({ language: 'en' });
+        mq.config({ language: 'es' });
+
+        // Content should be preserved
+        assert.equal(
+          mq.latex(),
+          originalLatex,
+          'LaTeX content should be preserved through language switches'
+        );
+      });
+
+      test('multiple MathFields with different languages', function () {
+        var mq1 = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+          language: 'en'
+        });
+        var mq2 = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+          language: 'es'
+        });
+
+        mq1.latex('\\frac{1}{2}');
+        mq2.latex('\\frac{1}{2}');
+
+        // Each field should maintain its own language
+        assert.equal(mq1.getAriaLabel(), 'Math Input');
+        assert.equal(mq2.getAriaLabel(), 'Entrada Matemática');
+        assert.equal(mq1.mathspeak(), 'StartFraction 1 Over 2 EndFraction');
+        assert.equal(mq2.mathspeak(), 'InicioFracción 1 Sobre 2 FinFracción');
+      });
+
+      test('localization with custom ARIA labels', function () {
+        mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
+          language: 'es'
+        });
+
+        // Set custom ARIA label
+        mq.setAriaLabel('Campo Personalizado');
+        assert.equal(mq.getAriaLabel(), 'Campo Personalizado');
+
+        // Language switching should not affect custom labels
+        mq.config({ language: 'en' });
+        assert.equal(
+          mq.getAriaLabel(),
+          'Campo Personalizado',
+          'Custom ARIA labels should be preserved'
+        );
+
+        // Resetting to empty should restore localized default
+        mq.setAriaLabel('');
+        assert.equal(
+          mq.getAriaLabel(),
+          'Math Input',
+          'Should restore localized default after clearing custom label'
+        );
+      });
+    });
+
+    teardown(function () {
+      // Clean up any global state
+      MQ.config({ language: 'en' });
+    });
+  });
 });

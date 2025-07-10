@@ -2,6 +2,8 @@
  * The publicly exposed MathQuill API.
  ********************************************************/
 
+// Note: getLocalization function is available globally from services/localization.ts
+
 type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';
 
 /** MathQuill instance fields/methods that are internal, not exposed in the public type defs. */
@@ -62,7 +64,8 @@ const processedOptions = {
   leftRightIntoCmdGoes: true,
   maxDepth: true,
   interpretTildeAsSim: true,
-  disableAutoSubstitutionInSubscripts: true
+  disableAutoSubstitutionInSubscripts: true,
+  language: true
 };
 type ProcessedOption = keyof typeof processedOptions;
 
@@ -113,6 +116,7 @@ class Options {
   disableCopyPaste?: boolean;
   statelessClipboard?: boolean;
   logAriaAlerts?: boolean;
+  language?: string;
   onPaste?: () => void;
   onCut?: () => void;
   overrideTypedText?: (text: string) => void;
@@ -250,6 +254,14 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
         var value = (newOptions as any)[name]; // TODO - think about typing this better
         var processor = (optionProcessors as any)[name]; // TODO - validate option processors better
         (currentOptions as any)[name] = processor ? processor(value) : value; // TODO - think about typing better
+
+        // Handle language changes by updating the localization service
+        if (name === 'language') {
+          const localization = getLocalization();
+          localization.setLanguage(value).catch((error) => {
+            console.warn('Failed to set language:', error);
+          });
+        }
       }
     }
   }
@@ -314,6 +326,10 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
       config(this.__options, opts);
       if (opts.tabindex !== undefined) {
         this.__controller.setTabindex(opts.tabindex);
+      }
+      if (opts.language !== undefined && this.__controller.updateAriaLabel) {
+        // Update the aria label when language changes
+        this.__controller.updateAriaLabel();
       }
       return this;
     }

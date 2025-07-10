@@ -2,6 +2,8 @@
  * Abstract classes of text blocks
  ************************************************/
 
+// Note: getLocalization function is available globally from services/localization.ts
+
 /**
  * Blocks of plain text, with one or two TextPiece's as children.
  * Represents flat strings of typically serif-font Roman characters, as
@@ -103,7 +105,10 @@ class TextBlock extends MQNode {
     return out;
   }
 
-  mathspeakTemplate = ['StartText', 'EndText'];
+  mathspeakTemplate = getLocalization().createMathspeakTemplate(
+    'start-text',
+    'end-text'
+  );
   mathspeak(opts?: MathspeakOptions) {
     if (opts && opts.ignoreShorthand) {
       return (

@@ -2,6 +2,8 @@ type TextareaKeyboardEventListeners = Partial<{
   [K in keyof HTMLElementEventMap]: (event: HTMLElementEventMap[K]) => any;
 }>;
 
+// Note: getLocalization function is available globally from services/localization.ts
+
 /*********************************************
  * Controller for a MathQuill instance
  ********************************************/
@@ -50,7 +52,8 @@ class ControllerBase {
     this.options = options;
 
     this.aria = new Aria(this.getControllerSelf());
-    this.ariaLabel = 'Math Input';
+    const localization = getLocalization();
+    this.ariaLabel = localization.formatMessage('default-aria-label');
     this.ariaPostLabel = '';
 
     root.controller = this.getControllerSelf();
@@ -66,6 +69,11 @@ class ControllerBase {
   getControllerSelf() {
     // dance we have to do to tell this thing it's a full controller
     return this as any as Controller;
+  }
+
+  updateAriaLabel() {
+    const localization = getLocalization();
+    this.ariaLabel = localization.formatMessage('default-aria-label');
   }
 
   handle(name: HandlersWithDirection, dir: Direction): void;
