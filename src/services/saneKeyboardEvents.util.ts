@@ -1,6 +1,6 @@
 /** Poller that fires once every tick. */
 class EveryTick<Args extends unknown[] = []> {
-  private timeoutId: number;
+  private timeoutId: TimeoutId;
   private fn: (...args: Args | []) => void = noop;
   constructor() {}
 

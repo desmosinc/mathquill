@@ -1,6 +1,7 @@
 /***************************
  * Commands and Operators.
  **************************/
+
 var SVG_SYMBOLS = {
   sqrt: {
     width: '',
@@ -118,9 +119,10 @@ class Style extends MathCommand {
     );
 
     this.ariaLabel = ariaLabel || ctrlSeq.replace(/^\\/, '');
+    const localization = getLocalization();
     this.mathspeakTemplate = [
-      'Start' + this.ariaLabel + ',',
-      'End' + this.ariaLabel
+      localization.formatStartBlock(this.ariaLabel) + ',',
+      ', ' + localization.formatEndBlock(this.ariaLabel)
     ];
     // In most cases, mathspeak should announce the start and end of style blocks.
     // There is one exception currently (mathrm).
@@ -251,9 +253,10 @@ LatexCmds.textcolor = class extends MathCommand {
       )
     );
     this.ariaLabel = color.replace(/^\\/, '');
+    const localization = getLocalization();
     this.mathspeakTemplate = [
-      'Start ' + this.ariaLabel + ',',
-      'End ' + this.ariaLabel
+      localization.formatStartBlock(this.ariaLabel) + ',',
+      ', ' + localization.formatEndBlock(this.ariaLabel)
     ];
   }
   latexRecursive(ctx: LatexContext) {
@@ -303,9 +306,10 @@ var Class = (LatexCmds['class'] = class extends MathCommand {
           h.block('span', { class: `mq-class ${cls}` }, blocks[0])
         );
         this.ariaLabel = cls + ' class';
+        const localization = getLocalization();
         this.mathspeakTemplate = [
-          'Start ' + this.ariaLabel + ',',
-          'End ' + this.ariaLabel
+          localization.formatStartBlock(this.ariaLabel) + ',',
+          ', ' + localization.formatEndBlock(this.ariaLabel)
         ];
         return super.parser();
       });
@@ -626,10 +630,16 @@ class SubscriptCommand extends SupSub {
   );
 
   textTemplate = ['_'];
-
-  mathspeakTemplate = ['Subscript,', ', Baseline'];
-
   ariaLabel = 'subscript';
+
+  mathspeak() {
+    const localization = getControllerLocalization(this);
+    this.mathspeakTemplate = [
+      localization.formatMessage('subscript') + ',',
+      ', ' + localization.formatMessage('baseline')
+    ];
+    return super.mathspeak();
+  }
 
   finalizeTree() {
     this.downInto = this.sub = this.getEnd(L);
@@ -652,7 +662,16 @@ LatexCmds.superscript =
       );
 
       textTemplate = ['^(', ')'];
+      ariaLabel = 'superscript';
+
       mathspeak(opts?: MathspeakOptions) {
+        // Set the template dynamically
+        const localization = getControllerLocalization(this);
+        this.mathspeakTemplate = [
+          localization.formatMessage('superscript') + ',',
+          ', ' + localization.formatMessage('baseline')
+        ];
+
         // Simplify basic exponent speech for common whole numbers.
         var child = this.upInto;
         if (child !== undefined) {
@@ -662,39 +681,23 @@ LatexCmds.superscript =
           var innerText = getCtrlSeqsFromBlock(child);
           // If the superscript is a whole number, shorten the speech that is returned.
           if ((!opts || !opts.ignoreShorthand) && intRgx.test(innerText)) {
+            var powerNumber = parseInt(innerText);
+
             // Simple cases
-            if (innerText === '0') {
-              return 'to the 0 power';
-            } else if (innerText === '2') {
-              return 'squared';
-            } else if (innerText === '3') {
-              return 'cubed';
+            if (powerNumber === 0) {
+              return localization.formatMessage('power-zero');
+            } else if (powerNumber === 2) {
+              return localization.formatMessage('power-squared');
+            } else if (powerNumber === 3) {
+              return localization.formatMessage('power-cubed');
             }
 
-            // More complex cases.
-            var suffix = '';
-            // Limit suffix addition to exponents < 1000.
-            if (/^[+-]?\d{1,3}$/.test(innerText)) {
-              if (/(11|12|13|4|5|6|7|8|9|0)$/.test(innerText)) {
-                suffix = 'th';
-              } else if (/1$/.test(innerText)) {
-                suffix = 'st';
-              } else if (/2$/.test(innerText)) {
-                suffix = 'nd';
-              } else if (/3$/.test(innerText)) {
-                suffix = 'rd';
-              }
-            }
-            var innerMathspeak =
-              typeof child === 'object' ? child.mathspeak() : innerText;
-            return 'to the ' + innerMathspeak + suffix + ' power';
+            // More complex cases - use localized ordinal power format
+            return localization.formatPowerExpression(powerNumber);
           }
         }
         return super.mathspeak();
       }
-
-      ariaLabel = 'superscript';
-      mathspeakTemplate = ['Superscript,', ', Baseline'];
       finalizeTree() {
         this.upInto = this.sup = this.getEnd(R);
         this.sup.downOutOf = insLeftOfMeUnlessAtEnd;
@@ -703,6 +706,8 @@ LatexCmds.superscript =
     };
 
 class SummationNotation extends MathCommand {
+  ariaLabel: string;
+
   constructor(ch: string, symbol: string, ariaLabel?: string) {
     super();
 
@@ -749,16 +754,19 @@ class SummationNotation extends MathCommand {
     this.checkCursorContextClose(ctx);
   }
   mathspeak() {
+    const localization = getLocalization();
+    const ariaLabelLower = this.ariaLabel.toLowerCase().replace(/ /g, '-');
+
     return (
-      'Start ' +
-      this.ariaLabel +
-      ' from ' +
+      localization.formatMessage(`start-${ariaLabelLower}`) +
+      ' ' +
       this.getEnd(L).mathspeak() +
-      ' to ' +
+      ', ' +
+      localization.formatMessage('to') +
+      ', ' +
       this.getEnd(R).mathspeak() +
-      ', end ' +
-      this.ariaLabel +
-      ', '
+      ', ' +
+      localization.formatMessage(`end-${ariaLabelLower}`)
     );
   }
   parser() {
@@ -864,14 +872,19 @@ var Fraction =
         this.downInto = endsL.downOutOf = endsR;
         endsL.ariaLabel = 'numerator';
         endsR.ariaLabel = 'denominator';
+        const localization = getControllerLocalization(this);
         if (this.getFracDepth() > 1) {
           this.mathspeakTemplate = [
-            'StartNestedFraction,',
-            'NestedOver',
-            ', EndNestedFraction'
+            localization.formatMessage('start-nested-fraction') + ',',
+            ' ' + localization.formatMessage('nested-over') + ' ',
+            ', ' + localization.formatMessage('end-nested-fraction')
           ];
         } else {
-          this.mathspeakTemplate = ['StartFraction,', 'Over', ', EndFraction'];
+          this.mathspeakTemplate = [
+            localization.formatMessage('start-fraction') + ',',
+            ' ' + localization.formatMessage('over') + ' ',
+            ', ' + localization.formatMessage('end-fraction')
+          ];
         }
       }
 
@@ -890,24 +903,40 @@ var Fraction =
           intRgx.test(numText) &&
           intRgx.test(denText)
         ) {
-          var isSingular = numText === '1' || numText === '-1';
+          var numerator = parseInt(numText);
+          var denominator = parseInt(denText);
+          const localization = getControllerLocalization(this);
           var newDenSpeech = '';
-          if (denText === '2') {
-            newDenSpeech = isSingular ? 'half' : 'halves';
-          } else if (denText === '3') {
-            newDenSpeech = isSingular ? 'third' : 'thirds';
-          } else if (denText === '4') {
-            newDenSpeech = isSingular ? 'quarter' : 'quarters';
-          } else if (denText === '5') {
-            newDenSpeech = isSingular ? 'fifth' : 'fifths';
-          } else if (denText === '6') {
-            newDenSpeech = isSingular ? 'sixth' : 'sixths';
-          } else if (denText === '7') {
-            newDenSpeech = isSingular ? 'seventh' : 'sevenths';
-          } else if (denText === '8') {
-            newDenSpeech = isSingular ? 'eighth' : 'eighths';
-          } else if (denText === '9') {
-            newDenSpeech = isSingular ? 'ninth' : 'ninths';
+
+          // Use localized fraction shortcuts for denominators 2-9
+          if (denominator >= 2 && denominator <= 9) {
+            // Try the new denominator-only format first
+            const denominatorPart = localization.formatFractionDenominator(
+              numerator,
+              denominator
+            );
+
+            if (denominatorPart !== '') {
+              // Handle negative numerators properly
+              let numeratorText: string;
+              if (numerator < 0) {
+                // For negative numerators, use localized "negative" + absolute value
+                numeratorText =
+                  localization.formatMessage('negative') +
+                  ' ' +
+                  Math.abs(numerator);
+              } else {
+                numeratorText = numerator.toString();
+              }
+              // Combine numerator with properly pluralized denominator
+              newDenSpeech = numeratorText + ' ' + denominatorPart;
+            } else {
+              // Fall back to the old full format
+              newDenSpeech = localization.formatFractionShortcut(
+                numerator,
+                denominator
+              );
+            }
           }
           if (newDenSpeech !== '') {
             var output = '';
@@ -931,9 +960,10 @@ var Fraction =
               }
             }
             if (precededByInteger) {
-              output += 'and ';
+              const localization = getControllerLocalization(this);
+              output += localization.formatMessage('and') + ' ';
             }
-            output += this.getEnd(L).mathspeak() + ' ' + newDenSpeech;
+            output += newDenSpeech;
             return output;
           }
         }
@@ -1053,7 +1083,10 @@ class Token extends MQSymbol {
   tokenId = '';
   ctrlSeq = '\\token';
   textTemplate = ['token(', ')'];
-  mathspeakTemplate = ['StartToken,', ', EndToken'];
+  mathspeakTemplate = getLocalization().createMathspeakTemplate(
+    'start-token',
+    'end-token'
+  );
   ariaLabel = 'token';
 
   html(): Element | DocumentFragment {
@@ -1118,8 +1151,16 @@ class SquareRoot extends MathCommand {
     ])
   );
   textTemplate = ['sqrt(', ')'];
-  mathspeakTemplate = ['StartRoot,', ', EndRoot'];
   ariaLabel = 'root';
+
+  mathspeak() {
+    const localization = getLocalization();
+    this.mathspeakTemplate = localization.createMathspeakTemplate(
+      'start-root',
+      'end-root'
+    );
+    return super.mathspeak();
+  }
   parser() {
     return latexMathParser.optBlock
       .then(function (optBlock) {
@@ -1188,16 +1229,29 @@ class NthRoot extends SquareRoot {
     var radicandMathspeak = this.getEnd(R).mathspeak();
     this.getEnd(L).ariaLabel = 'Index';
     this.getEnd(R).ariaLabel = 'Radicand';
+
+    const localization = getLocalization();
+
     if (indexMathspeak === '3') {
       // cube root
-      return 'Start Cube Root, ' + radicandMathspeak + ', End Cube Root';
+      return (
+        localization.formatMessage('start-cube-root') +
+        ', ' +
+        radicandMathspeak +
+        ', ' +
+        localization.formatMessage('end-cube-root')
+      );
     } else {
       return (
-        'Root Index ' +
+        localization.formatMessage('root-index') +
+        ' ' +
         indexMathspeak +
-        ', Start Root, ' +
+        ', ' +
+        localization.formatMessage('start-nth-root') +
+        ', ' +
         radicandMathspeak +
-        ', End Root'
+        ', ' +
+        localization.formatMessage('end-nth-root')
       );
     }
   }
@@ -1338,7 +1392,10 @@ class Bracket extends DelimsNode {
     var open = this.sides[L].ch,
       close = this.sides[R].ch;
     if (open === '|' && close === '|') {
-      this.mathspeakTemplate = ['StartAbsoluteValue,', ', EndAbsoluteValue'];
+      this.mathspeakTemplate = getLocalization().createMathspeakTemplate(
+        'start-absolute-value',
+        'end-absolute-value'
+      );
       this.ariaLabel = 'absolute value';
     } else if (opts && opts.createdLeftOf && this.side) {
       var ch = '';
@@ -1728,8 +1785,17 @@ class Binomial extends DelimsNode {
   );
 
   textTemplate = ['choose(', ',', ')'];
-  mathspeakTemplate = ['StartBinomial,', 'Choose', ', EndBinomial'];
   ariaLabel = 'binomial';
+
+  mathspeak() {
+    const localization = getControllerLocalization(this);
+    this.mathspeakTemplate = [
+      localization.formatMessage('start-binomial') + ',',
+      ' ' + localization.formatMessage('choose') + ' ',
+      ', ' + localization.formatMessage('end-binomial')
+    ];
+    return super.mathspeak();
+  }
 
   finalizeTree() {
     const endsL = this.getEnd(L);

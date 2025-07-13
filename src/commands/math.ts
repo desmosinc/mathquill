@@ -528,7 +528,15 @@ class MathBlock extends MathElement {
           if (tempOp !== '') {
             if (autoOps._maxLength! > 0) {
               var x = autoOps[tempOp.toLowerCase()];
-              if (typeof x === 'string') tempOp = x;
+              if (typeof x === 'string') {
+                tempOp = x;
+                // Check if there's a localized version of this auto operator
+                const localization = getLocalization();
+                const localizedOp = localization.formatAutoOperator(tempOp);
+                if (localizedOp !== tempOp) {
+                  tempOp = localizedOp;
+                }
+              }
             }
             speechArray.push(tempOp + ' ');
             tempOp = '';
@@ -643,7 +651,9 @@ class MathBlock extends MathElement {
       cmd.createLeftOf(cursor.show());
       // special-case the slash so that fractions are voiced while typing
       if (ch === '/') {
-        cursor.controller.aria.alert('over');
+        cursor.controller.aria.alert(
+          getControllerLocalization(cursor).formatMessage('over')
+        );
       } else {
         cursor.controller.aria.alert(cmd.mathspeak({ createdLeftOf: cursor }));
       }

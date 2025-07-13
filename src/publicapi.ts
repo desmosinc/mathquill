@@ -2,6 +2,8 @@
  * The publicly exposed MathQuill API.
  ********************************************************/
 
+// Note: getLocalization function is available globally from services/localization.ts
+
 type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';
 
 /** MathQuill instance fields/methods that are internal, not exposed in the public type defs. */
@@ -62,7 +64,8 @@ const processedOptions = {
   leftRightIntoCmdGoes: true,
   maxDepth: true,
   interpretTildeAsSim: true,
-  disableAutoSubstitutionInSubscripts: true
+  disableAutoSubstitutionInSubscripts: true,
+  language: true
 };
 type ProcessedOption = keyof typeof processedOptions;
 
@@ -113,6 +116,7 @@ class Options {
   disableCopyPaste?: boolean;
   statelessClipboard?: boolean;
   logAriaAlerts?: boolean;
+  language?: string;
   onPaste?: () => void;
   onCut?: () => void;
   overrideTypedText?: (text: string) => void;
@@ -235,7 +239,11 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
     })
   };
 
-  function config(currentOptions: CursorOptions, newOptions: ConfigOptions) {
+  function config(
+    currentOptions: CursorOptions,
+    newOptions: ConfigOptions,
+    isInitialConfig: boolean = false
+  ) {
     for (const name in newOptions) {
       if (newOptions.hasOwnProperty(name)) {
         if (name === 'substituteKeyboardEvents' && version >= 3) {
@@ -250,6 +258,23 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
         var value = (newOptions as any)[name]; // TODO - think about typing this better
         var processor = (optionProcessors as any)[name]; // TODO - validate option processors better
         (currentOptions as any)[name] = processor ? processor(value) : value; // TODO - think about typing better
+
+        // Handle language changes by updating the localization service
+        if (name === 'language') {
+          if (isInitialConfig) {
+            // During initial creation, throw errors for invalid languages
+            const localization = getLocalization();
+            localization.setLanguage(value, true);
+          } else {
+            // During later config calls, fall back silently
+            try {
+              const localization = getLocalization();
+              localization.setLanguage(value);
+            } catch (error) {
+              console.warn('Failed to set language:', error);
+            }
+          }
+        }
       }
     }
   }
@@ -295,6 +320,10 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
 
       this.revert = function () {
         ctrlr.removeMouseEventListener();
+        // Clean up language change callback
+        if (ctrlr.unregisterLanguageChange) {
+          ctrlr.unregisterLanguageChange();
+        }
         domFrag(el)
           .removeClass('mq-editable-field mq-math-mode mq-text-mode')
           .empty()
@@ -310,10 +339,30 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
     getAriaLabel() {
       return this.__controller.getAriaLabel();
     }
-    config(opts: ConfigOptions) {
-      config(this.__options, opts);
+    config(opts: ConfigOptions, isInitialConfig?: boolean) {
+      config(this.__options, opts, isInitialConfig);
       if (opts.tabindex !== undefined) {
         this.__controller.setTabindex(opts.tabindex);
+      }
+      if (opts.language !== undefined) {
+        // Update this controller's language directly
+        this.__controller.language = opts.language;
+        // Mark as explicit if this is NOT initial config (i.e., user called config() later)
+        // OR if this is initial config and the user provided the language option explicitly
+        if (!isInitialConfig) {
+          (this.__controller as any).explicitLanguage = true;
+        } else if (isInitialConfig && opts.hasOwnProperty('language')) {
+          // During initial config, only mark as explicit if language was actually provided by user
+          (this.__controller as any).explicitLanguage = true;
+        }
+
+        // Update the localization system with the new language
+        getLocalization().setLanguage(opts.language);
+
+        // Update the aria label when language changes
+        if (this.__controller.updateAriaLabel) {
+          this.__controller.updateAriaLabel();
+        }
       }
       return this;
     }
@@ -541,6 +590,10 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
 
   MQ.config = function (opts: ConfigOptions) {
     config(BaseOptions.prototype, opts);
+    if (opts.language !== undefined) {
+      // Update the localization system with the new language
+      getLocalization().setLanguage(opts.language);
+    }
     return this;
   };
 

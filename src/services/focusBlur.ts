@@ -17,8 +17,8 @@ ControllerBase.onNotify(function (cursor, e) {
 
 class Controller_focusBlur extends Controller_exportText {
   blurred: boolean;
-  __disableGroupingTimeout: number;
-  textareaSelectionTimeout: number;
+  __disableGroupingTimeout: TimeoutId;
+  textareaSelectionTimeout: TimeoutId;
 
   disableGroupingForSeconds(seconds: number) {
     clearTimeout(this.__disableGroupingTimeout);
@@ -32,7 +32,7 @@ class Controller_focusBlur extends Controller_exportText {
     }
   }
 
-  private blurTimeout: number;
+  private blurTimeout: TimeoutId;
 
   private handleTextareaFocusEditable = () => {
     const cursor = this.cursor;

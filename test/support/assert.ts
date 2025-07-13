@@ -53,6 +53,14 @@ var assert = (function () {
         explanation: 'expected ' + fn + ' to throw an error'
       });
     },
+    notEqual: function <T>(thing1: T, thing2: T, message?: string) {
+      if (thing1 !== thing2) return;
+
+      fail({
+        message: message,
+        explanation: 'expected (' + thing1 + ') to not equal (' + thing2 + ')'
+      });
+    },
     fail: function (message?: string) {
       fail({ message: message, explanation: 'generic fail' });
     }

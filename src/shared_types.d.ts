@@ -1,4 +1,7 @@
 type NodeRef = MQNode | 0;
+
+// Handle timeout types for both browser and Node.js environments
+type TimeoutId = number | NodeJS.Timeout;
 type ControllerEvent =
   | 'move'
   | 'upDown'

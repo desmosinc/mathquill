@@ -760,6 +760,25 @@ baseOptionProcessors.disableAutoSubstitutionInSubscripts = function (
   return { except: splitWordsIntoDict((opt as any).except) };
 };
 
+Options.prototype.language = 'en';
+baseOptionProcessors.language = function (lang: unknown) {
+  if (typeof lang !== 'string') {
+    throw '"' + lang + '" not a valid language code';
+  }
+  // Validate language code (basic check for 2-letter ISO codes)
+  if (!/^[a-z]{2}(-[a-z]{2})?$/i.test(lang)) {
+    throw (
+      '"' +
+      lang +
+      '" not a valid language code (expected format: "en" or "en-US")'
+    );
+  }
+
+  // The language will be resolved to the best available match during loading
+  // This validation just ensures the format is correct
+  return lang;
+};
+
 function splitWordsIntoDict(cmds: unknown) {
   if (typeof cmds !== 'string') {
     throw '"' + cmds + '" not a space-delimited list';
@@ -858,12 +877,20 @@ LatexCmds.f = class extends Letter {
 LatexCmds[' '] = LatexCmds.space = () =>
   new DigitGroupingChar('\\ ', h('span', {}, [h.text(U_NO_BREAK_SPACE)]), ' ');
 
-LatexCmds['.'] = () =>
-  new DigitGroupingChar(
-    '.',
-    h('span', { class: 'mq-digit' }, [h.text('.')]),
-    '.'
-  );
+class DotSymbol extends DigitGroupingChar {
+  constructor() {
+    super('.', h('span', { class: 'mq-digit' }, [h.text('.')]), '.');
+  }
+  mathspeak(opts?: MathspeakOptions): string {
+    // If this dot is being created by the user (typing or navigating to it explicitly),
+    // use the localized word. Otherwise, return the actual character so it's pronounced naturally as part of a number.
+    if (opts && opts.createdLeftOf) {
+      return getLocalization().formatMessage('dot');
+    }
+    return '.';
+  }
+}
+LatexCmds['.'] = () => new DotSymbol();
 
 LatexCmds["'"] = LatexCmds.prime = bindVanillaSymbol("'", '&prime;', 'prime');
 LatexCmds['″'] = LatexCmds.dprime = bindVanillaSymbol(
@@ -1265,7 +1292,10 @@ LatexCmds['+'] = class extends PlusMinus {
     super('+', h.text('+'));
   }
   mathspeak(): string {
-    return plusMinusIsBinaryOperator(this) ? 'plus' : 'positive';
+    const localization = getLocalization();
+    return plusMinusIsBinaryOperator(this)
+      ? localization.formatMessage('plus')
+      : localization.formatMessage('positive');
   }
 };
 
@@ -1275,7 +1305,10 @@ class MinusNode extends PlusMinus {
     super('-', h.entityText('&minus;'));
   }
   mathspeak(): string {
-    return plusMinusIsBinaryOperator(this) ? 'minus' : 'negative';
+    const localization = getLocalization();
+    return plusMinusIsBinaryOperator(this)
+      ? localization.formatMessage('minus')
+      : localization.formatMessage('negative');
   }
 }
 LatexCmds['−'] = LatexCmds['—'] = LatexCmds['–'] = LatexCmds['-'] = MinusNode;
@@ -1290,10 +1323,15 @@ LatexCmds.mp =
   LatexCmds.minusplus =
     () => new PlusMinus('\\mp ', h.entityText('&#8723;'), 'minus-or-plus');
 
-CharCmds['*'] =
-  LatexCmds.sdot =
-  LatexCmds.cdot =
-    bindBinaryOperator('\\cdot ', '&middot;', '*', 'times'); //semantically should be &sdot;, but &middot; looks better
+class TimesOperator extends BinaryOperator {
+  constructor() {
+    super('\\cdot ', h.entityText('&middot;'), '*');
+  }
+  mathspeak(): string {
+    return getLocalization().formatMessage('times');
+  }
+}
+CharCmds['*'] = LatexCmds.sdot = LatexCmds.cdot = () => new TimesOperator(); //semantically should be &sdot;, but &middot; looks better
 
 class To extends BinaryOperator {
   constructor() {
@@ -1343,6 +1381,18 @@ class Inequality extends BinaryOperator {
       .replaceWith(domFrag(h.entityText(this.data[`htmlEntity${strictness}`])));
     this.textTemplate = [this.data[`text${strictness}`]];
     this.mathspeakName = this.data[`mathspeak${strictness}`];
+  }
+  mathspeak(): string {
+    const localization = getLocalization();
+    const isLess = this.data === less;
+
+    if (this.strict) {
+      return localization.formatMessage(isLess ? 'less-than' : 'greater-than');
+    } else {
+      return localization.formatMessage(
+        isLess ? 'less-than-or-equal-to' : 'greater-than-or-equal-to'
+      );
+    }
   }
   deleteTowards(dir: Direction, cursor: Cursor) {
     if (dir === L && !this.strict) {
@@ -1414,14 +1464,23 @@ LatexCmds['∞'] =
   LatexCmds.infin =
   LatexCmds.infinity =
     bindVanillaSymbol('\\infty ', '&infin;', 'infinity');
-LatexCmds['≠'] =
-  LatexCmds.ne =
-  LatexCmds.neq =
-    bindBinaryOperator('\\ne ', '&ne;', 'not equal');
+class NotEqual extends BinaryOperator {
+  constructor() {
+    super('\\ne ', h.entityText('&ne;'), '≠', 'not equal');
+  }
+  mathspeak(): string {
+    return getLocalization().formatMessage('not-equal-to');
+  }
+}
+
+LatexCmds['≠'] = LatexCmds.ne = LatexCmds.neq = NotEqual;
 
 class Equality extends BinaryOperator {
   constructor() {
     super('=', h.text('='), '=', 'equals');
+  }
+  mathspeak(): string {
+    return getLocalization().formatMessage('equals');
   }
   createLeftOf(cursor: Cursor) {
     var cursorL = cursor[L];
@@ -1472,6 +1531,9 @@ class Sim extends BinaryOperator {
 class Approx extends BinaryOperator {
   constructor() {
     super('\\approx ', h.entityText('&approx;'), '≈', 'approximately equal');
+  }
+  mathspeak(): string {
+    return getLocalization().formatMessage('approximately-equal-to');
   }
   deleteTowards(dir: Direction, cursor: Cursor) {
     if (dir === L) {

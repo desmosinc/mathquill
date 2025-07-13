@@ -26,7 +26,7 @@
 const animate = (function () {
   // IIFE exists just to hang on to configured rafShim and cancelShim
   // functions
-  let rafShim: (cb: () => void) => number, cancelShim: (token: number) => void;
+  let rafShim: (cb: () => void) => any, cancelShim: (token: any) => void;
   if (
     typeof requestAnimationFrame === 'function' &&
     typeof cancelAnimationFrame === 'function'
@@ -43,7 +43,7 @@ const animate = (function () {
     cb: (progress: number, scheduleNext: () => void, cancel: () => void) => void
   ) {
     let start = Date.now();
-    let cancelToken: number | undefined;
+    let cancelToken: any;
     let progress = 0;
     function step() {
       const proposedProgress = (Date.now() - start) / duration;

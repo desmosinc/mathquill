@@ -30,6 +30,9 @@ BASE_SOURCES = \
   $(SRC_DIR)/unicode.ts \
 	$(SRC_DIR)/browser.ts \
   $(SRC_DIR)/animate.ts \
+  $(SRC_DIR)/services/fluent-bundle.js \
+  $(SRC_DIR)/services/locale-imports.ts \
+  $(SRC_DIR)/services/localization.ts \
   $(SRC_DIR)/services/aria.ts \
   $(SRC_DIR)/domFragment.ts \
   $(SRC_DIR)/tree.ts \

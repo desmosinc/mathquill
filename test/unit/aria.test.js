@@ -169,16 +169,16 @@ suite('aria', function () {
     // We have logic to shorten the speak we return for common numeric fractions and superscripts.
     // While editing, however, the slightly longer form (but unambiguous) form of the item should be spoken.
     // In this case, we would shorten the fraction 1/2 to "1 half" when reading,
-    // but navigating around the equation should result in "StartFraction, 1 Over 2, EndFraction."
+    // but navigating around the equation should result in "Start Fraction, 1 over 2, End Fraction."
     mathField.keystroke('Tab');
-    assertAriaEqual('after StartFraction, 1 Over 2 , EndFraction');
+    assertAriaEqual('after Start Fraction, 1 over 2 , End Fraction');
 
     mathField.keystroke('Backspace');
     assertAriaEqual('end of denominator 2');
     mathField.keystroke('Backspace');
     assertAriaEqual('2');
     mathField.keystroke('Backspace');
-    assertAriaEqual('Over');
+    assertAriaEqual('over');
     mathField.keystroke('Backspace');
     assertAriaEqual('1');
   });
@@ -206,7 +206,7 @@ suite('aria', function () {
     assertAriaEqual('2');
 
     mathField.keystroke('Tab');
-    assertAriaEqual('after StartBinomial, 1 Choose 2 , EndBinomial');
+    assertAriaEqual('after Start Binomial, 1 Choose 2 , End Binomial');
 
     mathField.keystroke('Backspace');
     assertAriaEqual('end of lower index 2');
@@ -292,13 +292,13 @@ suite('aria', function () {
       )[0]
     );
     assert.equal(
-      '"y" equals StartFraction, 2 "x" Over 3 "y" , EndFraction',
+      '"y" equals Start Fraction, 2 "x" over 3 "y" , End Fraction',
       staticMath.__controller.mathspeakSpan.textContent
     );
     assert.equal('', staticMath.getAriaLabel());
     staticMath.setAriaLabel('Static Label');
     assert.equal(
-      'Static Label: "y" equals StartFraction, 2 "x" Over 3 "y" , EndFraction',
+      'Static Label: "y" equals Start Fraction, 2 "x" over 3 "y" , End Fraction',
       staticMath.__controller.mathspeakSpan.textContent
     );
     assert.equal('Static Label', staticMath.getAriaLabel());

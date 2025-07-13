@@ -103,15 +103,19 @@ class TextBlock extends MQNode {
     return out;
   }
 
-  mathspeakTemplate = ['StartText', 'EndText'];
   mathspeak(opts?: MathspeakOptions) {
     if (opts && opts.ignoreShorthand) {
+      const localization = getLocalization();
+      const mathspeakTemplate = localization.createMathspeakTemplate(
+        'start-text',
+        'end-text'
+      );
       return (
-        this.mathspeakTemplate[0] +
+        mathspeakTemplate[0] +
         ', ' +
         this.textContents() +
         ', ' +
-        this.mathspeakTemplate[1]
+        mathspeakTemplate[1]
       );
     } else {
       return this.textContents();

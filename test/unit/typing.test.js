@@ -166,7 +166,7 @@ suite('typing with auto-replaces', function () {
       mq.latex('\\frac{1}{9}');
       assertMathspeak('1 ninth');
       mq.latex('\\frac{1}{10}');
-      assertMathspeak('StartFraction, 1 Over 10, EndFraction');
+      assertMathspeak('Start Fraction, 1 over 10, End Fraction');
 
       // Testing plural numeric fractions from 31/2 to 31/10
       mq.latex('\\frac{31}{2}');
@@ -186,7 +186,7 @@ suite('typing with auto-replaces', function () {
       mq.latex('\\frac{31}{9}');
       assertMathspeak('31 ninths');
       mq.latex('\\frac{31}{10}');
-      assertMathspeak('StartFraction, 31 Over 10, EndFraction');
+      assertMathspeak('Start Fraction, 31 over 10, End Fraction');
 
       // Fractions with negative numerators should be shortened
       mq.latex('\\frac{-1}{2}');
@@ -198,19 +198,19 @@ suite('typing with auto-replaces', function () {
 
       // Fractions with negative denominators should not be shortened
       mq.latex('\\frac{1}{-2}');
-      assertMathspeak('StartFraction, 1 Over negative 2, EndFraction');
+      assertMathspeak('Start Fraction, 1 over negative 2, End Fraction');
 
       // Traditional fractions should be spoken if either numerator or denominator are not numeric
       mq.latex('\\frac{x}{2}');
-      assertMathspeak('StartFraction, "x" Over 2, EndFraction');
+      assertMathspeak('Start Fraction, "x" over 2, End Fraction');
       mq.latex('\\frac{2}{x}');
-      assertMathspeak('StartFraction, 2 Over "x", EndFraction');
+      assertMathspeak('Start Fraction, 2 over "x", End Fraction');
 
       // Traditional fractions should be spoken if either numerator or denominator are not whole numbers
       mq.latex('\\frac{1.2}{2}');
-      assertMathspeak('StartFraction, 1.2 Over 2, EndFraction');
+      assertMathspeak('Start Fraction, 1.2 over 2, End Fraction');
       mq.latex('\\frac{4}{2.3}');
-      assertMathspeak('StartFraction, 4 Over 2.3, EndFraction');
+      assertMathspeak('Start Fraction, 4 over 2.3, End Fraction');
 
       // A whole number followed by a shortened fraction should include the word "and", and other combinations should not.
       mq.latex('3\\frac{3}{8}');
@@ -228,7 +228,7 @@ suite('typing with auto-replaces', function () {
       mq.latex('\\ \\frac{1}{2}');
       assertMathspeak('1 half');
       mq.latex('3\\frac{3}{x}');
-      assertMathspeak('3 StartFraction, 3 Over "x", EndFraction');
+      assertMathspeak('3 Start Fraction, 3 over "x", End Fraction');
       mq.latex('x\\frac{3}{8}');
       assertMathspeak('"x" 3 eighths');
     });
@@ -275,9 +275,9 @@ suite('typing with auto-replaces', function () {
       assertMathspeak('"x" to the 999th power');
       // Values greater than 1000 have no suffix
       mq.latex('x^{1000}');
-      assertMathspeak('"x" to the 1000 power');
+      assertMathspeak('"x" to the 1000th power');
       mq.latex('x^{10000000000}');
-      assertMathspeak('"x" to the 10000000000 power');
+      assertMathspeak('"x" to the 10000000000th power');
 
       // Ensure negative exponents are shortened
       mq.latex('10^{-5}');
@@ -318,7 +318,7 @@ suite('typing with auto-replaces', function () {
       // letters are split and delimiters are announced for remaining commands:
       mq.latex('\\mathit{this\\ is\\ a\\ test}');
       assertMathspeak(
-        'StartItalic Font "t" "h" "i" "s" "i" "s" "a" "t" "e" "s" "t" EndItalic Font'
+        'Start Italic Font "t" "h" "i" "s" "i" "s" "a" "t" "e" "s" "t" End Italic Font'
       );
       mq.latex('\\textcolor{red}{this\\ is\\ a\\ test}');
       assertMathspeak(
@@ -1567,21 +1567,21 @@ suite('typing with auto-replaces', function () {
       assertMathspeak('tilde');
       mq.typedText('~');
       assertLatex('\\approx');
-      assertMathspeak('approximately equal');
+      assertMathspeak('approximately equal to');
       mq.config({ interpretTildeAsSim: true });
       mq.typedText('~');
       assertLatex('\\approx\\sim');
-      assertMathspeak('approximately equal tilde');
+      assertMathspeak('approximately equal to tilde');
       mq.typedText('~');
       assertLatex('\\approx\\approx');
-      assertMathspeak('approximately equal approximately equal');
+      assertMathspeak('approximately equal to approximately equal to');
       mq.config({ interpretTildeAsSim: false });
       mq.keystroke('Backspace');
       assertLatex('\\approx\\sim');
-      assertMathspeak('approximately equal tilde');
+      assertMathspeak('approximately equal to tilde');
       mq.keystroke('Backspace');
       assertLatex('\\approx');
-      assertMathspeak('approximately equal');
+      assertMathspeak('approximately equal to');
       mq.keystroke('Backspace');
       assertLatex('\\sim');
       assertMathspeak('tilde');
@@ -1592,7 +1592,7 @@ suite('typing with auto-replaces', function () {
       mq.keystroke('Backspace');
       mq.typedText('~b');
       assertLatex('a\\approx b');
-      assertMathspeak('"a" approximately equal "b"');
+      assertMathspeak('"a" approximately equal to "b"');
 
       // Now test that tilde is properly transformed when pasting in LaTeX.
       mq.latex('');
@@ -1609,7 +1609,7 @@ suite('typing with auto-replaces', function () {
     test('typing ≈ char directly', function () {
       mq.typedText('≈');
       assertLatex('\\approx');
-      assertMathspeak('approximately equal');
+      assertMathspeak('approximately equal to');
       mq.keystroke('Backspace');
       assertLatex('\\sim');
       assertMathspeak('tilde');
@@ -1762,7 +1762,7 @@ suite('typing with auto-replaces', function () {
     test('overline renders as expected', function () {
       mq.latex('0.3\\overline{5}');
       assertLatex('0.3\\overline{5}');
-      assertMathspeak('0 .3 StartOverline 5 EndOverline');
+      assertMathspeak('0 .3 Start Overline 5 End Overline');
     });
   });
 });
