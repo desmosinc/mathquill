@@ -104,6 +104,7 @@ endif
 # http://www.gnu.org/software/make/manual/html_node/Empty-Targets.html#Empty-Targets
 NODE_MODULES_INSTALLED = ./node_modules/.installed--used_by_Makefile
 BUILD_DIR_EXISTS = $(BUILD_DIR)/.exists--used_by_Makefile
+FLUENT_BUNDLE = $(SRC_DIR)/services/fluent-bundle.js
 
 # environment constants
 
@@ -123,6 +124,8 @@ css: $(BUILD_CSS)
 font: $(FONT_TARGET)
 clean:
 	rm -rf $(BUILD_DIR)
+	rm -f $(FLUENT_BUNDLE)
+	rm -f $(SRC_DIR)/services/locale-imports.ts
 # This adds an entry to your local .git/config file that looks like this:
 # [include]
 # 	path = ../.gitconfig
@@ -132,7 +135,7 @@ setup-gitconfig:
 prettify-all:
 	npx prettier --write '**/*.{ts,js,css,html}'
 
-$(BUILD_JS): $(INTRO) $(SOURCES_FULL) $(OUTRO) $(BUILD_DIR_EXISTS)
+$(BUILD_JS): $(INTRO) $(SOURCES_FULL) $(OUTRO) $(BUILD_DIR_EXISTS) $(FLUENT_BUNDLE)
 	cat $^ | ./script/escape-non-ascii | ./script/tsc-emit-only > $@
 	perl -pi -e s/mq-/$(MQ_CLASS_PREFIX)mq-/g $@
 	perl -pi -e s/{VERSION}/v$(VERSION)/ $@
@@ -140,7 +143,7 @@ $(BUILD_JS): $(INTRO) $(SOURCES_FULL) $(OUTRO) $(BUILD_DIR_EXISTS)
 $(UGLY_JS): $(BUILD_JS) $(NODE_MODULES_INSTALLED)
 	$(UGLIFY) $(UGLIFY_OPTS) < $< > $@
 
-$(BASIC_JS): $(INTRO) $(SOURCES_BASIC) $(OUTRO) $(BUILD_DIR_EXISTS)
+$(BASIC_JS): $(INTRO) $(SOURCES_BASIC) $(OUTRO) $(BUILD_DIR_EXISTS) $(FLUENT_BUNDLE)
 	cat $^ | ./script/escape-non-ascii | ./script/tsc-emit-only > $@
 	perl -pi -e s/mq-/$(MQ_CLASS_PREFIX)mq-/g $@
 	perl -pi -e s/{VERSION}/v$(VERSION)/ $@
@@ -171,6 +174,12 @@ $(FONT_TARGET): $(FONT_SOURCE) $(BUILD_DIR_EXISTS)
 	rm -rf $@
 	cp -r $< $@
 
+$(FLUENT_BUNDLE): package.json script/bundle-fluent.js $(NODE_MODULES_INSTALLED)
+	node script/bundle-fluent.js
+
+$(SRC_DIR)/services/locale-imports.ts: script/generate-locale-imports.js src/locale/*/messages.ftl
+	node script/generate-locale-imports.js
+
 #
 # -*- Test tasks -*-
 #
@@ -190,6 +199,6 @@ benchmark: dev $(BUILD_TEST) $(BASIC_JS) $(BASIC_CSS)
 	@echo
 	@echo "** now open benchmark/{render,select,update}.html in your browser. **"
 
-$(BUILD_TEST): $(INTRO) $(SOURCES_FULL) $(TEST_SUPPORT) $(UNIT_TESTS) $(OUTRO) $(BUILD_DIR_EXISTS)
+$(BUILD_TEST): $(INTRO) $(SOURCES_FULL) $(TEST_SUPPORT) $(UNIT_TESTS) $(OUTRO) $(BUILD_DIR_EXISTS) $(FLUENT_BUNDLE)
 	cat $^ | ./script/tsc-emit-only > $@
 	perl -pi -e s/{VERSION}/v$(VERSION)/ $@
