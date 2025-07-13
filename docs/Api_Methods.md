@@ -273,11 +273,11 @@ mathField.typedText('x=-b\\pm \\sqrt b^2 -4ac');
 
 ## .setAriaLabel(ariaLabel)
 
-Specify an [ARIA label][`aria-label`] for this field, for screen readers. The actual [`aria-label`] includes this label followed by the math content of the field as speech. Default: `'Math Input'`
+Specify an [ARIA label][`aria-label`] for this field, for screen readers. The actual [`aria-label`] includes this label followed by the math content of the field as speech. Default: `'Math Input'` for English or `'Entrada Matemática'` for Spanish
 
 ## .getAriaLabel()
 
-Returns the [ARIA label][`aria-label`] for this field, for screen readers. If no ARIA label has been specified, `'Math Input'` is returned.
+Returns the [ARIA label][`aria-label`] for this field, for screen readers. If no ARIA label has been specified, the default is returned (`'Math Input'` for English, `'Entrada Matemática'` for Spanish).
 
 ## .setAriaPostLabel(ariaPostLabel, timeout)
 
@@ -306,6 +306,67 @@ if (!mathField.isUserSelecting()) {
 ## .config(new_config)
 
 Changes the [configuration](Config.md) of just this math field.
+
+## Language Support
+
+MathQuill supports internationalization through the `language` configuration option. This affects how mathematical expressions are read aloud for screen readers and accessibility tools.
+
+### Setting Language
+
+You can set the language when creating a MathField:
+
+```javascript
+var mathField = MQ.MathField(document.getElementById('math-input'), {
+  language: 'es' // Spanish
+});
+```
+
+Or change it later using the config method:
+
+```javascript
+mathField.config({ language: 'en' }); // Switch to English
+```
+
+### Supported Languages
+
+Currently supported language codes:
+
+- `'en'` - English (default)
+- `'es'` - Spanish (Español)
+
+### Language Features
+
+The language setting affects how mathematical expressions are read aloud by screen readers. This includes operators, inequalities, fractions, powers, mathematical structures, and function names. For example, `sin(x^2) ≤ 1/2` reads as "sine of x squared less than or equal to 1 half" in English or "seno de x al cuadrado menor o igual que 1 medio" in Spanish.
+
+### Language Validation
+
+When creating a MathField with an invalid language code, an error will be thrown:
+
+```javascript
+// This will throw an error
+var mathField = MQ.MathField(element, { language: 'invalid' });
+```
+
+When using `.config()` to change language after creation, invalid languages will fall back to English with a console warning:
+
+```javascript
+mathField.config({ language: 'invalid' }); // Falls back to English, logs warning
+```
+
+### Examples
+
+```javascript
+// English math field (default)
+var englishField = MQ.MathField(document.getElementById('english-math'));
+
+// Spanish math field
+var spanishField = MQ.MathField(document.getElementById('spanish-math'), {
+  language: 'es'
+});
+
+// Global default language
+MQ.config({ language: 'es' }); // All new fields will default to Spanish
+```
 
 ## .dropEmbedded(pageX, pageY, options) **[ᴇxᴘᴇʀɪᴍᴇɴᴛᴀʟ](#note-on-experimental-features)**
 
