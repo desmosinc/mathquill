@@ -37,7 +37,8 @@ for (const lang of languages) {
     const strippedContent = content
       .split('\n')
       .filter((line) => !line.trim().startsWith('#') && line.trim() !== '')
-      .join('\n');
+      .join('\n')
+      .trim(); // Ensure clean content without trailing whitespace
     embeddedMessages[lang] = strippedContent;
     console.log(
       `✓ Loaded ${lang} messages (${content.length} chars -> ${strippedContent.length} chars after stripping comments)`

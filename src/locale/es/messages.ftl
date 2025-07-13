@@ -86,6 +86,18 @@ power-ordinal = a la { $number ->
     *[other] { $number }ª
 } potencia
 power-zero = a la 0 potencia
+power-negative = a la negativo { $number ->
+    [1] primera
+    [2] segunda
+    [3] tercera
+    [4] cuarta
+    [5] quinta
+    [6] sexta
+    [7] séptima
+    [8] octava
+    [9] novena
+    *[other] { $number }ª
+} potencia
 
 # Basic mathematical operators
 plus = más
@@ -94,6 +106,15 @@ minus = menos
 negative = negativo
 times = por
 dot = punto
+equals = igual
+
+# Inequality operators
+less-than = menor que
+greater-than = mayor que
+less-than-or-equal-to = menor o igual que
+greater-than-or-equal-to = mayor o igual que
+not-equal-to = no igual a
+approximately-equal-to = aproximadamente igual a
 
 # Mixed fractions
 and = y
@@ -143,6 +164,24 @@ fraction-shortcut-7-9 = 7 novenos
 fraction-shortcut-8-8 = 8 octavos
 fraction-shortcut-8-9 = 8 novenos
 fraction-shortcut-9-9 = 9 novenos
+
+# Fraction denominators (singular and plural forms)
+fraction-denom-2-singular = medio
+fraction-denom-2-plural = medios
+fraction-denom-3-singular = tercio
+fraction-denom-3-plural = tercios
+fraction-denom-4-singular = cuarto
+fraction-denom-4-plural = cuartos
+fraction-denom-5-singular = quinto
+fraction-denom-5-plural = quintos
+fraction-denom-6-singular = sexto
+fraction-denom-6-plural = sextos
+fraction-denom-7-singular = séptimo
+fraction-denom-7-plural = séptimos
+fraction-denom-8-singular = octavo
+fraction-denom-8-plural = octavos
+fraction-denom-9-singular = noveno
+fraction-denom-9-plural = novenos
 
 # Summation and Product Notation
 start-sum = Inicio suma desde

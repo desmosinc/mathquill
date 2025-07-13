@@ -103,12 +103,49 @@ power-ordinal = to the { \$number }{ \$number ->
     *[other] th
 } power
 power-zero = to the 0 power
+power-negative = to the negative { \$number }{ \$number ->
+    [1] st
+    [21] st
+    [31] st
+    [41] st
+    [51] st
+    [61] st
+    [71] st
+    [81] st
+    [91] st
+    [2] nd
+    [22] nd
+    [32] nd
+    [42] nd
+    [52] nd
+    [62] nd
+    [72] nd
+    [82] nd
+    [92] nd
+    [3] rd
+    [23] rd
+    [33] rd
+    [43] rd
+    [53] rd
+    [63] rd
+    [73] rd
+    [83] rd
+    [93] rd
+    *[other] th
+} power
 plus = plus
 positive = positive
 minus = minus
 negative = negative
 times = times
 dot = dot
+equals = equals
+less-than = less than
+greater-than = greater than
+less-than-or-equal-to = less than or equal to
+greater-than-or-equal-to = greater than or equal to
+not-equal-to = not equal to
+approximately-equal-to = approximately equal to
 and = and
 fraction-shortcut-1-2 = 1 half
 fraction-shortcut-1-3 = 1 third
@@ -154,6 +191,22 @@ fraction-shortcut-7-9 = 7 ninths
 fraction-shortcut-8-8 = 8 eighths
 fraction-shortcut-8-9 = 8 ninths
 fraction-shortcut-9-9 = 9 ninths
+fraction-denom-2-singular = half
+fraction-denom-2-plural = halves
+fraction-denom-3-singular = third
+fraction-denom-3-plural = thirds
+fraction-denom-4-singular = quarter
+fraction-denom-4-plural = quarters
+fraction-denom-5-singular = fifth
+fraction-denom-5-plural = fifths
+fraction-denom-6-singular = sixth
+fraction-denom-6-plural = sixths
+fraction-denom-7-singular = seventh
+fraction-denom-7-plural = sevenths
+fraction-denom-8-singular = eighth
+fraction-denom-8-plural = eighths
+fraction-denom-9-singular = ninth
+fraction-denom-9-plural = ninths
 start-sum = Start sum from
 end-sum = end sum
 start-product = Start product from
@@ -264,12 +317,31 @@ power-ordinal = a la { \$number ->
     *[other] { \$number }ª
 } potencia
 power-zero = a la 0 potencia
+power-negative = a la negativo { \$number ->
+    [1] primera
+    [2] segunda
+    [3] tercera
+    [4] cuarta
+    [5] quinta
+    [6] sexta
+    [7] séptima
+    [8] octava
+    [9] novena
+    *[other] { \$number }ª
+} potencia
 plus = más
 positive = positivo
 minus = menos
 negative = negativo
 times = por
 dot = punto
+equals = igual
+less-than = menor que
+greater-than = mayor que
+less-than-or-equal-to = menor o igual que
+greater-than-or-equal-to = mayor o igual que
+not-equal-to = no igual a
+approximately-equal-to = aproximadamente igual a
 and = y
 fraction-shortcut-1-2 = 1 medio
 fraction-shortcut-1-3 = 1 tercio
@@ -315,6 +387,22 @@ fraction-shortcut-7-9 = 7 novenos
 fraction-shortcut-8-8 = 8 octavos
 fraction-shortcut-8-9 = 8 novenos
 fraction-shortcut-9-9 = 9 novenos
+fraction-denom-2-singular = medio
+fraction-denom-2-plural = medios
+fraction-denom-3-singular = tercio
+fraction-denom-3-plural = tercios
+fraction-denom-4-singular = cuarto
+fraction-denom-4-plural = cuartos
+fraction-denom-5-singular = quinto
+fraction-denom-5-plural = quintos
+fraction-denom-6-singular = sexto
+fraction-denom-6-plural = sextos
+fraction-denom-7-singular = séptimo
+fraction-denom-7-plural = séptimos
+fraction-denom-8-singular = octavo
+fraction-denom-8-plural = octavos
+fraction-denom-9-singular = noveno
+fraction-denom-9-plural = novenos
 start-sum = Inicio suma desde
 end-sum = fin suma
 start-product = Inicio producto desde

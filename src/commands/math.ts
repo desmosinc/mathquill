@@ -717,7 +717,7 @@ API.StaticMath = function (APIClasses: APIClasses) {
     static RootBlock = MathBlock;
 
     __mathquillify(opts: ConfigOptions, _interfaceVersion: number) {
-      this.config(opts as MathQuill.v3.Config);
+      (this.config as any)(opts as MathQuill.v3.Config, true);
       // `mathquillify` calls `createTextarea`
       super.mathquillify('mq-math-mode');
       this.__controller.setupStaticField();
@@ -767,7 +767,7 @@ API.MathField = function (APIClasses: APIClasses) {
     static RootBlock = RootMathBlock;
 
     __mathquillify(opts: ConfigOptions, interfaceVersion: number) {
-      this.config(opts as MathQuill.v3.Config);
+      (this.config as any)(opts as MathQuill.v3.Config, true);
       if (interfaceVersion > 1) this.__controller.root.reflow = noop;
       super.mathquillify('mq-editable-field mq-math-mode');
       // TODO: Why does this need to be deleted (contrary to the type definition)? Could we set it to `noop` instead?
