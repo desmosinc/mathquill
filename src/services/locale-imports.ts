@@ -17,8 +17,7 @@
 
 // Embedded locale messages for immediate synchronous access
 const EMBEDDED_MESSAGES: Record<string, string> = {
-  en: `# Mathematical Structure Delimiters
-start-block = Start { \$blockType ->
+  en: `start-block = Start { \$blockType ->
     [Fraction] Fraction
     [Root] Root
     [CubeRoot] Cube Root
@@ -28,7 +27,6 @@ start-block = Start { \$blockType ->
     [Text] Text
     *[other] { \$blockType }
 }
-
 end-block = End { \$blockType ->
     [Fraction] Fraction
     [Root] Root
@@ -39,16 +37,12 @@ end-block = End { \$blockType ->
     [Text] Text
     *[other] { \$blockType }
 }
-
-# Fraction-specific messages
 start-fraction = Start Fraction
 end-fraction = End Fraction
 start-nested-fraction = Start Nested Fraction
 nested-over = nested over
 end-nested-fraction = End Nested Fraction
 over = over
-
-# Root-specific messages
 start-root = Start Root
 end-root = End Root
 start-cube-root = Start Cube Root
@@ -56,40 +50,26 @@ end-cube-root = End Cube Root
 root-index = Root Index
 start-nth-root = Start Root
 end-nth-root = End Root
-
-# Other structures
 start-absolute-value = Start Absolute Value
 end-absolute-value = End Absolute Value
 start-binomial = Start Binomial
 end-binomial = End Binomial
 choose = Choose
-
-# Summation and bounds
 start-lower-bound = Start Lower Bound
 end-lower-bound = End Lower Bound
 start-upper-bound = Start Upper Bound
 end-upper-bound = End Upper Bound
-
-# Binomial indices
 start-upper-index = Start Upper Index
 end-upper-index = End Upper Index
 start-lower-index = Start Lower Index
 end-lower-index = End Lower Index
-
-# Text blocks
 start-text = Start Text
 end-text = End Text
-
-# Token blocks
 start-token = Start Token
 end-token = End Token
-
-# Subscript and Superscript
 subscript = Subscript
 superscript = Superscript
 baseline = Baseline
-
-# Power expressions
 power-squared = squared
 power-cubed = cubed
 power-ordinal = to the { \$number }{ \$number ->
@@ -123,19 +103,13 @@ power-ordinal = to the { \$number }{ \$number ->
     *[other] th
 } power
 power-zero = to the 0 power
-
-# Basic mathematical operators
 plus = plus
 positive = positive
 minus = minus
 negative = negative
 times = times
 dot = dot
-
-# Mixed fractions
 and = and
-
-# Fraction shortcuts with simple key-value pairs
 fraction-shortcut-1-2 = 1 half
 fraction-shortcut-1-3 = 1 third
 fraction-shortcut-1-4 = 1 quarter
@@ -180,29 +154,19 @@ fraction-shortcut-7-9 = 7 ninths
 fraction-shortcut-8-8 = 8 eighths
 fraction-shortcut-8-9 = 8 ninths
 fraction-shortcut-9-9 = 9 ninths
-
-# Summation and Product Notation
 start-sum = Start sum from
 end-sum = end sum
 start-product = Start product from
 end-product = end product
 start-coproduct = Start co product from
 end-coproduct = end co product
-
-# Integrals
 start-integral = Start integral from
 end-integral = end integral
-
-# Consolidated "to" message (used by summation, product, coproduct, integral)
 to = to
-
-# Directional navigation
 before = before
 after = after
 beginning-of = beginning of
 end-of = end of
-
-# Generic fallback messages
 algebraic-fraction = { \$numerator } over { \$denominator }
 algebraic-power = { \$base } to the { \$exponent } power
 algebraic-root = { \$index ->
@@ -210,11 +174,7 @@ algebraic-root = { \$index ->
     [3] cube root of { \$radicand }
     *[other] { \$index } root of { \$radicand }
 }
-
-# Default ARIA labels
 default-aria-label = Math Input
-
-# Auto operator names (can be overridden by user configuration)
 auto-operator-sin = sine
 auto-operator-cos = cosine
 auto-operator-tan = tangent
@@ -236,8 +196,7 @@ auto-operator-min = minimum
 auto-operator-gcd = greatest common divisor
 auto-operator-standard-deviation = standard deviation`,
 
-  es: `# Mathematical Structure Delimiters
-start-block = Inicio { \$blockType ->
+  es: `start-block = Inicio { \$blockType ->
     [Fraction] Fracción
     [Root] Raíz
     [CubeRoot] Raíz Cúbica
@@ -247,7 +206,6 @@ start-block = Inicio { \$blockType ->
     [Text] Texto
     *[other] { \$blockType }
 }
-
 end-block = Fin { \$blockType ->
     [Fraction] Fracción
     [Root] Raíz
@@ -258,16 +216,12 @@ end-block = Fin { \$blockType ->
     [Text] Texto
     *[other] { \$blockType }
 }
-
-# Fraction-specific messages
 start-fraction = Inicio Fracción
 end-fraction = Fin Fracción
 start-nested-fraction = Inicio Fracción Anidada
 nested-over = sobre anidado
 end-nested-fraction = Fin Fracción Anidada
 over = sobre
-
-# Root-specific messages
 start-root = Inicio Raíz
 end-root = Fin Raíz
 start-cube-root = Inicio Raíz Cúbica
@@ -275,40 +229,26 @@ end-cube-root = Fin Raíz Cúbica
 root-index = Índice de Raíz
 start-nth-root = Inicio Raíz
 end-nth-root = Fin Raíz
-
-# Other structures
 start-absolute-value = Inicio Valor Absoluto
 end-absolute-value = Fin Valor Absoluto
 start-binomial = Inicio Binomial
 end-binomial = Fin Binomial
 choose = Elige
-
-# Summation and bounds
 start-lower-bound = Inicio Límite Inferior
 end-lower-bound = Fin Límite Inferior
 start-upper-bound = Inicio Límite Superior
 end-upper-bound = Fin Límite Superior
-
-# Binomial indices
 start-upper-index = Inicio Índice Superior
 end-upper-index = Fin Índice Superior
 start-lower-index = Inicio Índice Inferior
 end-lower-index = Fin Índice Inferior
-
-# Text blocks
 start-text = Inicio Texto
 end-text = Fin Texto
-
-# Token blocks
 start-token = Inicio Token
 end-token = Fin Token
-
-# Subscript and Superscript
 subscript = Subíndice
 superscript = Superíndice
 baseline = Línea Base
-
-# Power expressions
 power-squared = al cuadrado
 power-cubed = al cubo
 power-ordinal = a la { \$number ->
@@ -324,19 +264,13 @@ power-ordinal = a la { \$number ->
     *[other] { \$number }ª
 } potencia
 power-zero = a la 0 potencia
-
-# Basic mathematical operators
 plus = más
 positive = positivo
 minus = menos
 negative = negativo
 times = por
 dot = punto
-
-# Mixed fractions
 and = y
-
-# Fraction shortcuts with simple key-value pairs
 fraction-shortcut-1-2 = 1 medio
 fraction-shortcut-1-3 = 1 tercio
 fraction-shortcut-1-4 = 1 cuarto
@@ -381,29 +315,19 @@ fraction-shortcut-7-9 = 7 novenos
 fraction-shortcut-8-8 = 8 octavos
 fraction-shortcut-8-9 = 8 novenos
 fraction-shortcut-9-9 = 9 novenos
-
-# Summation and Product Notation
 start-sum = Inicio suma desde
 end-sum = fin suma
 start-product = Inicio producto desde
 end-product = fin producto
 start-coproduct = Inicio co producto desde
 end-coproduct = fin co producto
-
-# Integrals
 start-integral = Inicio integral desde
 end-integral = fin integral
-
-# Consolidated "to" message (used by summation, product, coproduct, integral)
 to = hasta
-
-# Directional navigation
 before = antes
 after = después
 beginning-of = principio de
 end-of = final de
-
-# Generic fallback messages
 algebraic-fraction = { \$numerator } sobre { \$denominator }
 algebraic-power = { \$base } a la { \$exponent } potencia
 algebraic-root = { \$index ->
@@ -411,11 +335,7 @@ algebraic-root = { \$index ->
     [3] raíz cúbica de { \$radicand }
     *[other] raíz { \$index } de { \$radicand }
 }
-
-# Default ARIA labels
 default-aria-label = Entrada Matemática
-
-# Auto operator names (can be overridden by user configuration)
 auto-operator-sin = seno
 auto-operator-cos = coseno
 auto-operator-tan = tangente

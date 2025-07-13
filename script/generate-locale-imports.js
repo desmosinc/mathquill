@@ -33,8 +33,15 @@ for (const lang of languages) {
   const messagesFile = path.join(localeDir, lang, 'messages.ftl');
   if (fs.existsSync(messagesFile)) {
     const content = fs.readFileSync(messagesFile, 'utf8');
-    embeddedMessages[lang] = content;
-    console.log(`✓ Loaded ${lang} messages (${content.length} chars)`);
+    // Strip out Fluent comments (lines starting with #) and empty lines
+    const strippedContent = content
+      .split('\n')
+      .filter((line) => !line.trim().startsWith('#') && line.trim() !== '')
+      .join('\n');
+    embeddedMessages[lang] = strippedContent;
+    console.log(
+      `✓ Loaded ${lang} messages (${content.length} chars -> ${strippedContent.length} chars after stripping comments)`
+    );
   } else {
     console.warn(`⚠ Missing messages.ftl for language: ${lang}`);
   }
