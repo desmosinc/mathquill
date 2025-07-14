@@ -2,8 +2,6 @@ type TextareaKeyboardEventListeners = Partial<{
   [K in keyof HTMLElementEventMap]: (event: HTMLElementEventMap[K]) => any;
 }>;
 
-// Note: getLocalization function is available globally from services/localization.ts
-
 /*********************************************
  * Controller for a MathQuill instance
  ********************************************/
@@ -26,6 +24,7 @@ class ControllerBase {
   ariaPostLabel: string;
   language: string; // Store this controller's language
   private explicitLanguage: boolean; // Track if language was explicitly set
+  private localization: MathQuillLocalization; // This controller's localization instance
   readonly cursor: Cursor;
   editable: boolean | undefined;
   _ariaAlertTimeout: TimeoutId;
@@ -55,10 +54,12 @@ class ControllerBase {
     this.options = options;
 
     this.aria = new Aria(this.getControllerSelf());
-    // Initialize language from options, defaulting to 'en'
+    // Initialize language from options, defaulting to global language
     // Start with explicitLanguage = false, will be set to true if language is explicitly configured
     this.explicitLanguage = false;
-    this.language = options.language || 'en';
+    this.language = options.language || getCurrentGlobalLanguage();
+    // Create this controller's localization instance
+    this.localization = new MathQuillLocalization(this.language);
     // Set the initial ARIA label based on this controller's language using Fluent
     // We'll set this after the method is defined, for now use a placeholder
     this.ariaLabel = '';
@@ -74,22 +75,23 @@ class ControllerBase {
     // TODO: stop depending on root.cursor, and rm it
 
     // Register for language change notifications to update mathspeak and aria label
-    this.unregisterLanguageChange = getLocalization().onLanguageChange(() => {
+    this.unregisterLanguageChange = onGlobalLanguageChange(() => {
       // Only update language for controllers that don't have an explicit language set
       if (!this.explicitLanguage) {
         // Update this controller's language to match the new global language
-        this.language = getLocalization().getCurrentLanguage();
+        this.language = getCurrentGlobalLanguage();
+        // Update this controller's localization instance
+        this.localization = new MathQuillLocalization(this.language);
 
         // Update the default aria label if it hasn't been customized
-        const currentLocalization = getLocalization();
         if (
           this.ariaLabel ===
-            currentLocalization.formatMessage('default-aria-label') ||
+            this.localization.formatMessage('default-aria-label') ||
           this.ariaLabel === 'Math Input' ||
           this.ariaLabel === 'Entrada Matemática'
         ) {
           this.ariaLabel =
-            currentLocalization.formatMessage('default-aria-label');
+            this.localization.formatMessage('default-aria-label');
         }
         this.updateMathspeak();
       }
@@ -106,7 +108,9 @@ class ControllerBase {
 
   updateAriaLabel() {
     // Update this controller's language to match the current global language
-    this.language = getLocalization().getCurrentLanguage();
+    this.language = getCurrentGlobalLanguage();
+    // Update this controller's localization instance
+    this.localization = new MathQuillLocalization(this.language);
     // Update ARIA label if it's still the default (hasn't been customized)
     const newDefaultLabel = this.getDefaultAriaLabel();
     if (
@@ -119,27 +123,20 @@ class ControllerBase {
 
   // Helper method to get the default ARIA label for this controller's language
   private getDefaultAriaLabel(): string {
-    // Create a temporary localization instance for this controller's language
-    // We need to import the MathQuillLocalization class to instantiate it
-    const tempLocalization = new (getLocalization().constructor as any)(
-      this.language
-    );
-    return tempLocalization.formatMessage('default-aria-label');
+    return this.localization.formatMessage('default-aria-label');
   }
 
   // Public method to get a localization instance for this controller's language
   // This can be used by math elements for mathspeak generation
   getLocalizationForController() {
-    const globalLocalization = getLocalization();
+    return this.localization;
+  }
 
-    // For controllers with explicit languages, create isolated localization instances
-    if (this.explicitLanguage) {
-      return new (globalLocalization.constructor as any)(this.language);
-    }
-
-    // For controllers without explicit languages, just use the global localization
-    // This ensures they follow global language changes automatically
-    return globalLocalization;
+  // Method to update the controller's language (called when explicitly set)
+  setLanguage(language: string) {
+    this.language = language;
+    this.localization = new MathQuillLocalization(language);
+    this.explicitLanguage = true;
   }
 
   handle(name: HandlersWithDirection, dir: Direction): void;
@@ -280,23 +277,34 @@ class ControllerBase {
   setOverflowClasses() {}
 }
 
-// Helper function for math elements to get their controller's localization
-// instead of the global localization
-function getControllerLocalization(node: any) {
+/**
+ * Helper function for math elements to get their controller's localization
+ *
+ * This function traverses up the MQ node tree to find a controller with localization,
+ * providing a fallback to global localization if no controller is found.
+ *
+ * @param node - The MQNode to start the search from
+ * @returns A MathQuillLocalization instance for the found controller or global fallback
+ */
+function getControllerLocalization(node: MQNode) {
   // Walk up the tree to find the controller
-  let current = node;
-  while (current && !current.controller) {
+  let current: MQNode | undefined = node;
+  while (current && !(current as any).controller) {
     current = current.parent;
   }
 
   if (
     current &&
-    current.controller &&
-    current.controller.getLocalizationForController
+    (current as any).controller &&
+    (current as any).controller.getLocalizationForController
   ) {
-    return current.controller.getLocalizationForController();
+    // Always get the controller's current localization instance
+    // This ensures we get the latest language even if it was recently changed
+    return (current as any).controller.getLocalizationForController();
   }
 
-  // Fallback to global localization if controller not found
-  return getLocalization();
+  // Fallback: create a localization instance with the current global language
+  // This can happen in tests or when math elements are created in isolation
+  // Always create a new instance to ensure we get the latest global language
+  return new MathQuillLocalization(getCurrentGlobalLanguage());
 }

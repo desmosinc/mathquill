@@ -3,13 +3,13 @@ suite('Localization Fluent Integration', function () {
 
   setup(function () {
     // Reset to English before each test
-    var localization = getLocalization();
+    var localization = MQ.L10N.create('en');
     localization.setLanguage('en');
   });
 
   suite('Fluent Bundle Configuration', function () {
     test('creates bundles without Unicode isolation marks', function () {
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
 
       // Test a message that could potentially have isolation marks
       var result = localization.formatMessage('default-aria-label');
@@ -24,7 +24,7 @@ suite('Localization Fluent Integration', function () {
     });
 
     test('formats parametric messages without isolation marks', function () {
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
 
       var result = localization.formatMessage('start-block', {
         blockType: 'Fraction'
@@ -39,7 +39,7 @@ suite('Localization Fluent Integration', function () {
     });
 
     test('handles Spanish messages without isolation marks', function () {
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
       localization.setLanguage('es');
 
       var result = localization.formatMessage('start-block', {
@@ -82,7 +82,7 @@ suite('Localization Fluent Integration', function () {
     });
 
     test('parses FTL syntax correctly', function () {
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
 
       // Test parametric message parsing
       var result = localization.formatMessage('power-ordinal', { number: 5 });
@@ -95,7 +95,7 @@ suite('Localization Fluent Integration', function () {
     });
 
     test('handles missing parameters gracefully', function () {
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
 
       // Try to format a parametric message without providing parameters
       var result = localization.formatMessage('start-block');
@@ -106,7 +106,7 @@ suite('Localization Fluent Integration', function () {
     });
 
     test('handles complex Fluent expressions', function () {
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
 
       // Test fraction shortcuts which use complex logic
       var result = localization.formatFractionShortcut(1, 2);
@@ -121,7 +121,7 @@ suite('Localization Fluent Integration', function () {
 
   suite('Bundle Caching', function () {
     test('caches bundles for performance', function () {
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
 
       // Switch to Spanish
       localization.setLanguage('es');
@@ -142,7 +142,7 @@ suite('Localization Fluent Integration', function () {
     });
 
     test('cache works with language variants', function () {
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
 
       // Request en-US (should resolve to en)
       localization.setLanguage('en-US');
@@ -162,7 +162,7 @@ suite('Localization Fluent Integration', function () {
     test('handles malformed FTL gracefully', function () {
       // This test ensures the system doesn't crash on malformed FTL
       // Since we control the FTL files, this is more of a safety net
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
 
       // Try to format a non-existent message
       var result = localization.formatMessage('completely-nonexistent-message');
@@ -170,7 +170,7 @@ suite('Localization Fluent Integration', function () {
     });
 
     test('handles fallback on bundle creation failure', function () {
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
 
       // Try to set an unsupported language
       localization.setLanguage('xyz'); // Should fall back to English

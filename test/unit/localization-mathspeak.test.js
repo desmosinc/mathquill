@@ -3,8 +3,7 @@ suite('Localization Mathspeak Integration', function () {
 
   setup(function () {
     // Reset to English before each test
-    var localization = getLocalization();
-    localization.setLanguage('en');
+    MQ.L10N.setLanguage('en');
   });
 
   suite('Mathspeak Recomputation on Language Change', function () {
@@ -19,8 +18,7 @@ suite('Localization Mathspeak Integration', function () {
       assert.equal(englishMathspeak, '1 half');
 
       // Switch to Spanish
-      var localization = getLocalization();
-      localization.setLanguage('es');
+      MQ.L10N.setLanguage('es');
 
       // Force mathspeak update (simulating what happens in real usage)
       mq.__controller.updateMathspeak();
@@ -38,8 +36,7 @@ suite('Localization Mathspeak Integration', function () {
       assert.equal(englishLabel, 'Math Input');
 
       // Switch to Spanish
-      var localization = getLocalization();
-      localization.setLanguage('es');
+      MQ.L10N.setLanguage('es');
 
       // Force aria label update (simulating what happens in real usage)
       mq.__controller.updateAriaLabel();
@@ -57,8 +54,7 @@ suite('Localization Mathspeak Integration', function () {
       assert.equal(mq.getAriaLabel(), 'Custom Calculator');
 
       // Switch language
-      var localization = getLocalization();
-      localization.setLanguage('es');
+      MQ.L10N.setLanguage('es');
 
       // Custom label should be preserved
       assert.equal(mq.getAriaLabel(), 'Custom Calculator');
@@ -67,7 +63,7 @@ suite('Localization Mathspeak Integration', function () {
 
   suite('Aria Label Key Normalization', function () {
     test('normalizes aria label keys with hyphens', function () {
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
 
       // Test that spaces are converted to hyphens in aria label keys
       assert.equal(
@@ -81,8 +77,8 @@ suite('Localization Mathspeak Integration', function () {
     });
 
     test('normalizes aria label keys in Spanish', function () {
-      var localization = getLocalization();
-      localization.setLanguage('es');
+      MQ.L10N.setLanguage('es');
+      var localization = MQ.L10N.create('es');
 
       assert.equal(
         localization.formatMessage('start-lower-bound'),
@@ -97,7 +93,7 @@ suite('Localization Mathspeak Integration', function () {
 
   suite('Fraction Denominator Pluralization', function () {
     test('uses singular forms for numerator = 1 in English', function () {
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
       localization.setLanguage('en');
 
       var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
@@ -114,7 +110,7 @@ suite('Localization Mathspeak Integration', function () {
     });
 
     test('uses plural forms for numerator > 1 in English', function () {
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
       localization.setLanguage('en');
 
       var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
@@ -131,10 +127,13 @@ suite('Localization Mathspeak Integration', function () {
     });
 
     test('uses singular forms for numerator = 1 in Spanish', function () {
-      var localization = getLocalization();
-      localization.setLanguage('es');
-
       var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+      // Switch to Spanish after creating the field
+      MQ.L10N.setLanguage('es');
+
+      // Force mathspeak update to ensure Spanish language is applied
+      mq.__controller.updateMathspeak();
 
       // Test singular forms
       mq.latex('\\frac{1}{2}');
@@ -148,10 +147,13 @@ suite('Localization Mathspeak Integration', function () {
     });
 
     test('uses plural forms for numerator > 1 in Spanish', function () {
-      var localization = getLocalization();
-      localization.setLanguage('es');
-
       var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+      // Switch to Spanish after creating the field
+      MQ.L10N.setLanguage('es');
+
+      // Force mathspeak update to ensure Spanish language is applied
+      mq.__controller.updateMathspeak();
 
       // Test plural forms
       mq.latex('\\frac{2}{2}');
@@ -165,7 +167,7 @@ suite('Localization Mathspeak Integration', function () {
     });
 
     test('uses singular forms for negative numerator with absolute value = 1', function () {
-      var localization = getLocalization();
+      var localization = MQ.L10N.create('en');
       localization.setLanguage('en');
 
       var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
@@ -186,10 +188,13 @@ suite('Localization Mathspeak Integration', function () {
     });
 
     test('uses singular forms for negative numerator with absolute value = 1 in Spanish', function () {
-      var localization = getLocalization();
-      localization.setLanguage('es');
-
       var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+      // Switch to Spanish after creating the field
+      MQ.L10N.setLanguage('es');
+
+      // Force mathspeak update to ensure Spanish language is applied
+      mq.__controller.updateMathspeak();
 
       // Test negative fractions with |numerator| = 1 should use singular
       mq.latex('\\frac{-1}{2}');
@@ -209,8 +214,7 @@ suite('Localization Mathspeak Integration', function () {
 
   suite('Power Expression Number Formatting', function () {
     test('large exponents do not have spaces inserted', function () {
-      var localization = getLocalization();
-      localization.setLanguage('en');
+      MQ.L10N.setLanguage('en');
 
       var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
 
@@ -223,10 +227,13 @@ suite('Localization Mathspeak Integration', function () {
     });
 
     test('ordinal power expressions in Spanish', function () {
-      var localization = getLocalization();
-      localization.setLanguage('es');
-
       var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+      // Switch to Spanish after creating the field
+      MQ.L10N.setLanguage('es');
+
+      // Force mathspeak update to ensure Spanish language is applied
+      mq.__controller.updateMathspeak();
 
       // Test ordinal format for small numbers
       mq.latex('x^4');
@@ -244,8 +251,7 @@ suite('Localization Mathspeak Integration', function () {
     });
 
     test('negative power expressions', function () {
-      var localization = getLocalization();
-      localization.setLanguage('en');
+      MQ.L10N.setLanguage('en');
 
       var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
 
@@ -257,10 +263,11 @@ suite('Localization Mathspeak Integration', function () {
       assert.equal(mq.mathspeak(), '"x" to the negative 2nd power');
 
       // Switch to Spanish
-      localization.setLanguage('es');
+      MQ.L10N.setLanguage('es');
       mq.__controller.updateMathspeak();
 
       mq.latex('10^{-5}');
+      mq.__controller.updateMathspeak();
       assert.equal(mq.mathspeak(), '10 a la negativo quinta potencia');
     });
   });

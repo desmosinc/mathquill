@@ -11,8 +11,6 @@
  * Chrome 54+ on Android works reliably with Talkback.
  ****************************************/
 
-// Note: getLocalization function is available globally from localization.ts
-
 type AriaQueueItem = NodeRef | Fragment | string;
 
 class Aria {
@@ -66,7 +64,7 @@ class Aria {
   }
   queueDirOf(dir: Direction) {
     prayDirection(dir);
-    const localization = getLocalization();
+    const localization = this.controller.getLocalizationForController();
     return this.queue(
       dir === L
         ? localization.formatDirectional('before')
@@ -75,7 +73,7 @@ class Aria {
   }
   queueDirEndOf(dir: Direction) {
     prayDirection(dir);
-    const localization = getLocalization();
+    const localization = this.controller.getLocalizationForController();
     return this.queue(
       dir === L
         ? localization.formatDirectional('beginning-of')

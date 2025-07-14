@@ -885,7 +885,7 @@ class DotSymbol extends DigitGroupingChar {
     // If this dot is being created by the user (typing or navigating to it explicitly),
     // use the localized word. Otherwise, return the actual character so it's pronounced naturally as part of a number.
     if (opts && opts.createdLeftOf) {
-      return getLocalization().formatMessage('dot');
+      return getControllerLocalization(this).formatMessage('dot');
     }
     return '.';
   }
@@ -1292,7 +1292,7 @@ LatexCmds['+'] = class extends PlusMinus {
     super('+', h.text('+'));
   }
   mathspeak(): string {
-    const localization = getLocalization();
+    const localization = getControllerLocalization(this);
     return plusMinusIsBinaryOperator(this)
       ? localization.formatMessage('plus')
       : localization.formatMessage('positive');
@@ -1305,7 +1305,7 @@ class MinusNode extends PlusMinus {
     super('-', h.entityText('&minus;'));
   }
   mathspeak(): string {
-    const localization = getLocalization();
+    const localization = getControllerLocalization(this);
     return plusMinusIsBinaryOperator(this)
       ? localization.formatMessage('minus')
       : localization.formatMessage('negative');
@@ -1328,7 +1328,7 @@ class TimesOperator extends BinaryOperator {
     super('\\cdot ', h.entityText('&middot;'), '*');
   }
   mathspeak(): string {
-    return getLocalization().formatMessage('times');
+    return getControllerLocalization(this).formatMessage('times');
   }
 }
 CharCmds['*'] = LatexCmds.sdot = LatexCmds.cdot = () => new TimesOperator(); //semantically should be &sdot;, but &middot; looks better
@@ -1383,7 +1383,7 @@ class Inequality extends BinaryOperator {
     this.mathspeakName = this.data[`mathspeak${strictness}`];
   }
   mathspeak(): string {
-    const localization = getLocalization();
+    const localization = getControllerLocalization(this);
     const isLess = this.data === less;
 
     if (this.strict) {
@@ -1469,7 +1469,7 @@ class NotEqual extends BinaryOperator {
     super('\\ne ', h.entityText('&ne;'), '≠', 'not equal');
   }
   mathspeak(): string {
-    return getLocalization().formatMessage('not-equal-to');
+    return getControllerLocalization(this).formatMessage('not-equal-to');
   }
 }
 
@@ -1480,7 +1480,7 @@ class Equality extends BinaryOperator {
     super('=', h.text('='), '=', 'equals');
   }
   mathspeak(): string {
-    return getLocalization().formatMessage('equals');
+    return getControllerLocalization(this).formatMessage('equals');
   }
   createLeftOf(cursor: Cursor) {
     var cursorL = cursor[L];
@@ -1533,7 +1533,9 @@ class Approx extends BinaryOperator {
     super('\\approx ', h.entityText('&approx;'), '≈', 'approximately equal');
   }
   mathspeak(): string {
-    return getLocalization().formatMessage('approximately-equal-to');
+    return getControllerLocalization(this).formatMessage(
+      'approximately-equal-to'
+    );
   }
   deleteTowards(dir: Direction, cursor: Cursor) {
     if (dir === L) {

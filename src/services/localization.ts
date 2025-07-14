@@ -1,56 +1,65 @@
 /**
  * Fluent-based localization service for MathQuill screen reader announcements
  * Provides centralized internationalization for mathematical expression descriptions
+ *
+ * Features:
+ * - Type-safe Fluent integration with proper TypeScript definitions
+ * - Graceful language fallback with console warnings for unsupported languages
+ * - Global language state management with change callbacks
+ * - Caching of localization bundles for performance
+ * - Support for language variants (e.g., 'en-US' → 'en')
  */
 
-// TypeScript interfaces for Fluent types
-// Note: FluentBundle and parseResource are provided by fluent-bundle.js
-// which is included in the build before this file
+// TypeScript interfaces for Fluent types that match @fluent/bundle
+// These are provided by fluent-bundle.js which is included in the build
+// Using local interfaces instead of imports to maintain compatibility with concatenated build
 
-// FluentVariable represents the types that can be passed as arguments to Fluent messages
 type FluentVariable = string | number | Date | boolean;
 
 interface FluentMessage {
-  value?: any; // Pattern from Fluent AST
+  value?: any; // Pattern from Fluent AST - opaque type handled by Fluent internals
   attributes?: Record<string, any>;
 }
 
-interface FluentBundle {
+interface FluentBundleType {
   locales: Array<string>;
   hasMessage(id: string): boolean;
   getMessage(id: string): FluentMessage | undefined;
-  addResource(resource: FluentResource): Array<Error>;
+  addResource(resource: FluentResourceType): Array<Error>;
   formatPattern(
-    pattern: any,
+    pattern: any, // Fluent Pattern type - opaque implementation detail
     args?: Record<string, FluentVariable> | null,
     errors?: Array<Error> | null
   ): string;
 }
 
-interface FluentResource {
-  body: Array<any>;
+interface FluentResourceType {
+  body: Array<any>; // Fluent AST nodes - opaque implementation detail
 }
 
-interface FluentBundleConstructor {
-  new (locales: string | Array<string>, options?: any): FluentBundle;
-}
-
-interface FluentResourceConstructor {
-  new (source: string): FluentResource;
-}
-
-declare var FluentBundle: FluentBundleConstructor;
-declare var FluentResource: FluentResourceConstructor;
+declare var FluentBundle: {
+  new (
+    locales: string | Array<string>,
+    options?: {
+      functions?: Record<string, any>;
+      useIsolating?: boolean;
+      transform?: (text: string) => string;
+    }
+  ): FluentBundleType;
+};
+declare var FluentResource: {
+  new (source: string): FluentResourceType;
+};
 declare var parseResource: any;
 
 // Note: These functions are provided by locale-imports.ts
 // They are included in the build before this file
 
 class MathQuillLocalization {
-  private bundle: FluentBundle | null = null;
+  private bundle: FluentBundleType | null = null;
   private requestedLanguage: string = 'en';
   private resolvedLanguage: string = 'en';
-  private bundleCache: Map<string, FluentBundle> = new Map();
+  private bundleCache: Map<string, FluentBundleType> = new Map();
   private languageChangeCallbacks: Set<() => void> = new Set();
 
   constructor(language: string = 'en') {
@@ -119,7 +128,7 @@ class MathQuillLocalization {
   private createFluentBundle(
     language: string,
     ftlContent: string
-  ): FluentBundle {
+  ): FluentBundleType {
     // FluentBundle constructor expects a locale or array of locales
     // Disable Unicode isolation marks (⁩) for cleaner screen reader output
     const bundle = new FluentBundle([language], { useIsolating: false });
@@ -355,22 +364,82 @@ function isValidLanguageCode(language: string): boolean {
   return languagePattern.test(language);
 }
 
-// Global instance
-let mathQuillLocalization: MathQuillLocalization;
+// Global language state manager for coordinating language changes across controllers
+class GlobalLanguageManager {
+  private currentLanguage: string = 'en';
+  private listeners: (() => void)[] = [];
 
-// Get or create the global instance
-function getLocalization(): MathQuillLocalization {
-  if (!mathQuillLocalization) {
-    mathQuillLocalization = new MathQuillLocalization();
+  setLanguage(language: string, throwOnError: boolean = false): void {
+    const resolvedLanguage = MathQuillLocalization.resolveLanguage(language);
+
+    // Warn about unsupported languages, but don't throw errors unless explicitly requested
+    if (!MathQuillLocalization.isLanguageSupported(language)) {
+      if (throwOnError) {
+        throw new Error(`Language "${language}" is not supported`);
+      } else {
+        console.warn(
+          `Language "${language}" is not supported, falling back to "${resolvedLanguage}"`
+        );
+      }
+    }
+
+    if (this.currentLanguage !== resolvedLanguage) {
+      this.currentLanguage = resolvedLanguage;
+      this.notifyListeners();
+    }
   }
-  return mathQuillLocalization;
+
+  getCurrentLanguage(): string {
+    return this.currentLanguage;
+  }
+
+  onLanguageChange(listener: () => void): () => void {
+    this.listeners.push(listener);
+    return () => {
+      const index = this.listeners.indexOf(listener);
+      if (index >= 0) {
+        this.listeners.splice(index, 1);
+      }
+    };
+  }
+
+  private notifyListeners(): void {
+    this.listeners.forEach((listener) => listener());
+  }
 }
 
-// getLocalization is made globally available below
+// Global language manager instance
+const globalLanguageManager = new GlobalLanguageManager();
 
-// @ts-ignore - Make function globally available
-if (typeof window !== 'undefined') {
-  (window as any).getLocalization = getLocalization;
-} else if (typeof global !== 'undefined') {
-  (global as any).getLocalization = getLocalization;
+// Export functions for global language management
+// These functions are used by other modules in the concatenated build
+// and will be made available through the MathQuill API
+
+/**
+ * Sets the global default language for new MathQuill instances
+ * @param language - Language code (e.g., 'en', 'es', 'en-US')
+ * @param throwOnError - Whether to throw errors for unsupported languages (default: false)
+ */
+function setGlobalLanguage(
+  language: string,
+  throwOnError: boolean = false
+): void {
+  globalLanguageManager.setLanguage(language, throwOnError);
+}
+
+/**
+ * Gets the current global default language
+ * @returns The current language code
+ */
+function getCurrentGlobalLanguage(): string {
+  return globalLanguageManager.getCurrentLanguage();
+}
+
+/**
+ * Registers a callback for global language changes
+ * @param listener - Function to call when language changes
+ * @returns Function to unregister the listener
+ */
+function onGlobalLanguageChange(listener: () => void): () => void {
+  return globalLanguageManager.onLanguageChange(listener);
 }

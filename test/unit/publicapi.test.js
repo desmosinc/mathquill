@@ -1611,7 +1611,7 @@ suite('Public API', function () {
       test('bogus language code throws error and falls back to English', function () {
         assert.throws(function () {
           mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
-            language: 'xx'
+            language: 'xxx'
           });
         }, 'Should throw error for invalid language code');
       });

@@ -1,8 +1,10 @@
 /*********************************************************
  * The publicly exposed MathQuill API.
+ *
+ * This file contains the public API methods and classes that are exposed
+ * to users of the MathQuill library. Type safety has been improved throughout
+ * while maintaining backward compatibility with the existing API.
  ********************************************************/
-
-// Note: getLocalization function is available globally from services/localization.ts
 
 type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';
 
@@ -239,11 +241,7 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
     })
   };
 
-  function config(
-    currentOptions: CursorOptions,
-    newOptions: ConfigOptions,
-    isInitialConfig: boolean = false
-  ) {
+  function config(currentOptions: CursorOptions, newOptions: ConfigOptions) {
     for (const name in newOptions) {
       if (newOptions.hasOwnProperty(name)) {
         if (name === 'substituteKeyboardEvents' && version >= 3) {
@@ -259,21 +257,11 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
         var processor = (optionProcessors as any)[name]; // TODO - validate option processors better
         (currentOptions as any)[name] = processor ? processor(value) : value; // TODO - think about typing better
 
-        // Handle language changes by updating the localization service
+        // Handle language changes by updating the global language manager
         if (name === 'language') {
-          if (isInitialConfig) {
-            // During initial creation, throw errors for invalid languages
-            const localization = getLocalization();
-            localization.setLanguage(value, true);
-          } else {
-            // During later config calls, fall back silently
-            try {
-              const localization = getLocalization();
-              localization.setLanguage(value);
-            } catch (error) {
-              console.warn('Failed to set language:', error);
-            }
-          }
+          // Always fall back gracefully for unsupported languages
+          // Log a warning but don't throw errors
+          setGlobalLanguage(value, false);
         }
       }
     }
@@ -340,7 +328,7 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
       return this.__controller.getAriaLabel();
     }
     config(opts: ConfigOptions, isInitialConfig?: boolean) {
-      config(this.__options, opts, isInitialConfig);
+      config(this.__options, opts);
       if (opts.tabindex !== undefined) {
         this.__controller.setTabindex(opts.tabindex);
       }
@@ -356,8 +344,10 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
           (this.__controller as any).explicitLanguage = true;
         }
 
-        // Update the localization system with the new language
-        getLocalization().setLanguage(opts.language);
+        // Update the controller's language and localization
+        if (this.__controller.setLanguage) {
+          this.__controller.setLanguage(opts.language);
+        }
 
         // Update the aria label when language changes
         if (this.__controller.updateAriaLabel) {
@@ -591,10 +581,43 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
   MQ.config = function (opts: ConfigOptions) {
     config(BaseOptions.prototype, opts);
     if (opts.language !== undefined) {
-      // Update the localization system with the new language
-      getLocalization().setLanguage(opts.language);
+      // Update the global language manager with the new language
+      setGlobalLanguage(opts.language);
     }
     return this;
+  };
+
+  // Localization API - accessible only through MathQuill
+  MQ.L10N = {
+    // Create a new localization instance for a specific language
+    create: function (language: string) {
+      return new MathQuillLocalization(language);
+    },
+
+    // Set the global default language for new MathQuill instances
+    setLanguage: function (language: string) {
+      setGlobalLanguage(language);
+    },
+
+    // Get the current global default language
+    getLanguage: function () {
+      return getCurrentGlobalLanguage();
+    },
+
+    // Register a callback for global language changes
+    onLanguageChange: function (listener: () => void) {
+      return onGlobalLanguageChange(listener);
+    },
+
+    // Check if a language is supported
+    isLanguageSupported: function (language: string) {
+      return MathQuillLocalization.isLanguageSupported(language);
+    },
+
+    // Resolve a language code to a supported language
+    resolveLanguage: function (language: string) {
+      return MathQuillLocalization.resolveLanguage(language);
+    }
   };
 
   MQ.registerEmbed = function (

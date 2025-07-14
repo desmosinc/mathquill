@@ -119,7 +119,7 @@ class Style extends MathCommand {
     );
 
     this.ariaLabel = ariaLabel || ctrlSeq.replace(/^\\/, '');
-    const localization = getLocalization();
+    const localization = getControllerLocalization(this);
     this.mathspeakTemplate = [
       localization.formatStartBlock(this.ariaLabel) + ',',
       ', ' + localization.formatEndBlock(this.ariaLabel)
@@ -253,7 +253,7 @@ LatexCmds.textcolor = class extends MathCommand {
       )
     );
     this.ariaLabel = color.replace(/^\\/, '');
-    const localization = getLocalization();
+    const localization = getControllerLocalization(this);
     this.mathspeakTemplate = [
       localization.formatStartBlock(this.ariaLabel) + ',',
       ', ' + localization.formatEndBlock(this.ariaLabel)
@@ -306,7 +306,7 @@ var Class = (LatexCmds['class'] = class extends MathCommand {
           h.block('span', { class: `mq-class ${cls}` }, blocks[0])
         );
         this.ariaLabel = cls + ' class';
-        const localization = getLocalization();
+        const localization = getControllerLocalization(this);
         this.mathspeakTemplate = [
           localization.formatStartBlock(this.ariaLabel) + ',',
           ', ' + localization.formatEndBlock(this.ariaLabel)
@@ -754,7 +754,7 @@ class SummationNotation extends MathCommand {
     this.checkCursorContextClose(ctx);
   }
   mathspeak() {
-    const localization = getLocalization();
+    const localization = getControllerLocalization(this);
     const ariaLabelLower = this.ariaLabel.toLowerCase().replace(/ /g, '-');
 
     return (
@@ -1083,10 +1083,7 @@ class Token extends MQSymbol {
   tokenId = '';
   ctrlSeq = '\\token';
   textTemplate = ['token(', ')'];
-  mathspeakTemplate = getLocalization().createMathspeakTemplate(
-    'start-token',
-    'end-token'
-  );
+  mathspeakTemplate = ['token(', ')']; // Static fallback, not used by mathspeak method
   ariaLabel = 'token';
 
   html(): Element | DocumentFragment {
@@ -1154,7 +1151,7 @@ class SquareRoot extends MathCommand {
   ariaLabel = 'root';
 
   mathspeak() {
-    const localization = getLocalization();
+    const localization = getControllerLocalization(this);
     this.mathspeakTemplate = localization.createMathspeakTemplate(
       'start-root',
       'end-root'
@@ -1230,7 +1227,7 @@ class NthRoot extends SquareRoot {
     this.getEnd(L).ariaLabel = 'Index';
     this.getEnd(R).ariaLabel = 'Radicand';
 
-    const localization = getLocalization();
+    const localization = getControllerLocalization(this);
 
     if (indexMathspeak === '3') {
       // cube root
@@ -1392,10 +1389,10 @@ class Bracket extends DelimsNode {
     var open = this.sides[L].ch,
       close = this.sides[R].ch;
     if (open === '|' && close === '|') {
-      this.mathspeakTemplate = getLocalization().createMathspeakTemplate(
-        'start-absolute-value',
-        'end-absolute-value'
-      );
+      // Generate mathspeak template dynamically to ensure it uses current language
+      this.mathspeakTemplate = getControllerLocalization(
+        this
+      ).createMathspeakTemplate('start-absolute-value', 'end-absolute-value');
       this.ariaLabel = 'absolute value';
     } else if (opts && opts.createdLeftOf && this.side) {
       var ch = '';

@@ -105,7 +105,7 @@ class TextBlock extends MQNode {
 
   mathspeak(opts?: MathspeakOptions) {
     if (opts && opts.ignoreShorthand) {
-      const localization = getLocalization();
+      const localization = getControllerLocalization(this);
       const mathspeakTemplate = localization.createMathspeakTemplate(
         'start-text',
         'end-text'

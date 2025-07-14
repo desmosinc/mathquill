@@ -72,7 +72,7 @@ Updates the default [configuration options](Config.md) for this instance of the 
 
 If there are multiple instances of the MathQuill API, `MQ.config()` only affects the math MathQuill objects created by `MQ`. E.g.:
 
-```javascript
+```js
 var MQ1 = MathQuill.getInterface(3),
   MQ2 = MathQuill.getInterface(3);
 
@@ -216,7 +216,7 @@ Removes focus from the editable field.
 
 Write the given LaTeX at the current cursor position. If the cursor does not have focus, writes to last position the cursor occupied in the editable field.
 
-```javascript
+```js
 mathField.write(' - 1'); // writes ' - 1' to mathField at the cursor position
 ```
 
@@ -224,7 +224,7 @@ mathField.write(' - 1'); // writes ' - 1' to mathField at the cursor position
 
 Enter a LaTeX command at the current cursor position or with the current selection. If the cursor does not have focus, it writes it to last position the cursor occupied in the editable field.
 
-```javascript
+```js
 mathField.cmd('\\sqrt'); // writes a square root command at the cursor position
 ```
 
@@ -244,7 +244,7 @@ Move the cursor to the left/right end of the editable field, respectively. These
 
 Moves the cursor to the end of the mathfield in the direction specified. The direction can be one of `MQ.L` or `MQ.R`. These are constants, where `MQ.L === -MQ.R` and vice versa. This function may be easier to use than [moveToLeftEnd or moveToRightEnd](#movetoleftend-movetorightend) if used in the [`moveOutOf` handler](Config.md#outof-handlers).
 
-```javascript
+```js
 var config = {
   handlers: {
     moveOutOf: function(direction) {
@@ -258,7 +258,7 @@ var config = {
 
 Simulates keystrokes given a string like `"Ctrl-Home Del"`, a whitespace-delimited list of [key inputs](http://www.w3.org/TR/2012/WD-DOM-Level-3-Events-20120614/#fixed-virtual-key-codes) with optional prefixes.
 
-```javascript
+```js
 mathField.keystroke('Shift-Left'); // Selects character before the current cursor position
 ```
 
@@ -266,7 +266,7 @@ mathField.keystroke('Shift-Left'); // Selects character before the current curso
 
 Simulates typing text, one character at a time from where the cursor currently is. This is supposed to be identical to what would happen if a user were typing the text in.
 
-```javascript
+```js
 // Types part of the demo from mathquill.com without delays between keystrokes
 mathField.typedText('x=-b\\pm \\sqrt b^2 -4ac');
 ```
@@ -293,7 +293,7 @@ Returns the suffix to be appended to the [ARIA label][`aria-label`], after the m
 
 Returns `true` if the user is currently selecting text with the mouse, `false` otherwise. This can be useful for preventing certain actions (like setting the cursor position) while the user is actively dragging to select text. The method tracks mouse selection from the moment the user presses the mouse button down to start selecting until they release it or the selection is cancelled due to an edit operation.
 
-```javascript
+```js
 if (!mathField.isUserSelecting()) {
   // Safe to programmatically change cursor position
   mathField.moveToLeftEnd();
@@ -315,7 +315,7 @@ MathQuill supports internationalization through the `language` configuration opt
 
 You can set the language when creating a MathField:
 
-```javascript
+```js
 var mathField = MQ.MathField(document.getElementById('math-input'), {
   language: 'es' // Spanish
 });
@@ -323,7 +323,7 @@ var mathField = MQ.MathField(document.getElementById('math-input'), {
 
 Or change it later using the config method:
 
-```javascript
+```js
 mathField.config({ language: 'en' }); // Switch to English
 ```
 
@@ -338,24 +338,28 @@ Currently supported language codes:
 
 The language setting affects how mathematical expressions are read aloud by screen readers. This includes operators, inequalities, fractions, powers, mathematical structures, and function names. For example, `sin(x^2) ≤ 1/2` reads as "sine of x squared less than or equal to 1 half" in English or "seno de x al cuadrado menor o igual que 1 medio" in Spanish.
 
-### Language Validation
+### Language Validation and Fallback
 
-When creating a MathField with an invalid language code, an error will be thrown:
+MathQuill provides graceful fallback for unsupported languages. When an unsupported language is specified, it will automatically fall back to the closest supported language or English as a final fallback:
 
-```javascript
-// This will throw an error
-var mathField = MQ.MathField(element, { language: 'invalid' });
+```js
+// Language variants are resolved automatically
+var mathField = MQ.MathField(element, { language: 'en-US' }); // Uses 'en'
+var mathField = MQ.MathField(element, { language: 'es-MX' }); // Uses 'es'
+
+// Unsupported languages fall back to English with a console warning
+var mathField = MQ.MathField(element, { language: 'fr' }); // Falls back to 'en', logs warning
 ```
 
-When using `.config()` to change language after creation, invalid languages will fall back to English with a console warning:
+The fallback system works for both initial configuration and runtime language changes:
 
-```javascript
-mathField.config({ language: 'invalid' }); // Falls back to English, logs warning
+```js
+mathField.config({ language: 'fr-CA' }); // Falls back to 'en', logs warning
 ```
 
 ### Examples
 
-```javascript
+```js
 // English math field (default)
 var englishField = MQ.MathField(document.getElementById('english-math'));
 
@@ -367,6 +371,58 @@ var spanishField = MQ.MathField(document.getElementById('spanish-math'), {
 // Global default language
 MQ.config({ language: 'es' }); // All new fields will default to Spanish
 ```
+
+### Localization API
+
+MathQuill provides a localization API accessible through `MQ.L10N` for working with languages and translations:
+
+```js
+// Check if a language is supported
+var isSupported = MQ.L10N.isLanguageSupported('es'); // true
+
+// Resolve language codes (handles variants like 'en-US' → 'en')
+var resolved = MQ.L10N.resolveLanguage('en-US'); // returns 'en'
+
+// Set global default language for new MathQuill instances
+MQ.L10N.setLanguage('es');
+
+// Get current global default language
+var currentLang = MQ.L10N.getLanguage(); // returns current language
+
+// Listen for global language changes
+var unsubscribe = MQ.L10N.onLanguageChange(function() {
+  console.log('Language changed to:', MQ.L10N.getLanguage());
+});
+
+// Later, unsubscribe from changes
+unsubscribe();
+
+// Create a localization instance for custom use (advanced)
+var localization = MQ.L10N.create('es');
+var translation = localization.formatMessage('plus'); // 'más'
+```
+
+#### MQ.L10N.onLanguageChange(callback)
+
+Registers a callback function that will be called whenever the global default language changes. This is useful for updating UI elements or re-rendering content when the language changes.
+
+```js
+// Listen for language changes
+var unsubscribe = MQ.L10N.onLanguageChange(function() {
+  // This will be called whenever MQ.L10N.setLanguage() is called
+  var newLanguage = MQ.L10N.getLanguage();
+  console.log('Language changed to:', newLanguage);
+
+  // Update your UI or re-render content as needed
+});
+
+// To stop listening for changes, call the returned function
+unsubscribe();
+```
+
+The callback receives no arguments. Use `MQ.L10N.getLanguage()` to get the current language within the callback.
+
+**Returns:** A function that can be called to unregister the callback.
 
 ## .dropEmbedded(pageX, pageY, options) **[ᴇxᴘᴇʀɪᴍᴇɴᴛᴀʟ](#note-on-experimental-features)**
 

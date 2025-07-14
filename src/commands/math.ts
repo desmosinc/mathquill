@@ -520,6 +520,7 @@ class MathBlock extends MathElement {
     var tempOp = '';
     var autoOps: CursorOptions['autoOperatorNames'] = {};
     if (this.controller) autoOps = this.controller.options.autoOperatorNames;
+    const outerThis = this; // Capture outer 'this' for use in callback
     return (
       this.foldChildren<string[]>([], function (speechArray, cmd) {
         if (cmd.isPartOfOperator) {
@@ -531,7 +532,7 @@ class MathBlock extends MathElement {
               if (typeof x === 'string') {
                 tempOp = x;
                 // Check if there's a localized version of this auto operator
-                const localization = getLocalization();
+                const localization = getControllerLocalization(outerThis);
                 const localizedOp = localization.formatAutoOperator(tempOp);
                 if (localizedOp !== tempOp) {
                   tempOp = localizedOp;
@@ -652,7 +653,7 @@ class MathBlock extends MathElement {
       // special-case the slash so that fractions are voiced while typing
       if (ch === '/') {
         cursor.controller.aria.alert(
-          getControllerLocalization(cursor).formatMessage('over')
+          getControllerLocalization(cursor.parent).formatMessage('over')
         );
       } else {
         cursor.controller.aria.alert(cmd.mathspeak({ createdLeftOf: cursor }));
@@ -717,7 +718,9 @@ API.StaticMath = function (APIClasses: APIClasses) {
     static RootBlock = MathBlock;
 
     __mathquillify(opts: ConfigOptions, _interfaceVersion: number) {
-      (this.config as any)(opts as MathQuill.v3.Config, true);
+      // Internal config method takes additional isInitialConfig parameter
+      // Cast necessary because public API only exposes single-parameter version
+      (this.config as any)(opts, true);
       // `mathquillify` calls `createTextarea`
       super.mathquillify('mq-math-mode');
       this.__controller.setupStaticField();
@@ -767,7 +770,9 @@ API.MathField = function (APIClasses: APIClasses) {
     static RootBlock = RootMathBlock;
 
     __mathquillify(opts: ConfigOptions, interfaceVersion: number) {
-      (this.config as any)(opts as MathQuill.v3.Config, true);
+      // Internal config method takes additional isInitialConfig parameter
+      // Cast necessary because public API only exposes single-parameter version
+      (this.config as any)(opts, true);
       if (interfaceVersion > 1) this.__controller.root.reflow = noop;
       super.mathquillify('mq-editable-field mq-math-mode');
       // TODO: Why does this need to be deleted (contrary to the type definition)? Could we set it to `noop` instead?
