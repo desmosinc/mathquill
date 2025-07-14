@@ -38,7 +38,7 @@ class Cursor extends Point {
   );
   private _domFrag = domFrag();
   selection: MQSelection | undefined;
-  intervalId: number;
+  intervalId: TimeoutId;
   anticursor: Anticursor | undefined;
 
   constructor(

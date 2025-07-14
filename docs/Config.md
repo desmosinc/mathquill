@@ -4,6 +4,7 @@ The configuration options object is of the following form:
 
 ```js
 {
+  language: 'en',
   spaceBehavesLikeTab: true,
   leftRightIntoCmdGoes: 'up',
   restrictMismatchedBrackets: true,
@@ -31,6 +32,35 @@ You can configure an editable math field by passing an options argument as the s
 Defaults may be set with [`MQ.config(global_config)`](Api_Methods.md#mqconfigconfig).
 
 # Configuration Options
+
+## language
+
+The `language` option sets the language for mathematical speech and accessibility features. This affects how screen readers and other accessibility tools announce mathematical expressions.
+
+**Type**: `string`  
+**Default**: `'en'`  
+**Supported values**: `'en'` (English), `'es'` (Spanish)
+
+```js
+// Set language when creating a MathField
+var mathField = MQ.MathField(element, { language: 'es' });
+
+// Change language later
+mathField.config({ language: 'en' });
+
+// Set global default language
+MQ.config({ language: 'es' });
+```
+
+### Language Features
+
+The language setting affects how mathematical expressions are read aloud by screen readers. Operators (`+`, `-`, `=`), inequalities (`<`, `≤`), fractions (`1/2` becomes "1 half"), powers (`x^2` becomes "x squared"), mathematical structures (roots, summations), and function names (`sin`, `log`) are all localized. For example, `x^2 = 1/2` reads as "x squared equals 1 half" in English or "x al cuadrado igual 1 medio" in Spanish.
+
+### Language Validation
+
+- When creating a MathField with an invalid language code, an error is thrown
+- When using `.config()` to change language, invalid codes fall back to English with a console warning
+- Language codes are case-insensitive and support fallbacks (e.g., `'en-US'` falls back to `'en'`)
 
 ## spacesBehavesLikeTab
 
@@ -83,6 +113,8 @@ This defaults to the LaTeX built-in operator names ([Section 3.17 of the Short M
 Just like [`autoCommands`](#autocommands) above, this takes a string formatted as a space-delimited list of LaTeX commands.
 
 autoOperatorNames can also accept a speech-friendly alternative for each operator name. This will get read out by screenreaders in place of the raw command. To specify a speech-friendly-alternative, add a `|` character after the command, and then add the speech-friendly-alternative as a string, with spaces replaced by `-`. E.g. `stdev|standard-deviation`.
+
+Built-in operator names are automatically localized for screen readers based on the [`language`](#language) setting. For example, `sin` is read as "sine" in English or "seno" in Spanish. Custom speech alternatives using the `|` syntax take precedence over automatic localization.
 
 ## infixOperatorNames
 

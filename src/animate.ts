@@ -25,7 +25,7 @@
  */
 const animate = (function () {
   // IIFE exists just to hang on to configured rafShim and cancelShim
-  // functions
+  // functions. Both return/accept number tokens for cross-environment compatibility.
   let rafShim: (cb: () => void) => number, cancelShim: (token: number) => void;
   if (
     typeof requestAnimationFrame === 'function' &&
@@ -34,8 +34,10 @@ const animate = (function () {
     rafShim = requestAnimationFrame;
     cancelShim = cancelAnimationFrame;
   } else {
-    rafShim = (cb: () => void) => setTimeout(cb, 13);
-    cancelShim = clearTimeout;
+    // setTimeout fallback with type coercion for consistent number-based token handling
+    rafShim = (cb: () => void) => setTimeout(cb, 13) as unknown as number;
+    cancelShim = (token: number) =>
+      clearTimeout(token as unknown as NodeJS.Timeout);
   }
 
   return function (

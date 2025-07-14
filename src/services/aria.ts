@@ -64,11 +64,21 @@ class Aria {
   }
   queueDirOf(dir: Direction) {
     prayDirection(dir);
-    return this.queue(dir === L ? 'before' : 'after');
+    const localization = this.controller.getLocalizationForController();
+    return this.queue(
+      dir === L
+        ? localization.formatDirectional('before')
+        : localization.formatDirectional('after')
+    );
   }
   queueDirEndOf(dir: Direction) {
     prayDirection(dir);
-    return this.queue(dir === L ? 'beginning of' : 'end of');
+    const localization = this.controller.getLocalizationForController();
+    return this.queue(
+      dir === L
+        ? localization.formatDirectional('beginning-of')
+        : localization.formatDirectional('end-of')
+    );
   }
 
   alert(t?: AriaQueueItem) {
