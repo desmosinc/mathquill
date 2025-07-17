@@ -194,17 +194,23 @@ class Controller_latex extends Controller_keystroke {
     const currentSelectionInfo = this.exportLatexSelection();
     const currentLatex = currentSelectionInfo.selection.latex;
     const newLatex = data.latex;
+
+    // latexs must match for the startIndex and endIndex to match up
+    if (newLatex !== currentLatex) return;
+
+    // the data.startIndex and data.endIndex are values that are relative to the
+    // cleaned latex. The problem is that when we traverse this tree looking for
+    // the nodes in those positions we will be working on raw uncleaned latex. We need
+    // to map our cleaned indices back to uncleaned indices. Then we can take another
+    // pass through the tree looking for the nodes at the startIndex and endIndex
+    const mappedIndices = mapFromCleanedToUncleanedIndices(
+      currentLatex,
+      currentSelectionInfo.ctx.latex,
+      data
+    );
+    this.exportLatexSelection(mappedIndices);
+
     const { cursorInsertPath, signedSelectionSize } = data.opaqueSnapshot;
-
-    // latex's must match for the indicies in the selection to match up
-    if (currentLatex !== newLatex) return;
-
-    // TODO - track things better so that we can actually make this work
-    if (currentLatex !== currentSelectionInfo.ctx.latex) {
-      throw new Error(
-        'TODO - restoring selection requires uncleanedLatex to match latex'
-      );
-    }
 
     if (!this.insertCursorAtPath(cursorInsertPath)) return;
 
@@ -243,7 +249,10 @@ class Controller_latex extends Controller_keystroke {
     return count;
   }
 
-  exportLatexSelection(): {
+  exportLatexSelection(restoreInfo?: {
+    uncleanStartIndex: number;
+    uncleanEndIndex: number;
+  }): {
     selection: ExportedLatexSelection;
     ctx: LatexContext;
   } {
@@ -252,6 +261,13 @@ class Controller_latex extends Controller_keystroke {
       startIndex: -1,
       endIndex: -1
     };
+
+    if (restoreInfo) {
+      ctx.restoreInfo = {
+        startIndex: restoreInfo.uncleanStartIndex,
+        endIndex: restoreInfo.uncleanEndIndex
+      };
+    }
 
     let cursorInsertPath: string = '';
     let signedSelectionSize: number = 0;
@@ -289,28 +305,11 @@ class Controller_latex extends Controller_keystroke {
     // need to clean the latex
     var uncleanedLatex = ctx.latex;
     var cleanLatex = this.cleanLatex(uncleanedLatex);
-    var startIndex = ctx.startIndex;
-    var endIndex = ctx.endIndex;
-
-    // assumes that the cleaning process will only remove characters. We
-    // run through the uncleanedLatex and cleanLatex to find differences.
-    // when we find differences we see how many characters are dropped until
-    // we sync back up. While detecting missing characters we decrement the
-    // startIndex and endIndex if appropriate.
-    var j = 0;
-    for (var i = 0; i < ctx.endIndex; i++) {
-      if (uncleanedLatex[i] !== cleanLatex[j]) {
-        if (i < ctx.startIndex) {
-          startIndex -= 1;
-        }
-        endIndex -= 1;
-
-        // do not increment j. We wan to keep looking at this same
-        // cleanLatex character until we find it in the uncleanedLatex
-      } else {
-        j += 1; //move to next cleanLatex character
-      }
-    }
+    const { startIndex, endIndex } = mapFromUncleanedToCleanedIndices(
+      uncleanedLatex,
+      cleanLatex,
+      ctx
+    );
 
     return {
       selection: {
@@ -595,4 +594,80 @@ class Controller_latex extends Controller_keystroke {
       root.finalizeInsert(cursor.options, cursor);
     }
   }
+}
+
+function mapFromUncleanedToCleanedIndices(
+  uncleanedLatex: string,
+  cleanedLatex: string,
+  indices: { startIndex: number; endIndex: number }
+) {
+  var startIndex = indices.startIndex;
+  var endIndex = indices.endIndex;
+
+  // assumes that the cleaning process will only remove space characters. We
+  // run through the uncleanedLatex and cleanLatex to find differences.
+  // when we find differences we see how many characters are dropped until
+  // we sync back up. While detecting missing characters we decrement the
+  // startIndex and endIndex if appropriate.
+  for (
+    var uncleanIdx = 0, cleanIdx = 0;
+    uncleanIdx < indices.endIndex;
+    uncleanIdx++
+  ) {
+    if (uncleanedLatex[uncleanIdx] !== cleanedLatex[cleanIdx]) {
+      if (uncleanIdx < indices.startIndex) {
+        startIndex -= 1;
+      }
+      endIndex -= 1;
+
+      // do not increment j. We wan to keep looking at this same
+      // cleanLatex character until we find it in the uncleanedLatex
+    } else {
+      cleanIdx += 1; //move to next cleanLatex character
+    }
+  }
+
+  return {
+    startIndex,
+    endIndex
+  };
+}
+
+function mapFromCleanedToUncleanedIndices(
+  cleanedLatex: string,
+  uncleanedLatex: string,
+  indices: { startIndex: number; endIndex: number }
+) {
+  const cleanStartIdx = indices.startIndex;
+  const cleanEndIdx = indices.endIndex;
+  var uncleanStartIndex = cleanStartIdx;
+  var uncleanEndIndex = cleanEndIdx;
+
+  // assumes that the cleaning process will only remove space characters. We
+  // run through the uncleanedLatex moving one character every time. We compare
+  // against the cleanedLatex. If the cleanedLatex matches we consume a cleanedLatex
+  // character. Otherwise we continue pointing to the same cleanedLatex character until
+  // it matches the uncleanedLatex. When we find mismatches we know that we need to increase
+  // the startIndex and endIndex to correspond to the correct uncleaned positions.
+  for (
+    var uncleanIdx = 0, cleanIdx = 0;
+    uncleanIdx < uncleanedLatex.length;
+    uncleanIdx++
+  ) {
+    if (uncleanedLatex[uncleanIdx] !== cleanedLatex[cleanIdx]) {
+      if (cleanIdx <= cleanStartIdx) {
+        uncleanStartIndex += 1;
+      }
+      if (cleanIdx <= cleanEndIdx) {
+        uncleanEndIndex += 1;
+      }
+    } else {
+      cleanIdx += 1;
+    }
+  }
+
+  return {
+    uncleanStartIndex,
+    uncleanEndIndex
+  };
 }

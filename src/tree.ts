@@ -345,19 +345,75 @@ class NodeBase {
   }
   latexRecursive(_ctx: LatexContext): void {}
   checkCursorContextOpen(ctx: LatexContext) {
+    const latexLength = ctx.latex.length;
     if (ctx.startSelectionBefore === this) {
-      ctx.startIndex = ctx.latex.length;
+      ctx.startIndex = latexLength;
     }
     if (ctx.endSelectionBefore === this) {
-      ctx.endIndex = ctx.latex.length;
+      ctx.endIndex = latexLength;
+    }
+
+    const restoreInfo = ctx.restoreInfo;
+    if (restoreInfo) {
+      console.log(
+        'open: ',
+        [restoreInfo.startIndex, restoreInfo.endIndex],
+        this,
+        ctx.latex,
+        latexLength
+      );
+
+      if (latexLength === restoreInfo.startIndex) {
+        if (restoreInfo.endIndex === restoreInfo.startIndex) {
+          // caret
+          if (latexLength === restoreInfo.startIndex) {
+            //if (!restoreInfo.cursorParent) {
+            restoreInfo.cursorParent = this.parent;
+            console.log('Cursor parent =', this.parent);
+            //}
+
+            console.log('Cursor start = ', this);
+          }
+        } else {
+          // selection
+          restoreInfo.selectionL = this;
+        }
+      }
     }
   }
   checkCursorContextClose(ctx: LatexContext) {
+    const latexLength = ctx.latex.length;
+
     if (ctx.startSelectionAfter === this) {
-      ctx.startIndex = ctx.latex.length;
+      ctx.startIndex = latexLength;
     }
     if (ctx.endSelectionAfter === this) {
-      ctx.endIndex = ctx.latex.length;
+      ctx.endIndex = latexLength;
+    }
+
+    const restoreInfo = ctx.restoreInfo;
+    if (restoreInfo) {
+      console.log(
+        'close: ',
+        [restoreInfo.startIndex, restoreInfo.endIndex],
+        this,
+        ctx.latex,
+        latexLength
+      );
+
+      if (latexLength === restoreInfo.endIndex) {
+        if (restoreInfo.startIndex === restoreInfo.endIndex) {
+          // caret
+          console.log('Cursor end = ', this);
+          if (!restoreInfo.cursorParent) {
+            console.log('Cursor parent =', this.parent);
+            restoreInfo.cursorParent = this.parent;
+          }
+        } else {
+          // selection
+          restoreInfo.selectionR = this;
+        }
+      }
     }
   }
   finalizeTree(_options: CursorOptions, _dir?: Direction) {}

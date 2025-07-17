@@ -346,7 +346,50 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
         return this;
       }
 
-      return this.__controller.exportLatexSelection().selection;
+      const out = this.__controller.exportLatexSelection();
+
+      // TODO - the point of the below code is to allow us to play with a mathquill live and verify
+      // that while we move selection around we are computing the correct cursor / selection positions.
+      // This will all go away when the actual logic gets nailed down.
+      const uncleanedIndicies = mapFromCleanedToUncleanedIndices(
+        out.selection.latex,
+        out.ctx.latex,
+        out.selection
+      );
+
+      const cursor = this.__controller.cursor;
+      if (cursor.selection) {
+        console.log('REAL SELECTION[L]', cursor.selection.getEnd(L));
+        console.log('REAL SELECTION[R]', cursor.selection.getEnd(R));
+      } else {
+        console.log('REAL CURSOR[PARENT]', cursor.parent);
+        console.log('REAL CURSOR[L]', cursor[L]);
+        console.log('REAL CURSOR[R]', cursor[R]);
+      }
+      console.log('---- simulate applying selection ---');
+      const results = this.__controller.exportLatexSelection(uncleanedIndicies);
+      console.log('=== done simulate applying selection ===');
+
+      if (cursor.selection) {
+        if (
+          cursor.selection.getEnd(L) !== results.ctx.restoreInfo?.selectionL ||
+          cursor.selection.getEnd(R) !== results.ctx.restoreInfo?.selectionR
+        ) {
+          // TODO -- I think maybe this is now never being hit. SelectionL and SelectionR might be solid.
+          console.log('computed wrong selection');
+          debugger;
+        }
+      } else {
+        if (cursor.parent !== results.ctx.restoreInfo?.cursorParent) {
+          // TODO -- computing the wrong parent when you put cursor inside of an empty () or empty sqrt(). I think
+          // there's something about MathBlocks that are special.
+          // TODO -- not even trying to get cursorL and cursorR correct yet.
+          console.log('wrong cursor parent');
+          debugger;
+        }
+      }
+
+      return out.selection;
     }
     html() {
       return this.__controller.root
