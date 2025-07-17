@@ -346,7 +346,7 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
         return this;
       }
 
-      return this.__controller.exportLatexSelection();
+      return this.__controller.exportLatexSelection().selection;
     }
     html() {
       return this.__controller.root

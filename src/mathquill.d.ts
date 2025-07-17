@@ -24,7 +24,6 @@ declare namespace MathQuill {
       startIndex: number;
       endIndex: number;
       opaqueSnapshot: {
-        uncleanedLatex: string;
         cursorInsertPath: string;
         signedSelectionSize: number;
       };

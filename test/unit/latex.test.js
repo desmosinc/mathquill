@@ -677,7 +677,7 @@ suite('latex', function () {
         // we tried setting
         const originalSnapShot = mq.selection();
         mq2.latex('');
-        mq2.latex(originalSnapShot.opaqueSnapshot.uncleanedLatex);
+        mq2.latex(originalSnapShot.latex);
         mq2.selection(originalSnapShot);
         const restoredSnapShot = mq2.selection();
         assert.equal(

@@ -9,7 +9,6 @@ type ExportedLatexSelection = {
   startIndex: number;
   endIndex: number;
   opaqueSnapshot: {
-    uncleanedLatex: string;
     cursorInsertPath: string;
     signedSelectionSize: number;
   };
@@ -192,14 +191,20 @@ class Controller_latex extends Controller_keystroke {
   }
 
   restoreLatexSelection(data: ExportedLatexSelection) {
-    const currentUncleanedLatex =
-      this.exportLatexSelection().opaqueSnapshot.uncleanedLatex;
-    const { cursorInsertPath, signedSelectionSize, uncleanedLatex } =
-      data.opaqueSnapshot;
+    const currentSelectionInfo = this.exportLatexSelection();
+    const currentLatex = currentSelectionInfo.selection.latex;
+    const newLatex = data.latex;
+    const { cursorInsertPath, signedSelectionSize } = data.opaqueSnapshot;
 
-    // verify the uncleanedLatex are identical. We need the trees to be identical so that the
-    // path instructions are relative to an identical tree structure
-    if (currentUncleanedLatex !== uncleanedLatex) return;
+    // latex's must match for the indicies in the selection to match up
+    if (currentLatex !== newLatex) return;
+
+    // TODO - track things better so that we can actually make this work
+    if (currentLatex !== currentSelectionInfo.ctx.latex) {
+      throw new Error(
+        'TODO - restoring selection requires uncleanedLatex to match latex'
+      );
+    }
 
     if (!this.insertCursorAtPath(cursorInsertPath)) return;
 
@@ -238,7 +243,10 @@ class Controller_latex extends Controller_keystroke {
     return count;
   }
 
-  exportLatexSelection(): ExportedLatexSelection {
+  exportLatexSelection(): {
+    selection: ExportedLatexSelection;
+    ctx: LatexContext;
+  } {
     var ctx: LatexContext = {
       latex: '',
       startIndex: -1,
@@ -305,14 +313,16 @@ class Controller_latex extends Controller_keystroke {
     }
 
     return {
-      latex: cleanLatex,
-      startIndex: startIndex,
-      endIndex: endIndex,
-      opaqueSnapshot: {
-        uncleanedLatex,
-        cursorInsertPath,
-        signedSelectionSize
-      }
+      selection: {
+        latex: cleanLatex,
+        startIndex: startIndex,
+        endIndex: endIndex,
+        opaqueSnapshot: {
+          cursorInsertPath,
+          signedSelectionSize
+        }
+      },
+      ctx
     };
   }
 
