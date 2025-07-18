@@ -347,7 +347,7 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
       }
 
       const out = this.__controller.exportLatexSelection();
-
+      /*
       // TODO - the point of the below code is to allow us to play with a mathquill live and verify
       // that while we move selection around we are computing the correct cursor / selection positions.
       // This will all go away when the actual logic gets nailed down.
@@ -414,7 +414,7 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
           debugger;
         }
       }
-
+      */
       return out.selection;
     }
     html() {

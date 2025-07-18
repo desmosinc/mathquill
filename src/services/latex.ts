@@ -10,7 +10,6 @@ type ExportedLatexSelection = {
   endIndex: number;
   opaqueSnapshot: {
     cursorInsertPath: string;
-    signedSelectionSize: number;
   };
 };
 
@@ -221,48 +220,22 @@ class Controller_latex extends Controller_keystroke {
         const { cursorInsertPath } = newSelection.opaqueSnapshot;
         this.insertCursorAtPath(cursorInsertPath);
       } else {
-        /*
-
-        */
         if (restoreInfo?.selectionL && restoreInfo.selectionR) {
           console.log('restore selection: ', restoreInfo);
 
-          /*if (signedSelectionSize) {
+          this.notify('move').cursor.insRightOf(
+            restoreInfo.selectionR as MQNode
+          );
           this.withIncrementalSelection((selectDir) => {
-            const dir = signedSelectionSize < 0 ? L : R;
-            const count = Math.abs(signedSelectionSize);
-            for (let i = 0; i < count; i += 1) {
-              selectDir(dir);
-            }
+            let count = 0;
+            do {
+              selectDir(L);
+              count += 1;
+            } while (this.cursor[R] !== restoreInfo.selectionL && count < 100);
           });
-        }*/
         }
       }
     }
-  }
-
-  // any time there's a selection there is a cursor and anticursor. The
-  // anticursor is the anchor, and the cursor is the head. It should be
-  // true that these are siblings. If you trace right or left far enough
-  // you will reach the other one. This returns the direction and magnitude
-  // of how many hops it takes to find the cursor from the anticursor. Otherwise
-  // returns 0. The idea is to try this both with L and R and use the one, if any,
-  // that comes back with a non-zero answer.
-  private findSignedSelectionSizeInDir(dir: L | R) {
-    const cursor = this.cursor;
-    const anticursor = cursor.anticursor;
-    if (!anticursor) return 0;
-
-    let count = 0;
-    let node = anticursor[dir];
-    while (node !== cursor[dir]) {
-      if (!node) return 0;
-
-      count += dir;
-      node = node[dir];
-    }
-
-    return count;
   }
 
   exportLatexSelection(restoreInfo?: {
@@ -286,18 +259,13 @@ class Controller_latex extends Controller_keystroke {
     }
 
     let cursorInsertPath: string = '';
-    let signedSelectionSize: number = 0;
 
     var selection = this.cursor.selection;
     if (selection && this.cursor.anticursor) {
-      cursorInsertPath = this.findPathFromRootToNode(this.cursor.anticursor);
+      cursorInsertPath = '<selection>';
 
       ctx.startSelectionBefore = selection.getEnd(L);
       ctx.endSelectionAfter = selection.getEnd(R);
-
-      signedSelectionSize =
-        this.findSignedSelectionSizeInDir(L) ||
-        this.findSignedSelectionSizeInDir(R);
     } else {
       cursorInsertPath = this.findPathFromRootToNode(this.cursor);
 
@@ -333,8 +301,7 @@ class Controller_latex extends Controller_keystroke {
         startIndex: startIndex,
         endIndex: endIndex,
         opaqueSnapshot: {
-          cursorInsertPath,
-          signedSelectionSize
+          cursorInsertPath
         }
       },
       ctx
