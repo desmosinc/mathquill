@@ -364,27 +364,43 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
       } else {
         console.log('REAL CURSOR[PARENT]', cursor.parent);
         console.log('REAL CURSOR[L]', cursor[L]);
-        console.log('REAL CURSOR[R]', cursor[R]);
       }
       console.log('---- simulate applying selection ---');
       const results = this.__controller.exportLatexSelection(uncleanedIndicies);
       console.log('=== done simulate applying selection ===');
 
       if (cursor.selection) {
+        console.log(
+          '[FOUND] selectionL: ',
+          results.ctx.restoreInfo?.selectionL
+        );
+        console.log(
+          '[FOUND] selectionR: ',
+          results.ctx.restoreInfo?.selectionR
+        );
+
         if (
           cursor.selection.getEnd(L) !== results.ctx.restoreInfo?.selectionL ||
           cursor.selection.getEnd(R) !== results.ctx.restoreInfo?.selectionR
         ) {
-          // TODO -- I think maybe this is now never being hit. SelectionL and SelectionR might be solid.
+          // TODO - I think maybe this is correct and never hit now
           console.log('computed wrong selection');
           debugger;
         }
       } else {
-        if (cursor.parent !== results.ctx.restoreInfo?.cursorParent) {
+        console.log(
+          '[FOUND] cursorParent: ',
+          results.ctx.restoreInfo?.cursorParent
+        );
+        console.log('[FOUND] cursorL: ', results.ctx.restoreInfo?.cursorL);
+
+        if (
+          cursor.parent !== results.ctx.restoreInfo?.cursorParent ||
+          cursor[L] !== results.ctx.restoreInfo?.cursorL
+        ) {
           // TODO -- computing the wrong parent when you put cursor inside of an empty () or empty sqrt(). I think
           // there's something about MathBlocks that are special.
-          // TODO -- not even trying to get cursorL and cursorR correct yet.
-          console.log('wrong cursor parent');
+          console.log('wrong cursor');
           debugger;
         }
       }

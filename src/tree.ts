@@ -367,12 +367,11 @@ class NodeBase {
         if (restoreInfo.endIndex === restoreInfo.startIndex) {
           // caret
           if (latexLength === restoreInfo.startIndex) {
-            //if (!restoreInfo.cursorParent) {
             restoreInfo.cursorParent = this.parent;
             console.log('Cursor parent =', this.parent);
-            //}
 
-            console.log('Cursor start = ', this);
+            console.log('set Cursor[L] = ', 0);
+            restoreInfo.cursorL = 0 as any;
           }
         } else {
           // selection
@@ -404,14 +403,27 @@ class NodeBase {
       if (latexLength === restoreInfo.endIndex) {
         if (restoreInfo.startIndex === restoreInfo.endIndex) {
           // caret
-          console.log('Cursor end = ', this);
+          if (!restoreInfo.cursorL) {
+            console.log('set Cursor[L] = ', this);
+            restoreInfo.cursorL = this;
+          }
+
           if (!restoreInfo.cursorParent) {
             console.log('Cursor parent =', this.parent);
             restoreInfo.cursorParent = this.parent;
+          } else if (restoreInfo.cursorParent === this.parent) {
+            // this seems important for when we enter an empty MathBlock. For instance cursor in between "()" or
+            // in an empty square root.
+            console.log('RESETTING Cursor parent =', this.parent);
+            restoreInfo.cursorParent = this;
           }
         } else {
           // selection
-          restoreInfo.selectionR = this;
+          // it seems like when closing the selection we want the very first node that matches
+          // the index, not any later ones.
+          if (!restoreInfo.selectionR) {
+            restoreInfo.selectionR = this;
+          }
         }
       }
     }
