@@ -311,6 +311,12 @@ class Controller_latex extends Controller_keystroke {
       ctx
     );
 
+    if (ctx.restoreInfo) {
+      if (!ctx.restoreInfo.cursorL) {
+        ctx.restoreInfo.cursorL = 0;
+      }
+    }
+
     return {
       selection: {
         latex: cleanLatex,

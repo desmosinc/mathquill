@@ -50,7 +50,7 @@ type LatexContext = {
     endIndex: number;
     selectionL?: NodeBase;
     selectionR?: NodeBase;
-    cursorL?: NodeBase;
+    cursorL?: NodeBase | 0;
     cursorParent?: NodeBase;
   };
 };

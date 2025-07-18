@@ -370,8 +370,8 @@ class NodeBase {
             restoreInfo.cursorParent = this.parent;
             console.log('Cursor parent =', this.parent);
 
-            console.log('set Cursor[L] = ', 0);
-            restoreInfo.cursorL = 0 as any;
+            //            console.log('set Cursor[L] = ', 0);
+            //            restoreInfo.cursorL = 0 as any;
           }
         } else {
           // selection
@@ -416,6 +416,7 @@ class NodeBase {
             // in an empty square root.
             console.log('RESETTING Cursor parent =', this.parent);
             restoreInfo.cursorParent = this;
+            restoreInfo.cursorL = 0;
           }
         } else {
           // selection
