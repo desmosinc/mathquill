@@ -173,13 +173,11 @@ If the cursor is before the plus this method would return:
 {
   latex: 'a+b',
   startIndex: 1,
-  endIndex: 1,
-  opaqueSnapshot: {...}
+  endIndex: 1
 }
 ```
 
-You can pass the result of `.selection()` back into `.selection()` to restore a cursor / selection. This works by taking a snapshot of the selection you currently have and recording
-enough information to restore it within `opaqueSnapshot`. You should not peek inside of `opaqueSnapshot` or permanently store it. This is valid only for this version of MathQuill. This selection is also only valid if the MQ's latex is identical. The MQ can go through changes, but when you try to restore the selection the current latex must match the latex when the selection snapshot was created.
+You can pass the result of `.selection()` back into `.selection()` to restore a cursor / selection.
 
 ```js
 // this would work

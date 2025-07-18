@@ -419,9 +419,14 @@ suite('latex', function () {
 
         const emptySelection = mq.selection();
         assert.equal(
-          emptySelection.opaqueSnapshot.cursorInsertPath,
-          'D',
-          'empty latex selection has "D" path'
+          emptySelection.startIndex,
+          0,
+          'empty selection has startIndex=0'
+        );
+        assert.equal(
+          emptySelection.endIndex,
+          0,
+          'empty selection has endIndex=0'
         );
 
         mq.latex('abc');

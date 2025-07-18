@@ -23,9 +23,6 @@ declare namespace MathQuill {
       latex: string;
       startIndex: number;
       endIndex: number;
-      opaqueSnapshot: {
-        cursorInsertPath: string;
-      };
     };
 
     interface BaseMathQuill {

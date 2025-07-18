@@ -8,9 +8,6 @@ type ExportedLatexSelection = {
   latex: string;
   startIndex: number;
   endIndex: number;
-  opaqueSnapshot: {
-    cursorInsertPath: string;
-  };
 };
 
 // Parser MathBlock
@@ -126,67 +123,9 @@ class Controller_latex extends Controller_keystroke {
     return this;
   }
 
-  // this traces up from the node to the root by first going left as much as possible
-  // then going up one parent. Then going left as much as possible then going up on parent.
-  // It continues this pattern until it finds the root. The "path" that this algorithm
-  // constructs is from the root back down to this node. So it will output the path in
-  // reverse traversal order and will replace lefts with rights and ups with downs.
-  private findPathFromRootToNode(node: MQNode | Cursor | Anticursor): string {
-    let path = '';
-    do {
-      while (node[L]) {
-        path = 'R' + path;
-        node = node[L];
-      }
-
-      if (node.parent) {
-        node = node.parent;
-        path = 'D' + path;
-      } else {
-        return path;
-      }
-    } while (true);
-  }
-
-  private insertCursorAtPath(path: string): boolean {
-    if (!path) return false;
-
-    let node: MQNode = this.root;
-
-    // We generate the path starting from the node working up to the root.
-    // So we need to work backwards when following the path. The very last instruction
-    // we encounter does not point to a node. It points to a space where a cursor could
-    // be inserted: either just to the right of the current node ("R") or just to the
-    // left of the current node's children ("D")
-    const lastInstructionI = path.length - 1;
-    for (let i = 0; i < lastInstructionI; i++) {
-      const instruction = path[i];
-
-      if (instruction === 'D') {
-        const end = node.children().getEnd(L);
-        if (!end) return false;
-        node = end;
-      } else if (instruction === 'R') {
-        const end = node[R];
-        if (!end) return false;
-        node = end;
-      } else {
-        return false;
-      }
-    }
-
-    const lastInstruction = path[lastInstructionI];
-    if (lastInstruction === 'D') {
-      this.cursor.clearSelection().endSelection();
-      this.notify('move').cursor.insAtLeftEnd(node);
-      return true;
-    } else if (lastInstruction === 'R') {
-      this.cursor.clearSelection().endSelection();
-      this.notify('move').cursor.insRightOf(node);
-      return true;
-    } else {
-      return false;
-    }
+  prepareCursorForRestoration() {
+    this.cursor.clearSelection().endSelection();
+    return this.notify('move').cursor;
   }
 
   restoreLatexSelection(newSelection: ExportedLatexSelection) {
@@ -198,9 +137,9 @@ class Controller_latex extends Controller_keystroke {
     if (newLatex !== currentLatex) return;
 
     if (newSelection.endIndex === 0) {
-      this.notify('move').cursor.insAtDirEnd(L, this.root);
+      this.prepareCursorForRestoration().insAtDirEnd(L, this.root);
     } else if (newSelection.startIndex === newLatex.length) {
-      this.notify('move').cursor.insAtDirEnd(R, this.root);
+      this.prepareCursorForRestoration().insAtDirEnd(R, this.root);
     } else {
       // the data.startIndex and data.endIndex are values that are relative to the
       // cleaned latex. The problem is that when we traverse this tree looking for
@@ -216,23 +155,47 @@ class Controller_latex extends Controller_keystroke {
       const { restoreInfo } = this.exportLatexSelection(mappedIndices).ctx;
 
       if (newSelection.startIndex === newSelection.endIndex) {
-        // TODO - insert based on restoreInfo cursorParent and cursorL
-        const { cursorInsertPath } = newSelection.opaqueSnapshot;
-        this.insertCursorAtPath(cursorInsertPath);
+        if (restoreInfo?.cursorL) {
+          this.prepareCursorForRestoration().insRightOf(
+            restoreInfo.cursorL as MQNode
+          );
+        } else if (restoreInfo?.cursorParent) {
+          this.prepareCursorForRestoration().insAtLeftEnd(
+            restoreInfo.cursorParent as MQNode
+          );
+        }
       } else {
         if (restoreInfo?.selectionL && restoreInfo.selectionR) {
-          console.log('restore selection: ', restoreInfo);
+          // TODO - should we validate this selection by verifying you can get from selectionR
+          // to selectionL by traversing leftward? That would be a quick and easy sanity check
+          // to run ahead of time to prevent messing up selection if an invalid selection is
+          // passed in. If an invalid selection is passed in we shouldn't loop infinitely but
+          // we could end up in a weird state.
 
-          this.notify('move').cursor.insRightOf(
+          // copied this from the selectAll routine. It does appear selecting from the
+          // right to the left is critical to this working.
+          this.prepareCursorForRestoration().insRightOf(
             restoreInfo.selectionR as MQNode
           );
+
+          const root = this.cursor.controller.root;
           this.withIncrementalSelection((selectDir) => {
-            let count = 0;
             do {
               selectDir(L);
-              count += 1;
-            } while (this.cursor[R] !== restoreInfo.selectionL && count < 100);
+
+              // if something goes wrong avoid an infinite loop. We should eventually
+              // reach the leftmost side.
+              if (!this.cursor[L] && this.cursor.parent === root) {
+                break;
+              }
+            } while (this.cursor[R] !== restoreInfo.selectionL);
           });
+
+          // TODO - should we validate that we ended up with exactly the correct selectionL
+          // and selectionR? It might be a little late to restore the previous selection. The
+          // case I'm thinking of is maybe your startIndex and endIndex are constructed in a way
+          // that we end up expand the selection in both directions. Hopefully we'd be able to
+          // guard against that in a precheck though.
         }
       }
     }
@@ -258,17 +221,11 @@ class Controller_latex extends Controller_keystroke {
       };
     }
 
-    let cursorInsertPath: string = '';
-
     var selection = this.cursor.selection;
     if (selection && this.cursor.anticursor) {
-      cursorInsertPath = '<selection>';
-
       ctx.startSelectionBefore = selection.getEnd(L);
       ctx.endSelectionAfter = selection.getEnd(R);
     } else {
-      cursorInsertPath = this.findPathFromRootToNode(this.cursor);
-
       var cursorL = this.cursor[L];
       if (cursorL) {
         ctx.startSelectionAfter = cursorL;
@@ -299,10 +256,7 @@ class Controller_latex extends Controller_keystroke {
       selection: {
         latex: cleanLatex,
         startIndex: startIndex,
-        endIndex: endIndex,
-        opaqueSnapshot: {
-          cursorInsertPath
-        }
+        endIndex: endIndex
       },
       ctx
     };
