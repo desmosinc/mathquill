@@ -355,23 +355,11 @@ class NodeBase {
 
     const restoreInfo = ctx.restoreInfo;
     if (restoreInfo) {
-      console.log(
-        'open: ',
-        [restoreInfo.startIndex, restoreInfo.endIndex],
-        this,
-        ctx.latex,
-        latexLength
-      );
-
       if (latexLength === restoreInfo.startIndex) {
         if (restoreInfo.endIndex === restoreInfo.startIndex) {
           // caret
           if (latexLength === restoreInfo.startIndex) {
             restoreInfo.cursorParent = this.parent;
-            console.log('Cursor parent =', this.parent);
-
-            //            console.log('set Cursor[L] = ', 0);
-            //            restoreInfo.cursorL = 0 as any;
           }
         } else {
           // selection
@@ -392,29 +380,18 @@ class NodeBase {
 
     const restoreInfo = ctx.restoreInfo;
     if (restoreInfo) {
-      console.log(
-        'close: ',
-        [restoreInfo.startIndex, restoreInfo.endIndex],
-        this,
-        ctx.latex,
-        latexLength
-      );
-
       if (latexLength === restoreInfo.endIndex) {
         if (restoreInfo.startIndex === restoreInfo.endIndex) {
           // caret
           if (!restoreInfo.cursorL) {
-            console.log('set Cursor[L] = ', this);
             restoreInfo.cursorL = this;
           }
 
           if (!restoreInfo.cursorParent) {
-            console.log('Cursor parent =', this.parent);
             restoreInfo.cursorParent = this.parent;
           } else if (restoreInfo.cursorParent === this.parent) {
             // this seems important for when we enter an empty MathBlock. For instance cursor in between "()" or
             // in an empty square root.
-            console.log('RESETTING Cursor parent =', this.parent);
             restoreInfo.cursorParent = this;
             restoreInfo.cursorL = 0;
           }
