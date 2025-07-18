@@ -190,38 +190,54 @@ class Controller_latex extends Controller_keystroke {
     }
   }
 
-  restoreLatexSelection(data: ExportedLatexSelection) {
+  restoreLatexSelection(newSelection: ExportedLatexSelection) {
     const currentSelectionInfo = this.exportLatexSelection();
     const currentLatex = currentSelectionInfo.selection.latex;
-    const newLatex = data.latex;
+    const newLatex = newSelection.latex;
 
     // latexs must match for the startIndex and endIndex to match up
     if (newLatex !== currentLatex) return;
 
-    // the data.startIndex and data.endIndex are values that are relative to the
-    // cleaned latex. The problem is that when we traverse this tree looking for
-    // the nodes in those positions we will be working on raw uncleaned latex. We need
-    // to map our cleaned indices back to uncleaned indices. Then we can take another
-    // pass through the tree looking for the nodes at the startIndex and endIndex
-    const mappedIndices = mapFromCleanedToUncleanedIndices(
-      currentLatex,
-      currentSelectionInfo.ctx.latex,
-      data
-    );
-    this.exportLatexSelection(mappedIndices);
+    if (newSelection.endIndex === 0) {
+      this.notify('move').cursor.insAtDirEnd(L, this.root);
+    } else if (newSelection.startIndex === newLatex.length) {
+      this.notify('move').cursor.insAtDirEnd(R, this.root);
+    } else {
+      // the data.startIndex and data.endIndex are values that are relative to the
+      // cleaned latex. The problem is that when we traverse this tree looking for
+      // the nodes in those positions we will be working on raw uncleaned latex. We need
+      // to map our cleaned indices back to uncleaned indices. Then we can take another
+      // pass through the tree looking for the nodes at the startIndex and endIndex
+      const mappedIndices = mapFromCleanedToUncleanedIndices(
+        currentLatex,
+        currentSelectionInfo.ctx.latex,
+        newSelection
+      );
 
-    const { cursorInsertPath, signedSelectionSize } = data.opaqueSnapshot;
+      const { restoreInfo } = this.exportLatexSelection(mappedIndices).ctx;
 
-    if (!this.insertCursorAtPath(cursorInsertPath)) return;
+      if (newSelection.startIndex === newSelection.endIndex) {
+        // TODO - insert based on restoreInfo cursorParent and cursorL
+        const { cursorInsertPath } = newSelection.opaqueSnapshot;
+        this.insertCursorAtPath(cursorInsertPath);
+      } else {
+        /*
 
-    if (signedSelectionSize) {
-      this.withIncrementalSelection((selectDir) => {
-        const dir = signedSelectionSize < 0 ? L : R;
-        const count = Math.abs(signedSelectionSize);
-        for (let i = 0; i < count; i += 1) {
-          selectDir(dir);
+        */
+        if (restoreInfo?.selectionL && restoreInfo.selectionR) {
+          console.log('restore selection: ', restoreInfo);
+
+          /*if (signedSelectionSize) {
+          this.withIncrementalSelection((selectDir) => {
+            const dir = signedSelectionSize < 0 ? L : R;
+            const count = Math.abs(signedSelectionSize);
+            for (let i = 0; i < count; i += 1) {
+              selectDir(dir);
+            }
+          });
+        }*/
         }
-      });
+      }
     }
   }
 
