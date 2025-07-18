@@ -394,6 +394,16 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
         );
         console.log('[FOUND] cursorL: ', results.ctx.restoreInfo?.cursorL);
 
+        // some normalization just for comparison. Would normally happen in the restoration code
+        if (!results.ctx.restoreInfo!.cursorL)
+          results.ctx.restoreInfo!.cursorL = 0;
+        if (!results.ctx.restoreInfo!.cursorParent) {
+          results.ctx.restoreInfo!.cursorParent = cursor.controller.root;
+        }
+        if (results.ctx.restoreInfo!.cursorL === cursor.controller.root) {
+          results.ctx.restoreInfo!.cursorL = 0;
+          results.ctx.restoreInfo!.cursorParent = cursor.controller.root;
+        }
         if (
           cursor.parent !== results.ctx.restoreInfo?.cursorParent ||
           cursor[L] !== results.ctx.restoreInfo?.cursorL
