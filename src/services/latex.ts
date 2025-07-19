@@ -129,12 +129,20 @@ class Controller_latex extends Controller_keystroke {
   }
 
   restoreLatexSelection(newSelection: ExportedLatexSelection) {
-    const currentSelectionInfo = this.exportLatexSelection();
-    const currentLatex = currentSelectionInfo.selection.latex;
+    const oldSelectionInfo = this.exportLatexSelection();
+    const oldSelection = oldSelectionInfo.selection;
+    const oldLatex = oldSelection.latex;
     const newLatex = newSelection.latex;
 
     // latexs must match for the startIndex and endIndex to match up
-    if (newLatex !== currentLatex) return;
+    if (newLatex !== oldLatex) return;
+
+    // nothing has changed, so there's nothing to do.
+    if (
+      newSelection.startIndex === oldSelection.startIndex &&
+      newSelection.endIndex === oldSelection.endIndex
+    )
+      return;
 
     if (newSelection.endIndex === 0) {
       this.prepareCursorForRestoration().insAtDirEnd(L, this.root);
@@ -147,8 +155,8 @@ class Controller_latex extends Controller_keystroke {
       // to map our cleaned indices back to uncleaned indices. Then we can take another
       // pass through the tree looking for the nodes at the startIndex and endIndex
       const mappedIndices = mapFromCleanedToUncleanedIndices(
-        currentLatex,
-        currentSelectionInfo.ctx.latex,
+        oldLatex,
+        oldSelectionInfo.ctx.latex,
         newSelection
       );
 

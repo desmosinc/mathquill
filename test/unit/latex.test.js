@@ -450,18 +450,29 @@ suite('latex', function () {
           'restoring selection failed'
         );
       });
-      /*
-      test('restores anchor and head', function () {
+      test('always restores selection with cursor left of anticursor', function () {
         mq.latex('abc');
+        const endSelection = mq.selection();
+        assert.equal(
+          endSelection.startIndex,
+          3,
+          'endSelection has startIndex=3'
+        );
+        assert.equal(endSelection.endIndex, 3, 'endSelection has endIndex=3');
 
         mq.keystroke('Shift-Left');
         mq.keystroke('Shift-Left');
         mq.keystroke('Shift-Left');
         const rightToLeftSelection = mq.selection();
         assert.equal(
-          rightToLeftSelection.opaqueSnapshot.signedSelectionSize,
-          -3,
-          'right to left has negative signedSelectionSize'
+          rightToLeftSelection.startIndex,
+          0,
+          'rightToLeft has startIndex=0'
+        );
+        assert.equal(
+          rightToLeftSelection.endIndex,
+          3,
+          'rightToLeft has endIndex=3'
         );
 
         mq.keystroke('Ctrl-Home');
@@ -470,63 +481,81 @@ suite('latex', function () {
         mq.keystroke('Shift-Right');
         const leftToRightSelection = mq.selection();
         assert.equal(
-          leftToRightSelection.opaqueSnapshot.signedSelectionSize,
+          rightToLeftSelection.startIndex,
+          0,
+          'rightToLeft has startIndex=0'
+        );
+        assert.equal(
+          rightToLeftSelection.endIndex,
           3,
-          'left to right has positive signedSelectionSize'
+          'rightToLeft has endIndex=3'
+        );
+
+        mq.selection(endSelection);
+        assert.equal(
+          mq.selection().startIndex,
+          3,
+          'restored endSelection has startIndex=3'
+        );
+        assert.equal(
+          mq.selection().endIndex,
+          3,
+          'restored endSelection has endIndex=3'
         );
 
         mq.selection(rightToLeftSelection);
         mq.keystroke('Shift-Right');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          -2,
+          mq.selection().startIndex,
+          1,
           'Shift-Right moves head to right'
         );
         mq.keystroke('Shift-Left');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          -3,
+          mq.selection().startIndex,
+          0,
           'Shift-Left moves head to left'
         );
         mq.keystroke('Shift-Left');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          -3,
+          mq.selection().startIndex,
+          0,
           'Shift-Left now does nothing'
         );
         mq.keystroke('Shift-Right');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          -2,
+          mq.selection().startIndex,
+          1,
           'Shift-Right moves head to right'
         );
 
+        mq.selection(endSelection);
         mq.selection(leftToRightSelection);
         mq.keystroke('Shift-Right');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          3,
-          'Shift-Right does nothing'
+          mq.selection().startIndex,
+          1,
+          'Shift-Right moves head to right'
         );
         mq.keystroke('Shift-Left');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          2,
+          mq.selection().startIndex,
+          0,
           'Shift-Left moves head to left'
         );
         mq.keystroke('Shift-Left');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          1,
-          'Shift-Left moves head again to left'
+          mq.selection().startIndex,
+          0,
+          'Shift-Left now does nothing'
         );
         mq.keystroke('Shift-Right');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          2,
+          mq.selection().startIndex,
+          1,
           'Shift-Right moves head to right'
         );
-      });*/
+      });
       test('entire selection works', function () {
         mq.latex('abc');
         mq.select();
