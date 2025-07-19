@@ -8,11 +8,6 @@ type ExportedLatexSelection = {
   latex: string;
   startIndex: number;
   endIndex: number;
-  opaqueSnapshot: {
-    uncleanedLatex: string;
-    cursorInsertPath: string;
-    signedSelectionSize: number;
-  };
 };
 
 // Parser MathBlock
@@ -128,139 +123,117 @@ class Controller_latex extends Controller_keystroke {
     return this;
   }
 
-  // this traces up from the node to the root by first going left as much as possible
-  // then going up one parent. Then going left as much as possible then going up on parent.
-  // It continues this pattern until it finds the root. The "path" that this algorithm
-  // constructs is from the root back down to this node. So it will output the path in
-  // reverse traversal order and will replace lefts with rights and ups with downs.
-  private findPathFromRootToNode(node: MQNode | Cursor | Anticursor): string {
-    let path = '';
-    do {
-      while (node[L]) {
-        path = 'R' + path;
-        node = node[L];
-      }
-
-      if (node.parent) {
-        node = node.parent;
-        path = 'D' + path;
-      } else {
-        return path;
-      }
-    } while (true);
+  prepareCursorForRestoration() {
+    this.cursor.clearSelection().endSelection();
+    return this.notify('move').cursor;
   }
 
-  private insertCursorAtPath(path: string): boolean {
-    if (!path) return false;
+  restoreLatexSelection(newSelection: ExportedLatexSelection) {
+    const oldSelectionInfo = this.exportLatexSelection();
+    const oldSelection = oldSelectionInfo.selection;
+    const oldLatex = oldSelection.latex;
+    const newLatex = newSelection.latex;
 
-    let node: MQNode = this.root;
+    // latexs must match for the startIndex and endIndex to match up
+    if (newLatex !== oldLatex) return;
 
-    // We generate the path starting from the node working up to the root.
-    // So we need to work backwards when following the path. The very last instruction
-    // we encounter does not point to a node. It points to a space where a cursor could
-    // be inserted: either just to the right of the current node ("R") or just to the
-    // left of the current node's children ("D")
-    const lastInstructionI = path.length - 1;
-    for (let i = 0; i < lastInstructionI; i++) {
-      const instruction = path[i];
+    // nothing has changed, so there's nothing to do.
+    if (
+      newSelection.startIndex === oldSelection.startIndex &&
+      newSelection.endIndex === oldSelection.endIndex
+    )
+      return;
 
-      if (instruction === 'D') {
-        const end = node.children().getEnd(L);
-        if (!end) return false;
-        node = end;
-      } else if (instruction === 'R') {
-        const end = node[R];
-        if (!end) return false;
-        node = end;
-      } else {
-        return false;
-      }
-    }
-
-    const lastInstruction = path[lastInstructionI];
-    if (lastInstruction === 'D') {
-      this.cursor.clearSelection().endSelection();
-      this.notify('move').cursor.insAtLeftEnd(node);
-      return true;
-    } else if (lastInstruction === 'R') {
-      this.cursor.clearSelection().endSelection();
-      this.notify('move').cursor.insRightOf(node);
-      return true;
+    if (newSelection.endIndex === 0) {
+      this.prepareCursorForRestoration().insAtDirEnd(L, this.root);
+    } else if (newSelection.startIndex === newLatex.length) {
+      this.prepareCursorForRestoration().insAtDirEnd(R, this.root);
     } else {
-      return false;
-    }
-  }
+      // the data.startIndex and data.endIndex are values that are relative to the
+      // cleaned latex. The problem is that when we traverse this tree looking for
+      // the nodes in those positions we will be working on raw uncleaned latex. We need
+      // to map our cleaned indices back to uncleaned indices. Then we can take another
+      // pass through the tree looking for the nodes at the startIndex and endIndex
+      const mappedIndices = mapFromCleanedToUncleanedIndices(
+        oldLatex,
+        oldSelectionInfo.ctx.latex,
+        newSelection
+      );
 
-  restoreLatexSelection(data: ExportedLatexSelection) {
-    const currentUncleanedLatex =
-      this.exportLatexSelection().opaqueSnapshot.uncleanedLatex;
-    const { cursorInsertPath, signedSelectionSize, uncleanedLatex } =
-      data.opaqueSnapshot;
+      const { restoreInfo } = this.exportLatexSelection(mappedIndices).ctx;
 
-    // verify the uncleanedLatex are identical. We need the trees to be identical so that the
-    // path instructions are relative to an identical tree structure
-    if (currentUncleanedLatex !== uncleanedLatex) return;
-
-    if (!this.insertCursorAtPath(cursorInsertPath)) return;
-
-    if (signedSelectionSize) {
-      this.withIncrementalSelection((selectDir) => {
-        const dir = signedSelectionSize < 0 ? L : R;
-        const count = Math.abs(signedSelectionSize);
-        for (let i = 0; i < count; i += 1) {
-          selectDir(dir);
+      if (newSelection.startIndex === newSelection.endIndex) {
+        if (restoreInfo?.cursorL) {
+          this.prepareCursorForRestoration().insRightOf(
+            restoreInfo.cursorL as MQNode
+          );
+        } else if (restoreInfo?.cursorParent) {
+          this.prepareCursorForRestoration().insAtLeftEnd(
+            restoreInfo.cursorParent as MQNode
+          );
         }
-      });
+      } else {
+        if (restoreInfo?.selectionL && restoreInfo.selectionR) {
+          // TODO - should we validate this selection by verifying you can get from selectionR
+          // to selectionL by traversing leftward? That would be a quick and easy sanity check
+          // to run ahead of time to prevent messing up selection if an invalid selection is
+          // passed in. If an invalid selection is passed in we shouldn't loop infinitely but
+          // we could end up in a weird state.
+
+          // copied this from the selectAll routine. It does appear selecting from the
+          // right to the left is critical to this working.
+          this.prepareCursorForRestoration().insRightOf(
+            restoreInfo.selectionR as MQNode
+          );
+
+          const root = this.cursor.controller.root;
+          this.withIncrementalSelection((selectDir) => {
+            do {
+              selectDir(L);
+
+              // if something goes wrong avoid an infinite loop. We should eventually
+              // reach the leftmost side.
+              if (!this.cursor[L] && this.cursor.parent === root) {
+                break;
+              }
+            } while (this.cursor[R] !== restoreInfo.selectionL);
+          });
+
+          // TODO - should we validate that we ended up with exactly the correct selectionL
+          // and selectionR? It might be a little late to restore the previous selection. The
+          // case I'm thinking of is maybe your startIndex and endIndex are constructed in a way
+          // that we end up expand the selection in both directions. Hopefully we'd be able to
+          // guard against that in a precheck though.
+        }
+      }
     }
   }
 
-  // any time there's a selection there is a cursor and anticursor. The
-  // anticursor is the anchor, and the cursor is the head. It should be
-  // true that these are siblings. If you trace right or left far enough
-  // you will reach the other one. This returns the direction and magnitude
-  // of how many hops it takes to find the cursor from the anticursor. Otherwise
-  // returns 0. The idea is to try this both with L and R and use the one, if any,
-  // that comes back with a non-zero answer.
-  private findSignedSelectionSizeInDir(dir: L | R) {
-    const cursor = this.cursor;
-    const anticursor = cursor.anticursor;
-    if (!anticursor) return 0;
-
-    let count = 0;
-    let node = anticursor[dir];
-    while (node !== cursor[dir]) {
-      if (!node) return 0;
-
-      count += dir;
-      node = node[dir];
-    }
-
-    return count;
-  }
-
-  exportLatexSelection(): ExportedLatexSelection {
+  exportLatexSelection(restoreInfo?: {
+    uncleanStartIndex: number;
+    uncleanEndIndex: number;
+  }): {
+    selection: ExportedLatexSelection;
+    ctx: LatexContext;
+  } {
     var ctx: LatexContext = {
       latex: '',
       startIndex: -1,
       endIndex: -1
     };
 
-    let cursorInsertPath: string = '';
-    let signedSelectionSize: number = 0;
+    if (restoreInfo) {
+      ctx.restoreInfo = {
+        startIndex: restoreInfo.uncleanStartIndex,
+        endIndex: restoreInfo.uncleanEndIndex
+      };
+    }
 
     var selection = this.cursor.selection;
     if (selection && this.cursor.anticursor) {
-      cursorInsertPath = this.findPathFromRootToNode(this.cursor.anticursor);
-
       ctx.startSelectionBefore = selection.getEnd(L);
       ctx.endSelectionAfter = selection.getEnd(R);
-
-      signedSelectionSize =
-        this.findSignedSelectionSizeInDir(L) ||
-        this.findSignedSelectionSizeInDir(R);
     } else {
-      cursorInsertPath = this.findPathFromRootToNode(this.cursor);
-
       var cursorL = this.cursor[L];
       if (cursorL) {
         ctx.startSelectionAfter = cursorL;
@@ -281,38 +254,19 @@ class Controller_latex extends Controller_keystroke {
     // need to clean the latex
     var uncleanedLatex = ctx.latex;
     var cleanLatex = this.cleanLatex(uncleanedLatex);
-    var startIndex = ctx.startIndex;
-    var endIndex = ctx.endIndex;
-
-    // assumes that the cleaning process will only remove characters. We
-    // run through the uncleanedLatex and cleanLatex to find differences.
-    // when we find differences we see how many characters are dropped until
-    // we sync back up. While detecting missing characters we decrement the
-    // startIndex and endIndex if appropriate.
-    var j = 0;
-    for (var i = 0; i < ctx.endIndex; i++) {
-      if (uncleanedLatex[i] !== cleanLatex[j]) {
-        if (i < ctx.startIndex) {
-          startIndex -= 1;
-        }
-        endIndex -= 1;
-
-        // do not increment j. We wan to keep looking at this same
-        // cleanLatex character until we find it in the uncleanedLatex
-      } else {
-        j += 1; //move to next cleanLatex character
-      }
-    }
+    const { startIndex, endIndex } = mapFromUncleanedToCleanedIndices(
+      uncleanedLatex,
+      cleanLatex,
+      ctx
+    );
 
     return {
-      latex: cleanLatex,
-      startIndex: startIndex,
-      endIndex: endIndex,
-      opaqueSnapshot: {
-        uncleanedLatex,
-        cursorInsertPath,
-        signedSelectionSize
-      }
+      selection: {
+        latex: cleanLatex,
+        startIndex: startIndex,
+        endIndex: endIndex
+      },
+      ctx
     };
   }
 
@@ -585,4 +539,80 @@ class Controller_latex extends Controller_keystroke {
       root.finalizeInsert(cursor.options, cursor);
     }
   }
+}
+
+function mapFromUncleanedToCleanedIndices(
+  uncleanedLatex: string,
+  cleanedLatex: string,
+  indices: { startIndex: number; endIndex: number }
+) {
+  var startIndex = indices.startIndex;
+  var endIndex = indices.endIndex;
+
+  // assumes that the cleaning process will only remove space characters. We
+  // run through the uncleanedLatex and cleanLatex to find differences.
+  // when we find differences we see how many characters are dropped until
+  // we sync back up. While detecting missing characters we decrement the
+  // startIndex and endIndex if appropriate.
+  for (
+    var uncleanIdx = 0, cleanIdx = 0;
+    uncleanIdx < indices.endIndex;
+    uncleanIdx++
+  ) {
+    if (uncleanedLatex[uncleanIdx] !== cleanedLatex[cleanIdx]) {
+      if (uncleanIdx < indices.startIndex) {
+        startIndex -= 1;
+      }
+      endIndex -= 1;
+
+      // do not increment j. We wan to keep looking at this same
+      // cleanLatex character until we find it in the uncleanedLatex
+    } else {
+      cleanIdx += 1; //move to next cleanLatex character
+    }
+  }
+
+  return {
+    startIndex,
+    endIndex
+  };
+}
+
+function mapFromCleanedToUncleanedIndices(
+  cleanedLatex: string,
+  uncleanedLatex: string,
+  indices: { startIndex: number; endIndex: number }
+) {
+  const cleanStartIdx = indices.startIndex;
+  const cleanEndIdx = indices.endIndex;
+  var uncleanStartIndex = cleanStartIdx;
+  var uncleanEndIndex = cleanEndIdx;
+
+  // assumes that the cleaning process will only remove space characters. We
+  // run through the uncleanedLatex moving one character every time. We compare
+  // against the cleanedLatex. If the cleanedLatex matches we consume a cleanedLatex
+  // character. Otherwise we continue pointing to the same cleanedLatex character until
+  // it matches the uncleanedLatex. When we find mismatches we know that we need to increase
+  // the startIndex and endIndex to correspond to the correct uncleaned positions.
+  for (
+    var uncleanIdx = 0, cleanIdx = 0;
+    uncleanIdx < uncleanedLatex.length;
+    uncleanIdx++
+  ) {
+    if (uncleanedLatex[uncleanIdx] !== cleanedLatex[cleanIdx]) {
+      if (cleanIdx <= cleanStartIdx) {
+        uncleanStartIndex += 1;
+      }
+      if (cleanIdx <= cleanEndIdx) {
+        uncleanEndIndex += 1;
+      }
+    } else {
+      cleanIdx += 1;
+    }
+  }
+
+  return {
+    uncleanStartIndex,
+    uncleanEndIndex
+  };
 }

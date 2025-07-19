@@ -345,19 +345,65 @@ class NodeBase {
   }
   latexRecursive(_ctx: LatexContext): void {}
   checkCursorContextOpen(ctx: LatexContext) {
+    const latexLength = ctx.latex.length;
     if (ctx.startSelectionBefore === this) {
-      ctx.startIndex = ctx.latex.length;
+      ctx.startIndex = latexLength;
     }
     if (ctx.endSelectionBefore === this) {
-      ctx.endIndex = ctx.latex.length;
+      ctx.endIndex = latexLength;
+    }
+
+    const restoreInfo = ctx.restoreInfo;
+    if (restoreInfo) {
+      if (latexLength === restoreInfo.startIndex) {
+        if (restoreInfo.endIndex === restoreInfo.startIndex) {
+          // caret
+          if (latexLength === restoreInfo.startIndex) {
+            restoreInfo.cursorParent = this.parent;
+          }
+        } else {
+          // selection
+          restoreInfo.selectionL = this;
+        }
+      }
     }
   }
   checkCursorContextClose(ctx: LatexContext) {
+    const latexLength = ctx.latex.length;
+
     if (ctx.startSelectionAfter === this) {
-      ctx.startIndex = ctx.latex.length;
+      ctx.startIndex = latexLength;
     }
     if (ctx.endSelectionAfter === this) {
-      ctx.endIndex = ctx.latex.length;
+      ctx.endIndex = latexLength;
+    }
+
+    const restoreInfo = ctx.restoreInfo;
+    if (restoreInfo) {
+      if (latexLength === restoreInfo.endIndex) {
+        if (restoreInfo.startIndex === restoreInfo.endIndex) {
+          // caret
+          if (!restoreInfo.cursorL) {
+            restoreInfo.cursorL = this;
+          }
+
+          if (!restoreInfo.cursorParent) {
+            restoreInfo.cursorParent = this.parent;
+          } else if (restoreInfo.cursorParent === this.parent) {
+            // this seems important for when we enter an empty MathBlock. For instance cursor in between "()" or
+            // in an empty square root.
+            restoreInfo.cursorParent = this;
+            restoreInfo.cursorL = 0;
+          }
+        } else {
+          // selection
+          // it seems like when closing the selection we want the very first node that matches
+          // the index, not any later ones.
+          if (!restoreInfo.selectionR) {
+            restoreInfo.selectionR = this;
+          }
+        }
+      }
     }
   }
   finalizeTree(_options: CursorOptions, _dir?: Direction) {}
