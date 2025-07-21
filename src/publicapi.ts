@@ -1,9 +1,5 @@
 /*********************************************************
  * The publicly exposed MathQuill API.
- *
- * This file contains the public API methods and classes that are exposed
- * to users of the MathQuill library. Type safety has been improved throughout
- * while maintaining backward compatibility with the existing API.
  ********************************************************/
 
 type KIND_OF_MQ = 'StaticMath' | 'MathField' | 'InnerMathField' | 'TextField';

@@ -1,9 +1,5 @@
 /**
  * Shared TypeScript type definitions for MathQuill
- *
- * This file contains type definitions that are shared across the codebase.
- * Many of these types have been improved to eliminate inappropriate use of 'any'
- * while maintaining compatibility with the concatenated build system.
  */
 
 type NodeRef = MQNode | 0;

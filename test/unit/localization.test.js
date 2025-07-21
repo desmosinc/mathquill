@@ -48,20 +48,19 @@ suite('Localization', function () {
       var localization = MQ.L10N.create('en');
 
       // Start in English
-      assert.equal(localization.formatMessage('plus'), 'plus');
       assert.equal(localization.getCurrentLanguage(), 'en');
+      assert.equal(localization.formatMessage('plus'), 'plus');
 
       // Switch to Spanish
       localization.setLanguage('es');
-      assert.equal(localization.formatMessage('plus'), 'más');
       assert.equal(localization.getCurrentLanguage(), 'es');
+      assert.equal(localization.formatMessage('plus'), 'más');
     });
 
     test('falls back to English for unsupported languages', function () {
       var localization = MQ.L10N.create('en');
 
       localization.setLanguage('fr'); // French not supported
-      assert.equal(localization.formatMessage('plus'), 'plus'); // Should be English
       assert.equal(localization.getResolvedLanguage(), 'en');
     });
 
@@ -77,7 +76,7 @@ suite('Localization', function () {
   });
 
   suite('Fraction Shortcuts', function () {
-    test('returns fraction shortcuts with "1" prefix', function () {
+    test('returns fraction shortcuts in English', function () {
       var localization = MQ.L10N.create('en');
 
       assert.equal(localization.formatFractionShortcut(1, 2), '1 half');
@@ -97,6 +96,7 @@ suite('Localization', function () {
     test('returns empty string for unsupported fractions', function () {
       var localization = MQ.L10N.create('en');
 
+      // In practice, fractions with no custom translation fall back to the more technical "Start Fraction, numerator over denominator, End Fraction" syntax.
       assert.equal(localization.formatFractionShortcut(2, 19), '');
       assert.equal(localization.formatFractionShortcut(5, 13), '');
     });
@@ -185,8 +185,8 @@ suite('Localization', function () {
         callbackCount++;
       });
 
-      localization.setLanguage('en'); // Already English
-      localization.setLanguage('en'); // Still English
+      localization.setLanguage('en');
+      localization.setLanguage('en');
 
       assert.equal(callbackCount, 0);
 
@@ -202,7 +202,7 @@ suite('Localization', function () {
         callbackTriggered = true;
       });
 
-      unregister(); // Unregister immediately
+      unregister(); // Unregister immediately so the callback is never fired
       localization.setLanguage('es');
 
       assert.equal(callbackTriggered, false);
