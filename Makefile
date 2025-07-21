@@ -104,7 +104,7 @@ endif
 # http://www.gnu.org/software/make/manual/html_node/Empty-Targets.html#Empty-Targets
 NODE_MODULES_INSTALLED = ./node_modules/.installed--used_by_Makefile
 BUILD_DIR_EXISTS = $(BUILD_DIR)/.exists--used_by_Makefile
-FLUENT_BUNDLE = $(SRC_DIR)/services/fluent-bundle.js
+FLUENT_BUNDLE = script/fluent-bundle.js
 
 # environment constants
 
@@ -124,7 +124,6 @@ css: $(BUILD_CSS)
 font: $(FONT_TARGET)
 clean:
 	rm -rf $(BUILD_DIR)
-	rm -f $(FLUENT_BUNDLE)
 	rm -f $(SRC_DIR)/services/locale-imports.ts
 # This adds an entry to your local .git/config file that looks like this:
 # [include]
@@ -175,7 +174,24 @@ $(FONT_TARGET): $(FONT_SOURCE) $(BUILD_DIR_EXISTS)
 	cp -r $< $@
 
 $(FLUENT_BUNDLE): package.json script/bundle-fluent.js $(NODE_MODULES_INSTALLED)
-	node script/bundle-fluent.js
+	@echo "Generating fluent-bundle.js..."
+	@node -e " \
+		const fs = require('fs'); \
+		const path = require('path'); \
+		const { execSync } = require('child_process'); \
+		console.log('📦 Bundling Fluent libraries for MathQuill...'); \
+		const entryFile = \`const { FluentBundle, FluentResource } = require('@fluent/bundle'); const { parse } = require('@fluent/syntax'); module.exports = { FluentBundle, FluentResource, parseResource: parse };\`; \
+		fs.writeFileSync('temp-fluent-entry.js', entryFile); \
+		const webpackConfig = \`const path = require('path'); module.exports = { mode: 'production', entry: './temp-fluent-entry.js', output: { path: path.resolve(__dirname, 'script'), filename: 'fluent-bundle.js', library: { name: 'FluentLib', type: 'var' } }, target: 'web' };\`; \
+		fs.writeFileSync('temp-webpack.config.js', webpackConfig); \
+		try { execSync('npx webpack --config temp-webpack.config.js', {stdio: 'inherit'}); } catch(e) { console.error('Webpack failed:', e.message); process.exit(1); } \
+		const globalExports = '\\nvar FluentBundle = FluentLib.FluentBundle;\\nvar FluentResource = FluentLib.FluentResource;\\nvar parseResource = FluentLib.parseResource;\\n'; \
+		fs.appendFileSync('script/fluent-bundle.js', globalExports); \
+		fs.unlinkSync('temp-fluent-entry.js'); \
+		fs.unlinkSync('temp-webpack.config.js'); \
+		console.log('✅ Fluent bundle generated successfully'); \
+		console.log('📍 Location: script/fluent-bundle.js'); \
+	"
 
 $(SRC_DIR)/services/locale-imports.ts: script/generate-locale-imports.js src/locale/*/messages.ftl
 	node script/generate-locale-imports.js

@@ -1,5 +1,4 @@
 /node_modules
 /build
-/src/services/fluent-bundle.js
 /src/services/locale-imports.ts
 
