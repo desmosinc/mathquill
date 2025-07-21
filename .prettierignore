@@ -1,6 +1,7 @@
 *.min.js
 *.min.css
 build
+script/fluent-bundle.js
 src/intro.js
 src/outro.js
 test/support/jquery-1.5.2.js
