@@ -665,7 +665,6 @@ LatexCmds.superscript =
       ariaLabel = 'superscript';
 
       mathspeak(opts?: MathspeakOptions) {
-        // Set the template dynamically
         const localization = getControllerLocalization(this);
         this.mathspeakTemplate = [
           localization.formatMessage('superscript') + ',',
@@ -698,6 +697,7 @@ LatexCmds.superscript =
         }
         return super.mathspeak();
       }
+
       finalizeTree() {
         this.upInto = this.sup = this.getEnd(R);
         this.sup.downOutOf = insLeftOfMeUnlessAtEnd;
@@ -1389,10 +1389,11 @@ class Bracket extends DelimsNode {
     var open = this.sides[L].ch,
       close = this.sides[R].ch;
     if (open === '|' && close === '|') {
-      // Generate mathspeak template dynamically to ensure it uses current language
-      this.mathspeakTemplate = getControllerLocalization(
-        this
-      ).createMathspeakTemplate('start-absolute-value', 'end-absolute-value');
+      const localization = getControllerLocalization(this);
+      this.mathspeakTemplate = localization.createMathspeakTemplate(
+        'start-absolute-value',
+        'end-absolute-value'
+      );
       this.ariaLabel = 'absolute value';
     } else if (opts && opts.createdLeftOf && this.side) {
       var ch = '';
@@ -1784,16 +1785,6 @@ class Binomial extends DelimsNode {
   textTemplate = ['choose(', ',', ')'];
   ariaLabel = 'binomial';
 
-  mathspeak() {
-    const localization = getControllerLocalization(this);
-    this.mathspeakTemplate = [
-      localization.formatMessage('start-binomial') + ',',
-      ' ' + localization.formatMessage('choose') + ' ',
-      ', ' + localization.formatMessage('end-binomial')
-    ];
-    return super.mathspeak();
-  }
-
   finalizeTree() {
     const endsL = this.getEnd(L);
     const endsR = this.getEnd(R);
@@ -1802,6 +1793,13 @@ class Binomial extends DelimsNode {
     // https://math.stackexchange.com/a/1617456 cites Knuth as the source of 'upper index' and 'lower index'
     endsL.ariaLabel = 'upper index';
     endsR.ariaLabel = 'lower index';
+
+    const localization = getControllerLocalization(this);
+    this.mathspeakTemplate = [
+      localization.formatMessage('start-binomial') + ',',
+      ' ' + localization.formatMessage('choose') + ' ',
+      ', ' + localization.formatMessage('end-binomial')
+    ];
   }
 }
 

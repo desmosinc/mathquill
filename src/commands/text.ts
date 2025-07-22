@@ -103,19 +103,23 @@ class TextBlock extends MQNode {
     return out;
   }
 
+  finalizeTree() {
+    const localization = getControllerLocalization(this);
+    this.mathspeakTemplate = localization.createMathspeakTemplate(
+      'start-text',
+      'end-text'
+    );
+    super.finalizeTree({} as CursorOptions);
+  }
+
   mathspeak(opts?: MathspeakOptions) {
     if (opts && opts.ignoreShorthand) {
-      const localization = getControllerLocalization(this);
-      const mathspeakTemplate = localization.createMathspeakTemplate(
-        'start-text',
-        'end-text'
-      );
       return (
-        mathspeakTemplate[0] +
+        this.mathspeakTemplate![0] +
         ', ' +
         this.textContents() +
         ', ' +
-        mathspeakTemplate[1]
+        this.mathspeakTemplate![1]
       );
     } else {
       return this.textContents();

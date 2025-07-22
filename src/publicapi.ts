@@ -345,6 +345,10 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
           this.__controller.setLanguage(opts.language);
         }
 
+        // Update the global language manager to ensure consistency
+        // This ensures that any fallback calls to getControllerLocalization work correctly
+        setGlobalLanguage(opts.language);
+
         // Update the aria label when language changes
         if (this.__controller.updateAriaLabel) {
           this.__controller.updateAriaLabel();

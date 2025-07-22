@@ -137,6 +137,8 @@ class ControllerBase {
     this.language = language;
     this.localization = new MathQuillLocalization(language);
     this.explicitLanguage = true;
+    // Update mathspeak templates with new language
+    this.updateMathspeak();
   }
 
   handle(name: HandlersWithDirection, dir: Direction): void;
@@ -271,7 +273,32 @@ class ControllerBase {
   }
 
   // overridden
-  updateMathspeak(_opts?: { emptyContent: boolean }) {}
+  updateMathspeak(_opts?: { emptyContent: boolean }) {
+    // Most templates are now dynamic and will update automatically when mathspeak() is called
+    // Only update the remaining static templates here
+    this.root.postOrder((node: MQNode) => {
+      const localization = this.localization;
+      if (node.ariaLabel === 'binomial') {
+        node.mathspeakTemplate = [
+          localization.formatMessage('start-binomial') + ',',
+          ' ' + localization.formatMessage('choose') + ' ',
+          ', ' + localization.formatMessage('end-binomial')
+        ];
+      } else if ('isTextBlock' in node && node.isTextBlock?.()) {
+        node.mathspeakTemplate = localization.createMathspeakTemplate(
+          'start-text',
+          'end-text'
+        );
+      } else if ('isStyleBlock' in node && node.isStyleBlock?.()) {
+        if (node.ariaLabel) {
+          node.mathspeakTemplate = [
+            localization.formatStartBlock(node.ariaLabel) + ',',
+            ', ' + localization.formatEndBlock(node.ariaLabel)
+          ];
+        }
+      }
+    });
+  }
   scrollHoriz() {}
   selectionChanged() {}
   setOverflowClasses() {}
@@ -289,18 +316,20 @@ class ControllerBase {
 function getControllerLocalization(node: MQNode) {
   // Walk up the tree to find the controller
   let current: MQNode | undefined = node;
-  while (current && !(current as any).controller) {
+  while (current && !('controller' in current)) {
     current = current.parent;
   }
 
+  // Try to get controller's localization using safe property access
   if (
     current &&
-    (current as any).controller &&
-    (current as any).controller.getLocalizationForController
+    'controller' in current &&
+    current.controller &&
+    typeof current.controller === 'object' &&
+    'getLocalizationForController' in current.controller &&
+    typeof current.controller.getLocalizationForController === 'function'
   ) {
-    // Always get the controller's current localization instance
-    // This ensures we get the latest language even if it was recently changed
-    return (current as any).controller.getLocalizationForController();
+    return current.controller.getLocalizationForController();
   }
 
   // Fallback: create a localization instance with the current global language
