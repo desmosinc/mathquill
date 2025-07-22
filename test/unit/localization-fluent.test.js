@@ -24,10 +24,10 @@ suite('Localization Fluent Integration', function () {
     var localization = MQ.L10N.create('en');
 
     // Try to format a parametric message without providing parameters
-    var result = localization.formatMessage('start-block');
+    var result = localization.formatMessage('power-ordinal');
 
     // Should handle missing parameters without crashing by returning the raw formatted string. We might want to make this an error at some point.
-    assert.equal(result, 'Start {$blockType}');
+    assert.equal(result, 'to the {$number}th power');
   });
 
   test('handles malformed FTL gracefully', function () {

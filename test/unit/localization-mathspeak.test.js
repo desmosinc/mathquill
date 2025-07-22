@@ -159,14 +159,14 @@ suite('Localization Mathspeak Integration', function () {
       MQ.L10N.setLanguage('es');
 
       mq.latex('\\frac{-1}{2}');
-      assert.equal(mq.mathspeak(), 'negativo 1 medio');
+      assert.equal(mq.mathspeak(), 'menos 1 medio');
       mq.latex('\\frac{-1}{3}');
-      assert.equal(mq.mathspeak(), 'negativo 1 tercio');
+      assert.equal(mq.mathspeak(), 'menos 1 tercio');
       mq.latex('\\frac{-2}{3}');
-      assert.equal(mq.mathspeak(), 'negativo 2 tercios');
+      assert.equal(mq.mathspeak(), 'menos 2 tercios');
 
       mq.latex('\\frac{-3}{4}');
-      assert.equal(mq.mathspeak(), 'negativo 3 cuartos');
+      assert.equal(mq.mathspeak(), 'menos 3 cuartos');
     });
   });
 
@@ -201,7 +201,7 @@ suite('Localization Mathspeak Integration', function () {
       assert.equal(mq.mathspeak(), '"x" a la 12345ª potencia');
     });
 
-    test('negative exponents in English', function () {
+    test('negative exponents', function () {
       MQ.L10N.setLanguage('en');
 
       var mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
@@ -215,7 +215,7 @@ suite('Localization Mathspeak Integration', function () {
       MQ.L10N.setLanguage('es');
 
       mq.latex('10^{-5}');
-      assert.equal(mq.mathspeak(), '10 a la negativo quinta potencia');
+      assert.equal(mq.mathspeak(), '10 a la potencia menos 5');
     });
   });
 });

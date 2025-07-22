@@ -67,8 +67,8 @@ class Aria {
     const localization = this.controller.getLocalizationForController();
     return this.queue(
       dir === L
-        ? localization.formatDirectional('before')
-        : localization.formatDirectional('after')
+        ? localization.formatMessage('before')
+        : localization.formatMessage('after')
     );
   }
   queueDirEndOf(dir: Direction) {
@@ -76,8 +76,8 @@ class Aria {
     const localization = this.controller.getLocalizationForController();
     return this.queue(
       dir === L
-        ? localization.formatDirectional('beginning-of')
-        : localization.formatDirectional('end-of')
+        ? localization.formatMessage('beginning-of')
+        : localization.formatMessage('end-of')
     );
   }
 

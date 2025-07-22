@@ -119,17 +119,47 @@ class Style extends MathCommand {
     );
 
     this.ariaLabel = ariaLabel || ctrlSeq.replace(/^\\/, '');
-    const localization = getControllerLocalization(this);
-    this.mathspeakTemplate = [
-      localization.formatStartBlock(this.ariaLabel) + ',',
-      ', ' + localization.formatEndBlock(this.ariaLabel)
-    ];
     // In most cases, mathspeak should announce the start and end of style blocks.
     // There is one exception currently (mathrm).
     this.shouldNotSpeakDelimiters = opts && opts.shouldNotSpeakDelimiters;
+
+    // Style blocks will have their mathspeak templates set by updateMathspeak when needed
   }
   mathspeak(opts?: MathspeakOptions) {
     if (!this.shouldNotSpeakDelimiters || (opts && opts.ignoreShorthand)) {
+      if (
+        !this.mathspeakTemplate ||
+        this.mathspeakTemplate.length === 0 ||
+        this.mathspeakTemplate[0] === ''
+      ) {
+        const localization = getControllerLocalization(this);
+        if (this.ariaLabel) {
+          const ariaLabel = this.ariaLabel.toLowerCase().replace(/\s+/g, '-');
+          const startKey = `start-${ariaLabel}`;
+          const endKey = `end-${ariaLabel}`;
+
+          if (
+            localization.hasMessage(startKey) &&
+            localization.hasMessage(endKey)
+          ) {
+            this.mathspeakTemplate = localization.createMathspeakTemplate(
+              startKey,
+              endKey
+            );
+          } else {
+            this.mathspeakTemplate = [
+              localization.formatMessage('generic-start') +
+                ' ' +
+                this.ariaLabel +
+                ',',
+              ', ' +
+                localization.formatMessage('generic-end') +
+                ' ' +
+                this.ariaLabel
+            ];
+          }
+        }
+      }
       return super.mathspeak();
     }
     return this.foldChildren('', function (speech, block) {
@@ -253,11 +283,7 @@ LatexCmds.textcolor = class extends MathCommand {
       )
     );
     this.ariaLabel = color.replace(/^\\/, '');
-    const localization = getControllerLocalization(this);
-    this.mathspeakTemplate = [
-      localization.formatStartBlock(this.ariaLabel) + ',',
-      ', ' + localization.formatEndBlock(this.ariaLabel)
-    ];
+    // Mathspeak template will be set by updateMathspeak when needed
   }
   latexRecursive(ctx: LatexContext) {
     this.checkCursorContextOpen(ctx);
@@ -280,6 +306,29 @@ LatexCmds.textcolor = class extends MathCommand {
         this.setColor(color);
         return super.parser();
       });
+  }
+  mathspeak() {
+    if (
+      !this.mathspeakTemplate ||
+      this.mathspeakTemplate.length === 0 ||
+      this.mathspeakTemplate[0] === ''
+    ) {
+      const localization = getControllerLocalization(this);
+      if (this.ariaLabel) {
+        // For textcolor, use the color name directly as start/end delimiters
+        this.mathspeakTemplate = [
+          localization.formatMessage('generic-start') +
+            ' ' +
+            this.ariaLabel +
+            ',',
+          ', ' +
+            localization.formatMessage('generic-end') +
+            ' ' +
+            this.ariaLabel
+        ];
+      }
+    }
+    return super.mathspeak();
   }
   isStyleBlock() {
     return true;
@@ -306,11 +355,7 @@ var Class = (LatexCmds['class'] = class extends MathCommand {
           h.block('span', { class: `mq-class ${cls}` }, blocks[0])
         );
         this.ariaLabel = cls + ' class';
-        const localization = getControllerLocalization(this);
-        this.mathspeakTemplate = [
-          localization.formatStartBlock(this.ariaLabel) + ',',
-          ', ' + localization.formatEndBlock(this.ariaLabel)
-        ];
+        // Mathspeak template will be set by updateMathspeak when needed
         return super.parser();
       });
   }
@@ -323,6 +368,29 @@ var Class = (LatexCmds['class'] = class extends MathCommand {
     ctx.latex += '}';
 
     this.checkCursorContextClose(ctx);
+  }
+  mathspeak() {
+    if (
+      !this.mathspeakTemplate ||
+      this.mathspeakTemplate.length === 0 ||
+      this.mathspeakTemplate[0] === ''
+    ) {
+      const localization = getControllerLocalization(this);
+      if (this.ariaLabel) {
+        // For class, use the class name directly as start/end delimiters
+        this.mathspeakTemplate = [
+          localization.formatMessage('generic-start') +
+            ' ' +
+            this.ariaLabel +
+            ',',
+          ', ' +
+            localization.formatMessage('generic-end') +
+            ' ' +
+            this.ariaLabel
+        ];
+      }
+    }
+    return super.mathspeak();
   }
   isStyleBlock() {
     return true;
@@ -1399,14 +1467,25 @@ class Bracket extends DelimsNode {
       var ch = '';
       if (this.side === L) ch = this.textTemplate[0];
       else if (this.side === R) ch = this.textTemplate[1];
+      const localization = getControllerLocalization(this);
       return (
-        (this.side === L ? 'left ' : 'right ') +
+        (this.side === L
+          ? localization.formatMessage('bracket-left')
+          : localization.formatMessage('bracket-right')) +
+        ' ' +
         BRACKET_NAMES[ch as keyof typeof BRACKET_NAMES]
       );
     } else {
+      const localization = getControllerLocalization(this);
       this.mathspeakTemplate = [
-        'left ' + BRACKET_NAMES[open as keyof typeof BRACKET_NAMES] + ',',
-        ', right ' + BRACKET_NAMES[close as keyof typeof BRACKET_NAMES]
+        localization.formatMessage('bracket-left') +
+          ' ' +
+          BRACKET_NAMES[open as keyof typeof BRACKET_NAMES] +
+          ',',
+        ', ' +
+          localization.formatMessage('bracket-right') +
+          ' ' +
+          BRACKET_NAMES[close as keyof typeof BRACKET_NAMES]
       ];
       this.ariaLabel =
         BRACKET_NAMES[open as keyof typeof BRACKET_NAMES] + ' block';
@@ -1795,11 +1874,11 @@ class Binomial extends DelimsNode {
     endsR.ariaLabel = 'lower index';
 
     const localization = getControllerLocalization(this);
-    this.mathspeakTemplate = [
-      localization.formatMessage('start-binomial') + ',',
-      ' ' + localization.formatMessage('choose') + ' ',
-      ', ' + localization.formatMessage('end-binomial')
-    ];
+    this.mathspeakTemplate = localization.createMathspeakTemplate(
+      'start-binomial',
+      'choose',
+      'end-binomial'
+    );
   }
 }
 

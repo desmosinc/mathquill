@@ -617,18 +617,43 @@ LatexCmds['⌉'] = LatexCmds.rceil = bindVanillaSymbol(
   '&#8969;',
   'right ceiling'
 );
-LatexCmds.opencurlybrace = LatexCmds.lbrace = bindVanillaSymbol(
-  '\\lbrace ',
-  '{',
-  'left brace'
-);
-LatexCmds.closecurlybrace = LatexCmds.rbrace = bindVanillaSymbol(
-  '\\rbrace ',
-  '}',
-  'right brace'
-);
-LatexCmds.lbrack = bindVanillaSymbol('[', 'left bracket');
-LatexCmds.rbrack = bindVanillaSymbol(']', 'right bracket');
+class LeftBrace extends VanillaSymbol {
+  constructor() {
+    super('\\lbrace ', h.text('{'));
+  }
+  mathspeak(): string {
+    return getControllerLocalization(this).formatMessage('left-brace');
+  }
+}
+class RightBrace extends VanillaSymbol {
+  constructor() {
+    super('\\rbrace ', h.text('}'));
+  }
+  mathspeak(): string {
+    return getControllerLocalization(this).formatMessage('right-brace');
+  }
+}
+class LeftBracket extends VanillaSymbol {
+  constructor() {
+    super('[', h.text('['));
+  }
+  mathspeak(): string {
+    return getControllerLocalization(this).formatMessage('left-bracket');
+  }
+}
+class RightBracket extends VanillaSymbol {
+  constructor() {
+    super(']', h.text(']'));
+  }
+  mathspeak(): string {
+    return getControllerLocalization(this).formatMessage('right-bracket');
+  }
+}
+
+LatexCmds.opencurlybrace = LatexCmds.lbrace = () => new LeftBrace();
+LatexCmds.closecurlybrace = LatexCmds.rbrace = () => new RightBrace();
+LatexCmds.lbrack = () => new LeftBracket();
+LatexCmds.rbrack = () => new RightBracket();
 
 //various symbols
 LatexCmds.slash = bindVanillaSymbol('/', 'slash');

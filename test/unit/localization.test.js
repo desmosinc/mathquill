@@ -36,10 +36,10 @@ suite('Localization', function () {
     test('formats parametric messages', function () {
       var localization = MQ.L10N.create('en');
 
-      var result = localization.formatMessage('start-block', {
-        blockType: 'Fraction'
+      var result = localization.formatMessage('power-ordinal', {
+        number: 5
       });
-      assert.equal(result, 'Start Fraction');
+      assert.equal(result, 'to the 5th power');
     });
   });
 

@@ -443,8 +443,16 @@ function makeTextBlock(
 ) {
   return class extends TextBlock {
     ctrlSeq = latex;
-    mathspeakTemplate = ['Start' + ariaLabel, 'End' + ariaLabel];
     ariaLabel = ariaLabel;
+
+    mathspeak() {
+      const localization = getControllerLocalization(this);
+      this.mathspeakTemplate = [
+        localization.formatMessage('generic-start') + ' ' + ariaLabel + ',',
+        ', ' + localization.formatMessage('generic-end') + ' ' + ariaLabel
+      ];
+      return super.mathspeak();
+    }
 
     html() {
       const out = h(tagName, attrs, [h.text(this.textContents())]);

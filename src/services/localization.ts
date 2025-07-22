@@ -130,7 +130,7 @@ class MathQuillLocalization {
     ftlContent: string
   ): FluentBundleType {
     // FluentBundle constructor expects a locale or array of locales
-    // Disable Unicode isolation marks (⁩) for cleaner screen reader output
+    // Disable Unicode isolation marks for cleaner screen reader output
     const bundle = new FluentBundle([language], { useIsolating: false });
 
     // Create a FluentResource from the raw FTL content
@@ -178,13 +178,6 @@ class MathQuillLocalization {
   }
 
   // Convenience methods for common mathematical structures
-  formatStartBlock(blockType: string): string {
-    return this.formatMessage('start-block', { blockType });
-  }
-
-  formatEndBlock(blockType: string): string {
-    return this.formatMessage('end-block', { blockType });
-  }
 
   formatFractionShortcut(numerator: number, denominator: number): string {
     const key = `fraction-shortcut-${numerator}-${denominator}`;
@@ -253,12 +246,6 @@ class MathQuillLocalization {
     }
   }
 
-  formatDirectional(
-    direction: 'before' | 'after' | 'beginning-of' | 'end-of'
-  ): string {
-    return this.formatMessage(direction);
-  }
-
   // Auto operator localization
   formatAutoOperator(operatorName: string): string {
     // First, try to find a localized version
@@ -279,20 +266,45 @@ class MathQuillLocalization {
   }
 
   /**
-   * Creates a mathspeak template for start/end delimited structures
+   * Creates a mathspeak template for delimited structures
+   * Supports both 2-parameter (start/end) and 3-parameter (start/middle/end) templates
    * @param startKey - The localization key for the start delimiter
-   * @param endKey - The localization key for the end delimiter
+   * @param middleOrEndKey - The localization key for middle part (3-param) or end delimiter (2-param)
+   * @param endKey - The localization key for the end delimiter (only for 3-param version)
    * @returns Array of template strings with commas for screen reader pauses
    */
-  createMathspeakTemplate(startKey: string, endKey: string): string[] {
-    return [
-      this.formatMessage(startKey) + ',',
-      ', ' + this.formatMessage(endKey)
-    ];
+  createMathspeakTemplate(
+    startKey: string,
+    middleOrEndKey: string,
+    endKey?: string
+  ): string[] {
+    if (endKey !== undefined) {
+      // 3-parameter version: start, middle, end
+      return [
+        this.formatMessage(startKey) + ',',
+        ' ' + this.formatMessage(middleOrEndKey) + ' ',
+        ', ' + this.formatMessage(endKey)
+      ];
+    } else {
+      // 2-parameter version: start, end
+      return [
+        this.formatMessage(startKey) + ',',
+        ', ' + this.formatMessage(middleOrEndKey)
+      ];
+    }
   }
 
   getCurrentLanguage(): string {
     return this.requestedLanguage;
+  }
+
+  /**
+   * Check if a message key exists in the current bundle
+   * @param messageKey - The message key to check
+   * @returns True if the message exists, false otherwise
+   */
+  hasMessage(messageKey: string): boolean {
+    return this.bundle?.hasMessage(messageKey) || false;
   }
 
   getResolvedLanguage(): string {
@@ -352,15 +364,6 @@ function isValidLanguageCode(language: string): boolean {
   // Accept: en, es, fr, fr-CA, en-US, zh-CN, etc.
   // Reject: xx, 123, empty string, special characters, etc.
   const languagePattern = /^[a-z]{2,3}(-[A-Z]{2})?$/i;
-
-  // Additional check: reject obviously made-up codes like 'xx'
-  const normalizedLanguage = language.toLowerCase();
-  const invalidCodes = ['xx', 'xyz', '123', 'test', 'invalid', 'bogus'];
-
-  if (invalidCodes.includes(normalizedLanguage)) {
-    return false;
-  }
-
   return languagePattern.test(language);
 }
 
@@ -411,9 +414,9 @@ class GlobalLanguageManager {
 // Global language manager instance
 const globalLanguageManager = new GlobalLanguageManager();
 
-// Export functions for global language management
-// These functions are used by other modules in the concatenated build
-// and will be made available through the MathQuill API
+// Global language management functions
+// These functions are made available globally through the concatenated build system
+// and can be accessed by other modules within MathQuill
 
 /**
  * Sets the global default language for new MathQuill instances

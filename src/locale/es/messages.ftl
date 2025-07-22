@@ -1,25 +1,44 @@
-# Mathematical Structure Delimiters
-start-block = Inicio { $blockType ->
-    [Fraction] Fracción
-    [Root] Raíz
-    [CubeRoot] Raíz Cúbica
-    [AbsoluteValue] Valor Absoluto
-    [Binomial] Binomial
-    [Token] Token
-    [Text] Texto
-    *[other] { $blockType }
-}
+# Text and Style Block Messages
+start-text = Inicio Texto
+end-text = Fin Texto
 
-end-block = Fin { $blockType ->
-    [Fraction] Fracción
-    [Root] Raíz
-    [CubeRoot] Raíz Cúbica
-    [AbsoluteValue] Valor Absoluto
-    [Binomial] Binomial
-    [Token] Token
-    [Text] Texto
-    *[other] { $blockType }
-}
+# Generic fallback messages
+generic-start = Inicio
+generic-end = Final
+
+# Bracket messages
+bracket-left = izquierdo
+bracket-right = derecho
+
+# Individual punctuation characters
+left-parenthesis = paréntesis izquierdo
+right-parenthesis = paréntesis derecho
+left-bracket = corchete izquierdo
+right-bracket = corchete derecho
+left-brace = llave izquierda
+right-brace = llave derecha
+
+# Style block messages
+start-italic-font = Inicio Fuente Cursiva
+end-italic-font = Fin Fuente Cursiva
+start-bold-font = Inicio Fuente Negrita
+end-bold-font = Fin Fuente Negrita
+start-roman-font = Inicio Fuente Romana
+end-roman-font = Fin Fuente Romana
+start-serif-font = Inicio Fuente Serif
+end-serif-font = Fin Fuente Serif
+start-math-text = Inicio Texto Matemático
+end-math-text = Fin Texto Matemático
+start-underline = Inicio Subrayado
+end-underline = Fin Subrayado
+start-overline = Inicio Sobrelineado
+end-overline = Fin Sobrelineado
+start-over-right-arrow = Inicio Flecha Superior Derecha
+end-over-right-arrow = Fin Flecha Superior Derecha
+start-over-left-arrow = Inicio Flecha Superior Izquierda
+end-over-left-arrow = Fin Flecha Superior Izquierda
+start-over-left-and-right-arrow = Inicio Flecha Superior Izquierda y Derecha
+end-over-left-and-right-arrow = Fin Flecha Superior Izquierda y Derecha
 
 # Fraction-specific messages
 start-fraction = Inicio Fracción
@@ -57,10 +76,6 @@ end-upper-index = Fin Índice Superior
 start-lower-index = Inicio Índice Inferior
 end-lower-index = Fin Índice Inferior
 
-# Text blocks
-start-text = Inicio Texto
-end-text = Fin Texto
-
 # Token blocks
 start-token = Inicio Token
 end-token = Fin Token
@@ -86,24 +101,13 @@ power-ordinal = a la { $number ->
     *[other] { $number }ª
 } potencia
 power-zero = a la 0 potencia
-power-negative = a la negativo { $number ->
-    [1] primera
-    [2] segunda
-    [3] tercera
-    [4] cuarta
-    [5] quinta
-    [6] sexta
-    [7] séptima
-    [8] octava
-    [9] novena
-    *[other] { $number }ª
-} potencia
+power-negative = a la potencia menos { $number }
 
 # Basic mathematical operators
 plus = más
 positive = positivo
 minus = menos
-negative = negativo
+negative = menos
 times = por
 dot = punto
 equals = igual

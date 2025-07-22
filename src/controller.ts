@@ -279,22 +279,48 @@ class ControllerBase {
     this.root.postOrder((node: MQNode) => {
       const localization = this.localization;
       if (node.ariaLabel === 'binomial') {
-        node.mathspeakTemplate = [
-          localization.formatMessage('start-binomial') + ',',
-          ' ' + localization.formatMessage('choose') + ' ',
-          ', ' + localization.formatMessage('end-binomial')
-        ];
+        node.mathspeakTemplate = localization.createMathspeakTemplate(
+          'start-binomial',
+          'choose',
+          'end-binomial'
+        );
       } else if ('isTextBlock' in node && node.isTextBlock?.()) {
         node.mathspeakTemplate = localization.createMathspeakTemplate(
           'start-text',
           'end-text'
         );
       } else if ('isStyleBlock' in node && node.isStyleBlock?.()) {
-        if (node.ariaLabel) {
-          node.mathspeakTemplate = [
-            localization.formatStartBlock(node.ariaLabel) + ',',
-            ', ' + localization.formatEndBlock(node.ariaLabel)
-          ];
+        if (
+          node.ariaLabel &&
+          !('shouldNotSpeakDelimiters' in node && node.shouldNotSpeakDelimiters)
+        ) {
+          // Handle different style block types with specific messages
+          const ariaLabel = node.ariaLabel.toLowerCase().replace(/\s+/g, '-');
+          const startKey = `start-${ariaLabel}`;
+          const endKey = `end-${ariaLabel}`;
+
+          // Check if specific messages exist, otherwise use fallback
+          if (
+            localization.hasMessage(startKey) &&
+            localization.hasMessage(endKey)
+          ) {
+            node.mathspeakTemplate = localization.createMathspeakTemplate(
+              startKey,
+              endKey
+            );
+          } else {
+            // Update the fallback template with localized generic messages
+            node.mathspeakTemplate = [
+              localization.formatMessage('generic-start') +
+                ' ' +
+                node.ariaLabel +
+                ',',
+              ', ' +
+                localization.formatMessage('generic-end') +
+                ' ' +
+                node.ariaLabel
+            ];
+          }
         }
       }
     });

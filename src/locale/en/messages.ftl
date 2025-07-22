@@ -1,25 +1,44 @@
-# Mathematical Structure Delimiters
-start-block = Start { $blockType ->
-    [Fraction] Fraction
-    [Root] Root
-    [CubeRoot] Cube Root
-    [AbsoluteValue] Absolute Value
-    [Binomial] Binomial
-    [Token] Token
-    [Text] Text
-    *[other] { $blockType }
-}
+# Text and Style Block Messages  
+start-text = Start Text
+end-text = End Text
 
-end-block = End { $blockType ->
-    [Fraction] Fraction
-    [Root] Root
-    [CubeRoot] Cube Root
-    [AbsoluteValue] Absolute Value
-    [Binomial] Binomial
-    [Token] Token
-    [Text] Text
-    *[other] { $blockType }
-}
+# Generic fallback messages
+generic-start = Start
+generic-end = End
+
+# Bracket messages  
+bracket-left = left
+bracket-right = right
+
+# Individual punctuation characters
+left-parenthesis = left parenthesis
+right-parenthesis = right parenthesis
+left-bracket = left bracket
+right-bracket = right bracket
+left-brace = left brace
+right-brace = right brace
+
+# Style block messages
+start-italic-font = Start Italic Font
+end-italic-font = End Italic Font
+start-bold-font = Start Bold Font
+end-bold-font = End Bold Font
+start-roman-font = Start Roman Font
+end-roman-font = End Roman Font
+start-serif-font = Start Serif Font
+end-serif-font = End Serif Font
+start-math-text = Start Math Text
+end-math-text = End Math Text
+start-underline = Start Underline
+end-underline = End Underline
+start-overline = Start Overline
+end-overline = End Overline
+start-over-right-arrow = Start Over Right Arrow
+end-over-right-arrow = End Over Right Arrow
+start-over-left-arrow = Start Over Left Arrow
+end-over-left-arrow = End Over Left Arrow
+start-over-left-and-right-arrow = Start Over Left and Right Arrow
+end-over-left-and-right-arrow = End Over Left and Right Arrow
 
 # Fraction-specific messages
 start-fraction = Start Fraction
@@ -56,10 +75,6 @@ start-upper-index = Start Upper Index
 end-upper-index = End Upper Index
 start-lower-index = Start Lower Index
 end-lower-index = End Lower Index
-
-# Text blocks
-start-text = Start Text
-end-text = End Text
 
 # Token blocks
 start-token = Start Token

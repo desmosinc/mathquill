@@ -1630,3 +1630,26 @@ LatexCmds['≁'] = LatexCmds.nsim = bindBinaryOperator(
   'nsim',
   'not similar'
 );
+
+// Localized parenthesis symbols
+class LeftParenthesis extends VanillaSymbol {
+  constructor() {
+    super('(', h.text('('));
+  }
+  mathspeak(): string {
+    return getControllerLocalization(this).formatMessage('left-parenthesis');
+  }
+}
+class RightParenthesis extends VanillaSymbol {
+  constructor() {
+    super(')', h.text(')'));
+  }
+  mathspeak(): string {
+    return getControllerLocalization(this).formatMessage('right-parenthesis');
+  }
+}
+
+// These might not be needed as parentheses are usually handled by the Bracket system,
+// but adding them for completeness in case individual parentheses are used
+LatexCmds.lparen = () => new LeftParenthesis();
+LatexCmds.rparen = () => new RightParenthesis();
