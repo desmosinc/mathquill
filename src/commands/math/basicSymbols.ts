@@ -242,7 +242,7 @@ class Digit extends DigitGroupingChar {
           cursorLL instanceof Variable &&
           cursorLL.isItalic !== false))
     ) {
-      new SubscriptCommand().createLeftOf(cursor);
+      new SupSub('sub').createLeftOf(cursor);
       super.createLeftOf(cursor);
       cursor.insRightOf(cursor.parent.parent);
     } else super.createLeftOf(cursor);

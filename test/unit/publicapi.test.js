@@ -215,6 +215,12 @@ suite('Public API', function () {
       assert.equal(mq.text(), '^( )');
       mq.latex('3^{4}');
       assert.equal(mq.text(), '3^4');
+      mq.latex('x_2');
+      assert.equal(mq.text(), 'x_2');
+      mq.latex('x_2^{4}');
+      assert.equal(mq.text(), 'x_2^4');
+      mq.latex('x_{abc}^{def}');
+      assert.equal(mq.text(), 'x_(a*b*c)^(d*e*f)');
       mq.latex('3x+\\ 4');
       assert.equal(mq.text(), '3*x+ 4');
       mq.latex('x^2');
@@ -375,6 +381,48 @@ suite('Public API', function () {
       assertMathSpeakEqual(
         mq.mathspeak(),
         'StartAbsoluteValue "x" EndAbsoluteValue plus left parenthesis "y" right pipe'
+      );
+
+      const wholeNumberExponentPairs = [
+        ['x^0', '"x" to the 0 power'],
+        ['x^1', '"x" to the 1st power'],
+        ['x^2', '"x" squared'],
+        ['x^3', '"x" cubed'],
+        ['x^4', '"x" to the 4th power'],
+        ['x^5', '"x" to the 5th power'],
+        ['x^6', '"x" to the 6th power'],
+        ['x^7', '"x" to the 7th power'],
+        ['x^8', '"x" to the 8th power'],
+        ['x^9', '"x" to the 9th power'],
+        ['x^{10}', '"x" to the 10th power'],
+        ['x^{11}', '"x" to the 11th power'],
+        ['x^{12}', '"x" to the 12th power'],
+        ['x^{13}', '"x" to the 13th power'],
+        ['x^{14}', '"x" to the 14th power'],
+        ['x^{15}', '"x" to the 15th power'],
+        ['x^{16}', '"x" to the 16th power'],
+        ['x^{20}', '"x" to the 20th power'],
+        ['x^{21}', '"x" to the 21st power'],
+        ['x^{22}', '"x" to the 22nd power'],
+        ['x^{23}', '"x" to the 23rd power'],
+        ['x^{24}', '"x" to the 24th power']
+      ];
+
+      for (const [latex, mathspeak] of wholeNumberExponentPairs) {
+        mq.latex(latex);
+        assertMathSpeakEqual(mq.mathspeak(), mathspeak);
+      }
+
+      mq.latex('x_1');
+      assertMathSpeakEqual(mq.mathspeak(), '"x" Subscript 1 Baseline');
+
+      mq.latex('x_1^2');
+      assertMathSpeakEqual(mq.mathspeak(), '"x" Subscript 1 Baseline squared');
+
+      mq.latex('x_1^y');
+      assertMathSpeakEqual(
+        mq.mathspeak(),
+        '"x" Subscript 1 Baseline Superscript "y" Baseline'
       );
     });
   });

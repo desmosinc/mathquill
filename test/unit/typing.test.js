@@ -1666,6 +1666,37 @@ suite('typing with auto-replaces', function () {
     });
   });
 
+  suite('SupSub switching between sup and sub', function () {
+    test('deleting sup from sup+sub gives sub', function () {
+      mq.typedText('x^2');
+      mq.keystroke('Down');
+      mq.typedText('_1');
+      assert.equal(mq.latex(), 'x_{1}^{2}');
+      mq.keystroke('Up');
+      mq.keystroke('Backspace');
+      assert.equal(mq.latex(), 'x_{1}^{ }');
+      mq.keystroke('Backspace');
+      assert.equal(mq.latex(), 'x_{1}');
+      mq.typedText(')');
+      assert.equal(mq.latex(), '\\left(x_{1}\\right)');
+    });
+
+    test('deleting sub from sup+sub gives sup', function () {
+      mq.typedText('x_1');
+      mq.keystroke('Up');
+      mq.typedText('^2');
+      assert.equal(mq.latex(), 'x_{1}^{2}');
+      mq.keystroke('Down');
+      mq.keystroke('Backspace');
+      assert.equal(mq.latex(), 'x_{ }^{2}');
+      mq.keystroke('Backspace');
+      assert.equal(mq.latex(), 'x^{2}');
+      mq.keystroke('End');
+      mq.typedText(')');
+      assert.equal(mq.latex(), '\\left(x^{2}\\right)');
+    });
+  });
+
   suite('SupSub behavior options', function () {
     test('superscript', function () {
       assert.equal(mq.typedText('x^2n+y').latex(), 'x^{2n+y}');

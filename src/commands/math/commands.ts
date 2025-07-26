@@ -345,13 +345,64 @@ function getCtrlSeqsFromBlock(block: NodeRef): string {
 
 Options.prototype.charsThatBreakOutOfSupSub = '';
 
+/**
+ * A SupSub node is a superscript, subscript, or both. It is possible to edit a SupSub node
+ * from being a superscript to a subscript without deleting the node by adding a subscript
+ * then deleting the superscript.
+ */
 class SupSub extends MathCommand {
-  ctrlSeq = '_{...}^{...}';
   sub?: MathBlock;
   sup?: MathBlock;
+  /**
+   * `supsub` is the current or planned shape of the SupSub node.
+   *
+   * It is set before intializing to know where to put the first block seen in parsing,
+   * either in the superscript or subscript. This is necessary e.g. because the SupSub
+   * in both `x_2` and `x^2` have a single MathBlock child, but the child goes to the
+   * subscript in one and the exponent in the other.
+   *
+   * After initialization, either the `sub` or `sup` properties of the `SubSub` are set
+   * at all times. If only one is set, the `supsub` property says which one is set.
+   * If both are set, the `supsub` property could be either 'sup' or 'sub' (it happens
+   * to be whichever state the SupSub was in before the second child block was added).
+   */
   supsub: 'sup' | 'sub';
 
   protected ends: Ends<MathBlock>;
+
+  constructor(supsub: 'sup' | 'sub') {
+    const ctrlSeq = '_{...}^{...}';
+
+    let domView;
+
+    // Note this.domView doesn't change if the SupSub is edited to something that has both
+    // superscript and subscript. This is correct, since domView is only used for the initial
+    // creation of the HTML node, not for any updates.
+    if (supsub === 'sub') {
+      domView = new DOMView(1, (blocks) =>
+        h('span', { class: 'mq-supsub mq-non-leaf' }, [
+          h.block('span', { class: 'mq-sub' }, blocks[0]),
+          h('span', { style: 'display:inline-block;width:0' }, [
+            h.text(U_ZERO_WIDTH_SPACE)
+          ])
+        ])
+      );
+    } else {
+      domView = new DOMView(1, (blocks) =>
+        h('span', { class: 'mq-supsub mq-non-leaf mq-sup-only' }, [
+          h.block('span', { class: 'mq-sup' }, blocks[0])
+        ])
+      );
+    }
+
+    super(ctrlSeq, domView);
+
+    // Note the ariaLabel doesn't change if the SupSub is edited between subscript and superscript.
+    // That may be a bug, though I don't know where the ariaLabel is actually used; the mathspeak
+    // method doesn't reference it.
+    this.ariaLabel = supsub === 'sub' ? 'subscript' : 'superscript';
+    this.supsub = supsub;
+  }
 
   setEnds(ends: Ends<MathBlock>) {
     pray(
@@ -434,6 +485,13 @@ class SupSub extends MathCommand {
     }
   }
   finalizeTree() {
+    if (this.supsub === 'sub') {
+      this.downInto = this.sub = this.getEnd(L);
+      this.sub.upOutOf = insLeftOfMeUnlessAtEnd;
+    } else if (this.supsub === 'sup') {
+      this.upInto = this.sup = this.getEnd(R);
+      this.sup.downOutOf = insLeftOfMeUnlessAtEnd;
+    }
     var endsL = this.getEnd(L);
     endsL.write = function (cursor: Cursor, ch: string) {
       if (
@@ -515,6 +573,40 @@ class SupSub extends MathCommand {
 
     this.checkCursorContextClose(ctx);
   }
+  mathspeak(opts?: MathspeakOptions) {
+    // Simplify basic exponent speech for common whole numbers.
+    if (this.sup !== undefined) {
+      // Calculate this item's inner text to determine whether to shorten the returned speech.
+      // Do not calculate its inner mathspeak now until we know that the speech is to be truncated.
+      // Since the mathspeak computation is recursive, we want to call it only once in this function to avoid performance bottlenecks.
+      var innerText = getCtrlSeqsFromBlock(this.sup);
+      // If the superscript is a whole number, shorten the speech that is returned.
+      if ((!opts || !opts.ignoreShorthand) && intRgx.test(innerText)) {
+        let prefix = '';
+        if (this.sub) {
+          prefix =
+            subMathspeakTemplate[0] +
+            ' ' +
+            this.sub.mathspeak() +
+            ' ' +
+            subMathspeakTemplate[1] +
+            ' ';
+        }
+        return prefix + wholeNumberPower(this.sup, innerText);
+      }
+    }
+    this.mathspeakTemplate = this.getMathspeakTemplate();
+    return super.mathspeak();
+  }
+  private getMathspeakTemplate() {
+    if (this.sub && this.sup) {
+      return supSubMathspeakTemplate;
+    } else if (this.sup) {
+      return supMathspeakTemplate;
+    } else {
+      return subMathspeakTemplate;
+    }
+  }
   text() {
     function text(prefix: string, block: NodeRef | undefined) {
       var l = (block && block.text()) || '';
@@ -524,6 +616,10 @@ class SupSub extends MathCommand {
     }
     return text('_', this.sub) + text('^', this.sup);
   }
+  // This function is called, for example, when parsing `x_1^2`.
+  // In that case, first a `SupSub("sup")` is created (i.e. a superscript) representing `x^2`,
+  // (with the superscript `2` being added in `finalizeTree`), then the subscript `1` is added
+  // with `addBlock`.
   addBlock(block: MathBlock) {
     if (this.supsub === 'sub') {
       this.sup = this.upInto = (this.sub as MQNode).upOutOf = block;
@@ -555,48 +651,41 @@ class SupSub extends MathCommand {
       );
     }
 
-    // like 'sub sup'.split(' ').forEach(function(supsub) { ... });
-    for (var i = 0; i < 2; i += 1)
-      (function (
-        cmd: SupSub,
-        supsub: 'sup' | 'sub',
-        oppositeSupsub: 'sup' | 'sub',
-        updown: 'up' | 'down'
-      ) {
-        const cmdSubSub = cmd[supsub]!;
-        cmdSubSub.deleteOutOf = function (dir: Direction, cursor: Cursor) {
-          cursor.insDirOf(this[dir] ? (-dir as Direction) : dir, this.parent);
-          if (!this.isEmpty()) {
-            var end = this.getEnd(dir);
-            this.children()
-              .disown()
-              .withDirAdopt(
-                dir,
-                cursor.parent,
-                cursor[dir],
-                cursor[-dir as Direction]
-              )
-              .domFrag()
-              .insDirOf(-dir as Direction, cursor.domFrag());
-            cursor[-dir as Direction] = end;
-          }
-          cmd.supsub = oppositeSupsub;
-          delete cmd[supsub];
-          delete cmd[`${updown}Into`];
-          const cmdOppositeSupsub = cmd[oppositeSupsub]!;
-          cmdOppositeSupsub[`${updown}OutOf`] = insLeftOfMeUnlessAtEnd;
-          delete (cmdOppositeSupsub as any).deleteOutOf; // TODO - refactor so this method can be optional
-          if (supsub === 'sub') {
-            cmd.domFrag().addClass('mq-sup-only').children().last().remove();
-          }
-          this.remove();
-        };
-      })(
-        this,
-        'sub sup'.split(' ')[i] as 'sup' | 'sup',
-        'sup sub'.split(' ')[i] as 'sup' | 'sup',
-        'down up'.split(' ')[i] as 'up' | 'down'
-      );
+    for (let i = 0; i < 2; i += 1) {
+      const cmd: SupSub = this;
+      const supsub = (['sub', 'sup'] as const)[i];
+      const oppositeSupsub = (['sup', 'sub'] as const)[i];
+      const updown = (['down', 'up'] as const)[i];
+      const cmdSubSub = cmd[supsub]!;
+
+      cmdSubSub.deleteOutOf = function (dir: Direction, cursor: Cursor) {
+        cursor.insDirOf(this[dir] ? (-dir as Direction) : dir, this.parent);
+        if (!this.isEmpty()) {
+          const end = this.getEnd(dir);
+          this.children()
+            .disown()
+            .withDirAdopt(
+              dir,
+              cursor.parent,
+              cursor[dir],
+              cursor[-dir as Direction]
+            )
+            .domFrag()
+            .insDirOf(-dir as Direction, cursor.domFrag());
+          cursor[-dir as Direction] = end;
+        }
+        cmd.supsub = oppositeSupsub;
+        delete cmd[supsub];
+        delete cmd[`${updown}Into`];
+        const cmdOppositeSupsub = cmd[oppositeSupsub]!;
+        cmdOppositeSupsub[`${updown}OutOf`] = insLeftOfMeUnlessAtEnd;
+        delete (cmdOppositeSupsub as any).deleteOutOf; // TODO - refactor so this method can be optional
+        if (supsub === 'sub') {
+          cmd.domFrag().addClass('mq-sup-only').children().last().remove();
+        }
+        this.remove();
+      };
+    }
   }
 }
 
@@ -613,94 +702,49 @@ function insLeftOfMeUnlessAtEnd(this: MQNode, cursor: Cursor) {
   return undefined;
 }
 
-class SubscriptCommand extends SupSub {
-  supsub = 'sub' as const;
+const subMathspeakTemplate = ['Subscript,', ', Baseline'];
+const supMathspeakTemplate = ['Superscript,', ', Baseline'];
+const supSubMathspeakTemplate = [
+  'Subscript,',
+  ', Baseline Superscript,',
+  ', Baseline'
+];
 
-  domView = new DOMView(1, (blocks) =>
-    h('span', { class: 'mq-supsub mq-non-leaf' }, [
-      h.block('span', { class: 'mq-sub' }, blocks[0]),
-      h('span', { style: 'display:inline-block;width:0' }, [
-        h.text(U_ZERO_WIDTH_SPACE)
-      ])
-    ])
-  );
-
-  textTemplate = ['_'];
-
-  mathspeakTemplate = ['Subscript,', ', Baseline'];
-
-  ariaLabel = 'subscript';
-
-  finalizeTree() {
-    this.downInto = this.sub = this.getEnd(L);
-    this.sub.upOutOf = insLeftOfMeUnlessAtEnd;
-    super.finalizeTree();
+/** Assumes innerText satisfies the `intRgx` */
+function wholeNumberPower(sup: MQNode, innerText: string) {
+  // Simple cases
+  if (innerText === '0') {
+    return 'to the 0 power';
+  } else if (innerText === '2') {
+    return 'squared';
+  } else if (innerText === '3') {
+    return 'cubed';
   }
+
+  // More complex cases.
+  var suffix = '';
+  // Limit suffix addition to exponents < 1000.
+  if (/^[+-]?\d{1,3}$/.test(innerText)) {
+    if (/(11|12|13|4|5|6|7|8|9|0)$/.test(innerText)) {
+      suffix = 'th';
+    } else if (/1$/.test(innerText)) {
+      suffix = 'st';
+    } else if (/2$/.test(innerText)) {
+      suffix = 'nd';
+    } else if (/3$/.test(innerText)) {
+      suffix = 'rd';
+    }
+  }
+  var innerMathspeak = typeof sup === 'object' ? sup.mathspeak() : innerText;
+  return 'to the ' + innerMathspeak + suffix + ' power';
 }
-LatexCmds.subscript = LatexCmds._ = SubscriptCommand;
+
+LatexCmds.subscript = LatexCmds._ = () => new SupSub('sub');
 
 LatexCmds.superscript =
   LatexCmds.supscript =
   LatexCmds['^'] =
-    class SuperscriptCommand extends SupSub {
-      supsub = 'sup' as const;
-
-      domView = new DOMView(1, (blocks) =>
-        h('span', { class: 'mq-supsub mq-non-leaf mq-sup-only' }, [
-          h.block('span', { class: 'mq-sup' }, blocks[0])
-        ])
-      );
-
-      textTemplate = ['^(', ')'];
-      mathspeak(opts?: MathspeakOptions) {
-        // Simplify basic exponent speech for common whole numbers.
-        var child = this.upInto;
-        if (child !== undefined) {
-          // Calculate this item's inner text to determine whether to shorten the returned speech.
-          // Do not calculate its inner mathspeak now until we know that the speech is to be truncated.
-          // Since the mathspeak computation is recursive, we want to call it only once in this function to avoid performance bottlenecks.
-          var innerText = getCtrlSeqsFromBlock(child);
-          // If the superscript is a whole number, shorten the speech that is returned.
-          if ((!opts || !opts.ignoreShorthand) && intRgx.test(innerText)) {
-            // Simple cases
-            if (innerText === '0') {
-              return 'to the 0 power';
-            } else if (innerText === '2') {
-              return 'squared';
-            } else if (innerText === '3') {
-              return 'cubed';
-            }
-
-            // More complex cases.
-            var suffix = '';
-            // Limit suffix addition to exponents < 1000.
-            if (/^[+-]?\d{1,3}$/.test(innerText)) {
-              if (/(11|12|13|4|5|6|7|8|9|0)$/.test(innerText)) {
-                suffix = 'th';
-              } else if (/1$/.test(innerText)) {
-                suffix = 'st';
-              } else if (/2$/.test(innerText)) {
-                suffix = 'nd';
-              } else if (/3$/.test(innerText)) {
-                suffix = 'rd';
-              }
-            }
-            var innerMathspeak =
-              typeof child === 'object' ? child.mathspeak() : innerText;
-            return 'to the ' + innerMathspeak + suffix + ' power';
-          }
-        }
-        return super.mathspeak();
-      }
-
-      ariaLabel = 'superscript';
-      mathspeakTemplate = ['Superscript,', ', Baseline'];
-      finalizeTree() {
-        this.upInto = this.sup = this.getEnd(R);
-        this.sup.downOutOf = insLeftOfMeUnlessAtEnd;
-        super.finalizeTree();
-      }
-    };
+    () => new SupSub('sup');
 
 class SummationNotation extends MathCommand {
   constructor(ch: string, symbol: string, ariaLabel?: string) {

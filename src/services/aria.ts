@@ -40,6 +40,8 @@ class Aria {
       // Some constructs include verbal shorthand (such as simple fractions and exponents).
       // Since ARIA alerts relate to moving through interactive content, we don't want to use that shorthand if it exists
       // since doing so may be ambiguous or confusing.
+      // For example, `x^2` normally has mathspeak '"x" squared', but when moving the cursor before the exponent,
+      // it speaks 'before Superscript, 2 , Baseline' since the alternative is 'before squared'.
       var itemMathspeak = item.mathspeak({ ignoreShorthand: true });
       if (shouldDescribe) {
         // used to ensure item is described when cursor reaches block boundaries
