@@ -45,6 +45,14 @@ type LatexContext = {
   startSelectionAfter?: NodeBase;
   endSelectionBefore?: NodeBase;
   endSelectionAfter?: NodeBase;
+  restoreInfo?: {
+    startIndex: number;
+    endIndex: number;
+    selectionL?: NodeBase;
+    selectionR?: NodeBase;
+    cursorL?: NodeBase | 0;
+    cursorParent?: NodeBase | 0;
+  };
 };
 
 type ControllerData = any;

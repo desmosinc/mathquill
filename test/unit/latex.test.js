@@ -419,14 +419,14 @@ suite('latex', function () {
 
         const emptySelection = mq.selection();
         assert.equal(
-          emptySelection.opaqueSnapshot.cursorInsertPath,
-          'D',
-          'empty latex selection has "D" path'
+          emptySelection.startIndex,
+          0,
+          'empty selection has startIndex=0'
         );
         assert.equal(
-          emptySelection.opaqueSnapshot.signedSelectionSize,
+          emptySelection.endIndex,
           0,
-          'empty latex selection has 0 length'
+          'empty selection has endIndex=0'
         );
 
         mq.latex('abc');
@@ -450,17 +450,29 @@ suite('latex', function () {
           'restoring selection failed'
         );
       });
-      test('restores anchor and head', function () {
+      test('always restores selection with cursor left of anticursor', function () {
         mq.latex('abc');
+        const endSelection = mq.selection();
+        assert.equal(
+          endSelection.startIndex,
+          3,
+          'endSelection has startIndex=3'
+        );
+        assert.equal(endSelection.endIndex, 3, 'endSelection has endIndex=3');
 
         mq.keystroke('Shift-Left');
         mq.keystroke('Shift-Left');
         mq.keystroke('Shift-Left');
         const rightToLeftSelection = mq.selection();
         assert.equal(
-          rightToLeftSelection.opaqueSnapshot.signedSelectionSize,
-          -3,
-          'right to left has negative signedSelectionSize'
+          rightToLeftSelection.startIndex,
+          0,
+          'rightToLeft has startIndex=0'
+        );
+        assert.equal(
+          rightToLeftSelection.endIndex,
+          3,
+          'rightToLeft has endIndex=3'
         );
 
         mq.keystroke('Ctrl-Home');
@@ -469,60 +481,78 @@ suite('latex', function () {
         mq.keystroke('Shift-Right');
         const leftToRightSelection = mq.selection();
         assert.equal(
-          leftToRightSelection.opaqueSnapshot.signedSelectionSize,
+          rightToLeftSelection.startIndex,
+          0,
+          'rightToLeft has startIndex=0'
+        );
+        assert.equal(
+          rightToLeftSelection.endIndex,
           3,
-          'left to right has positive signedSelectionSize'
+          'rightToLeft has endIndex=3'
+        );
+
+        mq.selection(endSelection);
+        assert.equal(
+          mq.selection().startIndex,
+          3,
+          'restored endSelection has startIndex=3'
+        );
+        assert.equal(
+          mq.selection().endIndex,
+          3,
+          'restored endSelection has endIndex=3'
         );
 
         mq.selection(rightToLeftSelection);
         mq.keystroke('Shift-Right');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          -2,
+          mq.selection().startIndex,
+          1,
           'Shift-Right moves head to right'
         );
         mq.keystroke('Shift-Left');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          -3,
+          mq.selection().startIndex,
+          0,
           'Shift-Left moves head to left'
         );
         mq.keystroke('Shift-Left');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          -3,
+          mq.selection().startIndex,
+          0,
           'Shift-Left now does nothing'
         );
         mq.keystroke('Shift-Right');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          -2,
+          mq.selection().startIndex,
+          1,
           'Shift-Right moves head to right'
         );
 
+        mq.selection(endSelection);
         mq.selection(leftToRightSelection);
         mq.keystroke('Shift-Right');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          3,
-          'Shift-Right does nothing'
+          mq.selection().startIndex,
+          1,
+          'Shift-Right moves head to right'
         );
         mq.keystroke('Shift-Left');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          2,
+          mq.selection().startIndex,
+          0,
           'Shift-Left moves head to left'
         );
         mq.keystroke('Shift-Left');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          1,
-          'Shift-Left moves head again to left'
+          mq.selection().startIndex,
+          0,
+          'Shift-Left now does nothing'
         );
         mq.keystroke('Shift-Right');
         assert.equal(
-          mq.selection().opaqueSnapshot.signedSelectionSize,
-          2,
+          mq.selection().startIndex,
+          1,
           'Shift-Right moves head to right'
         );
       });
@@ -531,27 +561,16 @@ suite('latex', function () {
         mq.select();
 
         const entireSelection = mq.selection();
-        assert.equal(
-          entireSelection.opaqueSnapshot.cursorInsertPath,
-          'DRRR',
-          'entire selection has "D" as insert path'
-        );
-        assert.equal(
-          entireSelection.opaqueSnapshot.signedSelectionSize,
-          -3,
-          'entire selection has selection length of -3'
-        );
+        assert.equal(entireSelection.startIndex, 0, 'startIndex = 0');
+        assert.equal(entireSelection.endIndex, 3, 'endIndex = 3');
 
         mq.clearSelection();
         const clearedSelection = mq.selection();
-        assert.equal(
-          clearedSelection.opaqueSnapshot.signedSelectionSize,
-          0,
-          'cleared selection has signedSelectionSize of 0'
-        );
-
+        assert.equal(clearedSelection.startIndex, 0, 'cleared startIndex = 0');
+        assert.equal(clearedSelection.endIndex, 0, 'cleared endIndex = 0');
         mq.selection(entireSelection);
         const restoredSelection = mq.selection();
+        console.log('restoredSelection: ', restoredSelection);
         assert.equal(
           JSON.stringify(restoredSelection, null, 2),
           JSON.stringify(entireSelection, null, 2),
@@ -579,16 +598,8 @@ suite('latex', function () {
           JSON.stringify(originalSnapShot, null, 2),
           'can restore selection'
         );
-        assert.equal(
-          restoredSnapShot.opaqueSnapshot.cursorInsertPath,
-          'D',
-          'has correct cursorInsertPath'
-        );
-        assert.equal(
-          restoredSnapShot.opaqueSnapshot.signedSelectionSize,
-          5,
-          'has correct signedSelectionSize'
-        );
+        assert.equal(restoredSnapShot.startIndex, 0, 'has correct startIndex');
+        assert.equal(restoredSnapShot.endIndex, 5, 'has correct endIndex');
       });
 
       test('complicated latex', function () {
@@ -613,16 +624,8 @@ suite('latex', function () {
           JSON.stringify(originalSnapShot, null, 2),
           'can restore selection'
         );
-        assert.equal(
-          restoredSnapShot.opaqueSnapshot.cursorInsertPath,
-          'DR',
-          'has correct cursorInsertPath'
-        );
-        assert.equal(
-          restoredSnapShot.opaqueSnapshot.signedSelectionSize,
-          4,
-          'has correct signedSelectionSize'
-        );
+        assert.equal(restoredSnapShot.startIndex, 1, 'has correct startIndex');
+        assert.equal(restoredSnapShot.endIndex, 55, 'has correct endIndex');
       });
     });
 
@@ -677,7 +680,7 @@ suite('latex', function () {
         // we tried setting
         const originalSnapShot = mq.selection();
         mq2.latex('');
-        mq2.latex(originalSnapShot.opaqueSnapshot.uncleanedLatex);
+        mq2.latex(originalSnapShot.latex);
         mq2.selection(originalSnapShot);
         const restoredSnapShot = mq2.selection();
         assert.equal(
