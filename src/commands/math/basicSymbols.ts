@@ -244,7 +244,9 @@ class Digit extends DigitGroupingChar {
     ) {
       new SupSub('sub').createLeftOf(cursor);
       super.createLeftOf(cursor);
-      cursor.insRightOf(cursor.parent.parent);
+      var gramp = cursor.parent.parent as MQNode;
+      pray('gramp exists', gramp);
+      cursor.insRightOf(gramp);
     } else super.createLeftOf(cursor);
   }
   mathspeak(opts: MathspeakOptions) {
