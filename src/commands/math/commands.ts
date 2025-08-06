@@ -689,13 +689,14 @@ class SupSub extends MathCommand {
   }
 }
 
-function insLeftOfMeUnlessAtEnd(this: MQNode, cursor: Cursor) {
+function insLeftOfMeUnlessAtEnd(this: MathCommand | MathBlock, cursor: Cursor) {
   // cursor.insLeftOf(cmd), unless cursor at the end of block, and every
   // ancestor cmd is at the end of every ancestor block
   var cmd = this.parent;
   var ancestorCmd: MQNode | Anticursor | Cursor = cursor;
   do {
     if (ancestorCmd[R]) return cursor.insLeftOf(cmd);
+    if (!ancestorCmd.parent || !ancestorCmd.parent.parent) break;
     ancestorCmd = ancestorCmd.parent.parent;
   } while (ancestorCmd !== cmd);
   cursor.insRightOf(cmd);
