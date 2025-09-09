@@ -1,0 +1,89 @@
+/*************************************************
+ * Voice Input Button Styles for MathQuill
+ ************************************************/
+
+.mq-voice-input-button {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+
+  &:hover {
+    border-color: #999;
+    background: #f5f5f5;
+  }
+
+  &:active {
+    background: #e5e5e5;
+    transform: scale(0.95);
+  }
+
+  &.mq-listening {
+    background: #ff4444;
+    border-color: #cc0000;
+    color: white;
+    animation: mq-pulse 1s infinite;
+
+    &:hover {
+      background: #ff6666;
+      border-color: #cc0000;
+    }
+
+    .mq-voice-icon {
+      fill: white;
+      stroke: white;
+    }
+  }
+
+  // Keyboard focus
+  &:focus {
+    outline: 2px solid #4A90E2;
+    outline-offset: 1px;
+  }
+
+  // Disabled state
+  &:disabled {
+    background: #f8f8f8;
+    border-color: #ddd;
+    color: #999;
+    cursor: not-allowed;
+    opacity: 0.6;
+
+    &:hover {
+      background: #f8f8f8;
+      border-color: #ddd;
+    }
+
+    .mq-voice-icon {
+      fill: #999;
+      stroke: #999;
+    }
+  }
+}
+
+@keyframes mq-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.mq-voice-icon {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 0.5;
+}
+
+// Ensure the mathfield container is positioned relative for absolute positioning of the button
+.mq-editable-field {
+  position: relative;
+}

@@ -62,7 +62,8 @@ const processedOptions = {
   leftRightIntoCmdGoes: true,
   maxDepth: true,
   interpretTildeAsSim: true,
-  disableAutoSubstitutionInSubscripts: true
+  disableAutoSubstitutionInSubscripts: true,
+  voiceInput: true
 };
 type ProcessedOption = keyof typeof processedOptions;
 
@@ -132,6 +133,7 @@ class Options {
     APIClasses: APIClasses;
   };
   scrollAnimationDuration?: number;
+  voiceInput?: boolean;
 
   jQuery: $ | undefined;
   assertJquery() {
@@ -232,7 +234,8 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
       // casting to the v3 version of this type
       fns: (handlers as HandlerOptions) || {},
       APIClasses
-    })
+    }),
+    voiceInput: (enabled) => !!enabled
   };
 
   function config(currentOptions: CursorOptions, newOptions: ConfigOptions) {
@@ -294,6 +297,11 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
       this.latex(contents.text());
 
       this.revert = function () {
+        // Clean up speech input service if it exists
+        if ((this as any).speechInputService) {
+          (this as any).speechInputService.destroy();
+        }
+
         ctrlr.removeMouseEventListener();
         domFrag(el)
           .removeClass('mq-editable-field mq-math-mode mq-text-mode')
@@ -383,13 +391,40 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
     extends AbstractMathQuill
     implements IEditableField
   {
+    private speechInputService?: SpeechInputService;
+
     mathquillify(classNames: string) {
       super.mathquillify(classNames);
       this.__controller.editable = true;
       this.__controller.addMouseEventListener();
       this.__controller.editablesTextareaEvents();
+
+      // Initialize voice input if enabled
+      if (this.__options.voiceInput !== false) {
+        this.initializeVoiceInput();
+      }
+
       return this;
     }
+
+    private initializeVoiceInput() {
+      try {
+        // Create speech input service
+        this.speechInputService = new SpeechInputService(this.__controller, {
+          enabled: this.__options.voiceInput !== false
+        });
+
+        // Create and add voice input button
+        const voiceButton = this.speechInputService.createVoiceInputButton();
+        const container = this.__controller.container;
+
+        // Add voice button to the container
+        container.appendChild(voiceButton);
+      } catch (error) {
+        console.warn('Failed to initialize voice input:', error);
+      }
+    }
+
     clearSelection() {
       this.__controller.cursor.clearSelection();
       return this;
