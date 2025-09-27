@@ -1196,7 +1196,7 @@ class SquareRoot extends MathCommand {
     super.deleteTowards(dir, cursor);
   }
 }
-LatexCmds.sqrt = SquareRoot;
+LatexCmds.sqrt = CharCmds['√'] = SquareRoot;
 
 LatexCmds.hat = class Hat extends MathCommand {
   ctrlSeq = '\\hat';
