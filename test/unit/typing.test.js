@@ -1538,6 +1538,34 @@ suite('typing with auto-replaces', function () {
       );
     });
 
+    test('typing √ directly', function () {
+      mq.typedText('√');
+      assertLatex('\\sqrt{ }');
+      mq.typedText('x');
+      assertLatex('\\sqrt{x}');
+    });
+
+    test('typing ∑ directly', function () {
+      mq.typedText('∑');
+      assertLatex('\\sum_{ }^{ }');
+      mq.typedText('n');
+      assertLatex('\\sum_{n}^{ }');
+    });
+
+    test('typing ∏ directly', function () {
+      mq.typedText('∏');
+      assertLatex('\\prod_{ }^{ }');
+      mq.typedText('n');
+      assertLatex('\\prod_{n}^{ }');
+    });
+
+    test('typing ∫ directly', function () {
+      mq.typedText('∫');
+      assertLatex('\\int_{ }^{ }');
+      mq.typedText('n');
+      assertLatex('\\int_{n}^{ }');
+    });
+
     test('typing and backspacing \\to', function () {
       mq.typedText('-');
       assertLatex('-');
