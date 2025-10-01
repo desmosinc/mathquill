@@ -4,27 +4,34 @@ suite('mouse', function () {
   test('basic mouse selection', function () {
     const mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
 
-    mq.latex('1+1+1+1+1');
+    mq.latex('1+3+5+1+1');
+    const rect = mq.el().getBoundingClientRect();
+    const three = $('#mock .mq-digit:contains(3)');
+
+    const beforeOne = rect.left + 1;
+    const five = $('#mock .mq-digit:contains(5)');
+    const afterThree = three.get(0).getBoundingClientRect().right;
+    const afterFive = five.get(0).getBoundingClientRect().right;
 
     const cases = [
-      { x0: 1, x1: 1, expected: [0, 0] },
-      { x0: 40, x1: 40, expected: [3, 3] },
-      { x0: 1, x1: 40, expected: [0, 3] },
-      { x0: 80, x1: 80, expected: [6, 6] },
-      { x0: 40, x1: 80, expected: [3, 6] },
-      { x0: 80, x1: 40, expected: [3, 6] }
+      { x0: beforeOne, x1: beforeOne, expected: [0, 0] },
+      { x0: afterThree, x1: afterThree, expected: [3, 3] },
+      { x0: beforeOne, x1: afterThree, expected: [0, 3] },
+      { x0: afterFive, x1: afterFive, expected: [5, 5] },
+      { x0: afterThree, x1: afterFive, expected: [3, 5] },
+      { x0: afterFive, x1: afterThree, expected: [3, 5] }
     ];
 
     for (const { x0, x1, expected } of cases) {
-      const rect = mq.el().getBoundingClientRect();
       const y = rect.top + 10;
 
       dispatchMouseEventAtPoint('mousedown', rect.left + x0, y);
       dispatchMouseEventAtPoint('mousemove', rect.left + x1, y);
       dispatchMouseEventAtPoint('mouseup', rect.left + x1, y);
 
+      debugger;
       assertDeepEqual(mq.selection(), {
-        latex: '1+1+1+1+1',
+        latex: '1+3+5+1+1',
         startIndex: expected[0],
         endIndex: expected[1]
       });
