@@ -1,4 +1,4 @@
-suite.only('mouse', function () {
+suite('mouse', function () {
   const $ = window.test_only_jquery;
 
   test('basic mouse selection', function () {
