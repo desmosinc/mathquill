@@ -157,7 +157,18 @@ class Controller_mouse extends Controller_latex {
     while (targetElm) {
       // try to find the MQ Node associated with the DOM Element
       node = NodeBase.getNodeOfElement(targetElm);
-      if (node) break;
+      if (node) {
+        // Special case: if we found a node that belongs to a different root than ours, that means we're in a separate,
+        // embedded MathQuill instance. In that case, skip to that root's parent and continue.
+        const root = findControllerRoot(node);
+        if (root && root !== this.root) {
+          // If we found a node that belongs to a different root, then
+          targetElm = root?.controller.container.parentElement;
+          continue;
+        }
+
+        break;
+      }
 
       // must be too deep, traverse up to the parent DOM Element
       targetElm = targetElm.parentElement;
@@ -178,4 +189,14 @@ class Controller_mouse extends Controller_latex {
     // always hits no-selection case in scrollHoriz and scrolls slower
     return this;
   }
+}
+
+function findControllerRoot(node: NodeBase) {
+  while (node) {
+    if (ControllerBase.isControllerRoot(node)) {
+      return node;
+    }
+    node = node.parent;
+  }
+  return undefined;
 }
