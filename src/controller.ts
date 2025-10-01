@@ -63,6 +63,11 @@ class ControllerBase {
     // TODO: stop depending on root.cursor, and rm it
   }
 
+  static isControllerRoot(node: NodeBase): node is ControllerRoot {
+    const ctrlr: Controller | undefined = (node as ControllerRoot).controller;
+    return ctrlr && ctrlr.root === node;
+  }
+
   getControllerSelf() {
     // dance we have to do to tell this thing it's a full controller
     return this as any as Controller;
