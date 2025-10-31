@@ -49,9 +49,9 @@ suite('typing with auto-replaces', function () {
   suite('LiveFraction', function () {
     test('full MathQuill', function () {
       mq.typedText('1/2').keystroke('Tab').typedText('+sinx/');
-      assertLatex('\\frac{1}{2}+\\frac{\\sin x}{ }');
+      assertLatex('\\frac{1}{2}+\\frac{\\sin x}{}');
       mq.latex('').typedText('1+/2');
-      assertLatex('1+\\frac{2}{ }');
+      assertLatex('1+\\frac{2}{}');
       mq.latex('').typedText('1 2/3');
       assertLatex('1\\ \\frac{2}{3}');
     });
@@ -68,7 +68,7 @@ suite('typing with auto-replaces', function () {
         tripleDotsAreEllipsis: true
       });
       mq.typedText('1...2/');
-      assertLatex('1...\\frac{2}{ }');
+      assertLatex('1...\\frac{2}{}');
     });
   });
 
@@ -76,9 +76,9 @@ suite('typing with auto-replaces', function () {
     test('full MathQuill', function () {
       mq.typedText('1').cmd('\\choose').typedText('2').keystroke('Tab');
       mq.typedText('+sinx').cmd('\\choose');
-      assertLatex('\\binom{1}{2}+\\binom{\\sin x}{ }');
+      assertLatex('\\binom{1}{2}+\\binom{\\sin x}{}');
       mq.latex('').typedText('1+').cmd('\\choose').typedText('2');
-      assertLatex('1+\\binom{2}{ }');
+      assertLatex('1+\\binom{2}{}');
       mq.latex('').typedText('1 2').cmd('\\choose').typedText('3');
       assertLatex('1\\ \\binom{2}{3}');
     });
@@ -1095,9 +1095,9 @@ suite('typing with auto-replaces', function () {
 
       test('selected and replaced by LiveFraction solidifies ghosts (1+2)/( )', function () {
         mq.typedText('1+2)/');
-        assertLatex('\\frac{\\left(1+2\\right)}{ }');
+        assertLatex('\\frac{\\left(1+2\\right)}{}');
         mq.keystroke('Left Backspace');
-        assertLatex('\\frac{\\left(1+2\\right)}{ }');
+        assertLatex('\\frac{\\left(1+2\\right)}{}');
       });
 
       test('close paren group by typing close-bracket outside ghost paren (1+2]', function () {
@@ -1210,28 +1210,28 @@ suite('typing with auto-replaces', function () {
 
     test('works in \\sum', function () {
       mq.typedText('sum');
-      assertLatex('\\sum_{ }^{ }');
+      assertLatex('\\sum_{}^{}');
       mq.typedText('sin');
-      assertLatex('\\sum_{\\sin\\left(\\right)}^{ }');
+      assertLatex('\\sum_{\\sin\\left(\\right)}^{}');
     });
 
     test('works in \\int', function () {
       mq.typedText('int');
-      assertLatex('\\int_{ }^{ }');
+      assertLatex('\\int_{}^{}');
       mq.typedText('sin');
-      assertLatex('\\int_{\\sin\\left(\\right)}^{ }');
+      assertLatex('\\int_{\\sin\\left(\\right)}^{}');
     });
 
     test('no auto operator names in simple subscripts', function () {
       mq.config(normalConfig);
       mq.typedText('x_');
-      assertLatex('x_{ }');
+      assertLatex('x_{}');
       mq.typedText('sin');
       assertLatex('x_{\\sin\\left(\\right)}');
       mq.latex('');
       mq.config(subscriptConfig);
       mq.typedText('x_');
-      assertLatex('x_{ }');
+      assertLatex('x_{}');
       mq.typedText('sin');
       assertLatex('x_{sin}');
       mq.config(normalConfig);
@@ -1264,12 +1264,12 @@ suite('typing with auto-replaces', function () {
     test('typing slash creates new fraction', function () {
       //autoParenthesized and also operatored
       mq.typedText('1/');
-      assertLatex('1\\frac{ }{ }');
+      assertLatex('1\\frac{}{}');
     });
 
     test("typing slash creates new fraction doesn't affect choose", function () {
       mq.typedText('1').cmd('\\choose');
-      assertLatex('\\binom{1}{ }');
+      assertLatex('\\binom{1}{}');
     });
   });
 
@@ -1431,13 +1431,13 @@ suite('typing with auto-replaces', function () {
     test('no auto commands in simple subscripts', function () {
       mq.config(normalConfig);
       mq.typedText('x_');
-      assertLatex('x_{ }');
+      assertLatex('x_{}');
       mq.typedText('pi');
       assertLatex('x_{\\pi}');
       mq.latex('');
       mq.config(subscriptConfig);
       mq.typedText('x_');
-      assertLatex('x_{ }');
+      assertLatex('x_{}');
       mq.typedText('pi');
       assertLatex('x_{pi}');
       mq.config(normalConfig);
@@ -1540,30 +1540,30 @@ suite('typing with auto-replaces', function () {
 
     test('typing √ directly', function () {
       mq.typedText('√');
-      assertLatex('\\sqrt{ }');
+      assertLatex('\\sqrt{}');
       mq.typedText('x');
       assertLatex('\\sqrt{x}');
     });
 
     test('typing ∑ directly', function () {
       mq.typedText('∑');
-      assertLatex('\\sum_{ }^{ }');
+      assertLatex('\\sum_{}^{}');
       mq.typedText('n');
-      assertLatex('\\sum_{n}^{ }');
+      assertLatex('\\sum_{n}^{}');
     });
 
     test('typing ∏ directly', function () {
       mq.typedText('∏');
-      assertLatex('\\prod_{ }^{ }');
+      assertLatex('\\prod_{}^{}');
       mq.typedText('n');
-      assertLatex('\\prod_{n}^{ }');
+      assertLatex('\\prod_{n}^{}');
     });
 
     test('typing ∫ directly', function () {
       mq.typedText('∫');
-      assertLatex('\\int_{ }^{ }');
+      assertLatex('\\int_{}^{}');
       mq.typedText('n');
-      assertLatex('\\int_{n}^{ }');
+      assertLatex('\\int_{n}^{}');
     });
 
     test('typing and backspacing \\to', function () {
@@ -1702,7 +1702,7 @@ suite('typing with auto-replaces', function () {
       assert.equal(mq.latex(), 'x_{1}^{2}');
       mq.keystroke('Up');
       mq.keystroke('Backspace');
-      assert.equal(mq.latex(), 'x_{1}^{ }');
+      assert.equal(mq.latex(), 'x_{1}^{}');
       mq.keystroke('Backspace');
       assert.equal(mq.latex(), 'x_{1}');
       mq.typedText(')');
@@ -1716,7 +1716,7 @@ suite('typing with auto-replaces', function () {
       assert.equal(mq.latex(), 'x_{1}^{2}');
       mq.keystroke('Down');
       mq.keystroke('Backspace');
-      assert.equal(mq.latex(), 'x_{ }^{2}');
+      assert.equal(mq.latex(), 'x_{}^{2}');
       mq.keystroke('Backspace');
       assert.equal(mq.latex(), 'x^{2}');
       mq.keystroke('End');
@@ -1749,18 +1749,18 @@ suite('typing with auto-replaces', function () {
     });
 
     test('supSubsRequireOperand', function () {
-      assert.equal(mq.typedText('^').latex(), '^{ }');
+      assert.equal(mq.typedText('^').latex(), '^{}');
       assert.equal(mq.typedText('2').latex(), '^{2}');
       assert.equal(mq.typedText('n').latex(), '^{2n}');
       mq.latex('');
       assert.equal(mq.typedText('x').latex(), 'x');
-      assert.equal(mq.typedText('^').latex(), 'x^{ }');
+      assert.equal(mq.typedText('^').latex(), 'x^{}');
       assert.equal(mq.typedText('2').latex(), 'x^{2}');
       assert.equal(mq.typedText('n').latex(), 'x^{2n}');
       mq.latex('');
       assert.equal(mq.typedText('x').latex(), 'x');
-      assert.equal(mq.typedText('^').latex(), 'x^{ }');
-      assert.equal(mq.typedText('^').latex(), 'x^{^{ }}');
+      assert.equal(mq.typedText('^').latex(), 'x^{}');
+      assert.equal(mq.typedText('^').latex(), 'x^{^{}}');
       assert.equal(mq.typedText('2').latex(), 'x^{^{2}}');
       assert.equal(mq.typedText('n').latex(), 'x^{^{2n}}');
       mq.latex('');
@@ -1775,13 +1775,13 @@ suite('typing with auto-replaces', function () {
       assert.equal(mq.typedText('n').latex(), '2n');
       mq.latex('');
       assert.equal(mq.typedText('x').latex(), 'x');
-      assert.equal(mq.typedText('^').latex(), 'x^{ }');
+      assert.equal(mq.typedText('^').latex(), 'x^{}');
       assert.equal(mq.typedText('2').latex(), 'x^{2}');
       assert.equal(mq.typedText('n').latex(), 'x^{2n}');
       mq.latex('');
       assert.equal(mq.typedText('x').latex(), 'x');
-      assert.equal(mq.typedText('^').latex(), 'x^{ }');
-      assert.equal(mq.typedText('^').latex(), 'x^{ }');
+      assert.equal(mq.typedText('^').latex(), 'x^{}');
+      assert.equal(mq.typedText('^').latex(), 'x^{}');
       assert.equal(mq.typedText('2').latex(), 'x^{2}');
       assert.equal(mq.typedText('n').latex(), 'x^{2n}');
       mq.latex('');
@@ -1793,7 +1793,7 @@ suite('typing with auto-replaces', function () {
   suite('alternative symbols when typing / and *', function () {
     test('typingSlashWritesDivisionSymbol', function () {
       mq.typedText('/');
-      assertLatex('\\frac{ }{ }');
+      assertLatex('\\frac{}{}');
 
       mq.config({ typingSlashWritesDivisionSymbol: true });
 

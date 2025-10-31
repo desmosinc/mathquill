@@ -38,7 +38,7 @@ suite('backspace', function () {
 
     mq.keystroke('Backspace');
     assert.equal(cursor.parent, expBlock, 'still in exponent, but it is empty');
-    assertLatex('x^{ }');
+    assertLatex('x^{}');
 
     mq.keystroke('Backspace');
     assert.equal(cursor.parent, rootBlock, 'backspace tears down exponent');
@@ -58,7 +58,7 @@ suite('backspace', function () {
 
     //finally delete a character
     mq.keystroke('Backspace');
-    assertLatex('1+\\frac{1}{\\frac{1}{2}+\\frac{2}{ }}');
+    assertLatex('1+\\frac{1}{\\frac{1}{2}+\\frac{2}{}}');
 
     //destroy fraction
     mq.keystroke('Backspace');
@@ -70,13 +70,13 @@ suite('backspace', function () {
 
     mq.keystroke('Backspace');
     mq.keystroke('Backspace');
-    assertLatex('1+\\frac{1}{\\frac{1}{ }}');
+    assertLatex('1+\\frac{1}{\\frac{1}{}}');
 
     mq.keystroke('Backspace');
     assertLatex('1+\\frac{1}{1}');
 
     mq.keystroke('Backspace');
-    assertLatex('1+\\frac{1}{ }');
+    assertLatex('1+\\frac{1}{}');
 
     mq.keystroke('Backspace');
     assertLatex('1+1');
@@ -94,13 +94,13 @@ suite('backspace', function () {
     assert.equal(mq.latex(), 'x_{2_{2}}');
 
     mq.keystroke('Backspace');
-    assert.equal(mq.latex(), 'x_{2_{ }}');
+    assert.equal(mq.latex(), 'x_{2_{}}');
 
     mq.keystroke('Backspace');
     assert.equal(mq.latex(), 'x_{2}');
 
     mq.keystroke('Backspace');
-    assert.equal(mq.latex(), 'x_{ }');
+    assert.equal(mq.latex(), 'x_{}');
 
     mq.keystroke('Backspace');
     assert.equal(mq.latex(), 'x');
@@ -119,7 +119,7 @@ suite('backspace', function () {
     mq.keystroke('Backspace');
     assert.equal(mq.latex(), 'x_{2}');
     mq.keystroke('Backspace');
-    assert.equal(mq.latex(), 'x_{ }');
+    assert.equal(mq.latex(), 'x_{}');
     mq.keystroke('Backspace');
     assert.equal(mq.latex(), 'x');
   });
@@ -137,7 +137,7 @@ suite('backspace', function () {
 
     //clear out exponent
     mq.keystroke('Backspace');
-    assert.equal(mq.latex(), 'x_{2}^{ }');
+    assert.equal(mq.latex(), 'x_{2}^{}');
 
     //unpeel exponent
     mq.keystroke('Backspace');
@@ -149,7 +149,7 @@ suite('backspace', function () {
 
     //clear out subscript
     mq.keystroke('Backspace');
-    assert.equal(mq.latex(), 'x_{ }');
+    assert.equal(mq.latex(), 'x_{}');
 
     //unpeel exponent
     mq.keystroke('Backspace');
@@ -192,7 +192,7 @@ suite('backspace', function () {
 
     //up into the superscript
     mq.keystroke('Backspace');
-    assert.equal(mq.latex(), '\\sum_{n=1}^{ }');
+    assert.equal(mq.latex(), '\\sum_{n=1}^{}');
 
     //destroy the sum, preserve the subscript (a little surprising)
     mq.keystroke('Backspace');
@@ -291,7 +291,7 @@ suite('delete', function () {
 
     mq.keystroke('Del');
     assert.equal(cursor.parent, expBlock, 'still in exponent, but it is empty');
-    assertLatex('^{ }');
+    assertLatex('^{}');
 
     mq.keystroke('Del');
     assert.equal(cursor.parent, rootBlock, 'delete tears down exponent');
@@ -308,7 +308,7 @@ suite('delete', function () {
 
     //delete the numerator
     mq.keystroke('Del');
-    assertLatex('\\frac{ }{\\frac{1}{2}+\\frac{2}{3}}+1');
+    assertLatex('\\frac{}{\\frac{1}{2}+\\frac{2}{3}}+1');
 
     //destroy fraction
     mq.keystroke('Del');
@@ -337,10 +337,10 @@ suite('delete', function () {
 
     mq.keystroke('Del');
     mq.keystroke('Del');
-    assertLatex('_{_{ }}');
+    assertLatex('_{_{}}');
 
     mq.keystroke('Del');
-    assertLatex('_{ }');
+    assertLatex('_{}');
     mq.keystroke('Del');
     assertLatex('');
   });
@@ -359,7 +359,7 @@ suite('delete', function () {
     mq.keystroke('Del');
     assertLatex('_{3}');
     mq.keystroke('Del');
-    assertLatex('_{ }');
+    assertLatex('_{}');
     mq.keystroke('Del');
     assertLatex('');
   });
@@ -377,7 +377,7 @@ suite('delete', function () {
 
     //clear out subscript
     mq.keystroke('Del');
-    assertLatex('_{ }^{32}');
+    assertLatex('_{}^{32}');
 
     //unpeel subscript
     mq.keystroke('Del');
@@ -391,7 +391,7 @@ suite('delete', function () {
     mq.keystroke('Del');
     assertLatex('^{2}');
     mq.keystroke('Del');
-    assertLatex('^{ }');
+    assertLatex('^{}');
 
     //unpeel exponent
     mq.keystroke('Del');
@@ -448,7 +448,7 @@ suite('delete', function () {
     mq.keystroke('Del');
     assertLatex('\\sum_{1}^{3}x');
     mq.keystroke('Del');
-    assertLatex('\\sum_{ }^{3}x');
+    assertLatex('\\sum_{}^{3}x');
 
     // destroy sum
     mq.keystroke('Del');
@@ -484,7 +484,7 @@ suite('delete', function () {
       mq.latex('x^{}');
       mq.moveToLeftEnd();
       mq.keystroke('Del');
-      assertLatex('^{ }');
+      assertLatex('^{}');
       mq.keystroke('Del');
       assertLatex('');
     });

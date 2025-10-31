@@ -547,27 +547,13 @@ class SupSub extends MathCommand {
 
     if (this.sub) {
       ctx.uncleanedLatex += '_{';
-      const beforeLength = ctx.uncleanedLatex.length;
       this.sub.latexRecursive(ctx);
-      const afterLength = ctx.uncleanedLatex.length;
-      if (beforeLength === afterLength) {
-        // nothing was written. so we write a space
-        ctx.uncleanedLatex += ' ';
-      }
-
       ctx.uncleanedLatex += '}';
     }
 
     if (this.sup) {
       ctx.uncleanedLatex += '^{';
-      const beforeLength = ctx.uncleanedLatex.length;
       this.sup.latexRecursive(ctx);
-      const afterLength = ctx.uncleanedLatex.length;
-      if (beforeLength === afterLength) {
-        // nothing was written. so we write a space
-        ctx.uncleanedLatex += ' ';
-      }
-
       ctx.uncleanedLatex += '}';
     }
 
@@ -772,22 +758,10 @@ class SummationNotation extends MathCommand {
     this.checkCursorContextOpen(ctx);
 
     ctx.uncleanedLatex += this.ctrlSeq + '_{';
-    let beforeLength = ctx.uncleanedLatex.length;
     this.getEnd(L).latexRecursive(ctx);
-    let afterLength = ctx.uncleanedLatex.length;
-    if (afterLength === beforeLength) {
-      // nothing was written so we write a space
-      ctx.uncleanedLatex += ' ';
-    }
 
     ctx.uncleanedLatex += '}^{';
-    beforeLength = ctx.uncleanedLatex.length;
     this.getEnd(R).latexRecursive(ctx);
-    afterLength = ctx.uncleanedLatex.length;
-    if (beforeLength === afterLength) {
-      // nothing was written so we write a space
-      ctx.uncleanedLatex += ' ';
-    }
 
     ctx.uncleanedLatex += '}';
     this.checkCursorContextClose(ctx);
