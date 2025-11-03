@@ -167,7 +167,7 @@ suite('SupSub', function () {
       assert.equal(mq.latex(), 'x_{a}^{b}');
 
       mq.keystroke('Down Backspace');
-      assert.equal(mq.latex(), 'x_{ }^{b}');
+      assert.equal(mq.latex(), 'x_{}^{b}');
 
       mq.keystroke('Backspace');
       assert.equal(mq.latex(), 'x^{b}');
@@ -186,7 +186,7 @@ suite('SupSub', function () {
       assert.equal(mq.latex(), 'x_{a}^{b}');
 
       mq.keystroke('Up Backspace');
-      assert.equal(mq.latex(), 'x_{a}^{ }');
+      assert.equal(mq.latex(), 'x_{a}^{}');
 
       mq.keystroke('Backspace');
       assert.equal(mq.latex(), 'x_{a}');

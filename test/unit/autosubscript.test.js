@@ -57,7 +57,7 @@ suite('autoSubscript', function () {
 
     //second backspace clears out remaining subscript
     mq.keystroke('Backspace');
-    assert.equal(mq.latex(), 'x_{ }');
+    assert.equal(mq.latex(), 'x_{}');
 
     //unpeel subscript
     mq.keystroke('Backspace');
@@ -104,7 +104,7 @@ suite('autoSubscript', function () {
     //clear out exponent
     mq.keystroke('Backspace');
     mq.keystroke('Backspace');
-    assert.equal(mq.latex(), 'x^{ }');
+    assert.equal(mq.latex(), 'x^{}');
 
     //unpeel exponent
     mq.keystroke('Backspace');
@@ -120,7 +120,7 @@ suite('autoSubscript', function () {
 
     //second one goes into the subscripts' subscript
     mq.keystroke('Backspace');
-    assert.equal(mq.latex(), 'x_{ }');
+    assert.equal(mq.latex(), 'x_{}');
 
     mq.keystroke('Backspace');
     assert.equal(mq.latex(), 'x');
