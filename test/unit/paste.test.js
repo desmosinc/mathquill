@@ -24,36 +24,36 @@ suite('paste', function () {
   suite('√', function () {
     test('sqrt symbol in empty latex', function () {
       simulatePaste(mq, '√');
-      assertLatex('\\sqrt{}');
+      assertLatex('\\sqrt{ }');
     });
     test('sqrt symbol in non-empty latex', function () {
       mq.latex('1+');
       simulatePaste(mq, '√');
-      assertLatex('1+\\sqrt{}');
+      assertLatex('1+\\sqrt{ }');
     });
     test('sqrt symbol at start of non-empty latex', function () {
       mq.latex('1+');
       mq.moveToLeftEnd();
       simulatePaste(mq, '√');
-      assertLatex('\\sqrt{}1+');
+      assertLatex('\\sqrt{ }1+');
     });
   });
 
   suite('√2', function () {
     test('sqrt symbol in empty latex', function () {
       simulatePaste(mq, '√2');
-      assertLatex('\\sqrt{}2');
+      assertLatex('\\sqrt{ }2');
     });
     test('sqrt symbol in non-empty latex', function () {
       mq.latex('1+');
       simulatePaste(mq, '√2');
-      assertLatex('1+\\sqrt{}2');
+      assertLatex('1+\\sqrt{ }2');
     });
     test('sqrt symbol at start of non-empty latex', function () {
       mq.latex('1+');
       mq.moveToLeftEnd();
       simulatePaste(mq, '√2');
-      assertLatex('\\sqrt{}21+');
+      assertLatex('\\sqrt{ }21+');
     });
   });
 

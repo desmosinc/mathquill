@@ -57,7 +57,7 @@ suite('latex', function () {
   test('block exponent', function () {
     assertParsesLatex('x^{n}', 'x^{n}');
     assertParsesLatex('x^{nm}');
-    assertParsesLatex('x^{}', 'x^{}');
+    assertParsesLatex('x^{}', 'x^{ }');
   });
 
   test('nested exponents', function () {
@@ -309,16 +309,16 @@ suite('latex', function () {
 
         test('only lower bound', function () {
           mq.write('\\sum_{n=0}');
-          assert.equal(mq.latex(), '\\sum_{n=0}^{}');
+          assert.equal(mq.latex(), '\\sum_{n=0}^{ }');
           mq.write('x^n');
-          assert.equal(mq.latex(), '\\sum_{n=0}^{}x^{n}');
+          assert.equal(mq.latex(), '\\sum_{n=0}^{ }x^{n}');
         });
 
         test('only upper bound', function () {
           mq.write('\\sum^5');
-          assert.equal(mq.latex(), '\\sum_{}^{5}');
+          assert.equal(mq.latex(), '\\sum_{ }^{5}');
           mq.write('x^n');
-          assert.equal(mq.latex(), '\\sum_{}^{5}x^{n}');
+          assert.equal(mq.latex(), '\\sum_{ }^{5}x^{n}');
         });
       });
 

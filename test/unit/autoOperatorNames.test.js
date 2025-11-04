@@ -73,13 +73,13 @@ suite('autoOperatorNames', function () {
   test('works in \\sum', function () {
     mq.typedText('sum');
     mq.typedText('sin');
-    assertLatex('sum allows operatorname', '\\sum_{\\sin}^{}');
+    assertLatex('sum allows operatorname', '\\sum_{\\sin}^{ }');
   });
 
   test('works in \\int', function () {
     mq.typedText('int');
     mq.typedText('sin');
-    assertLatex('int allows operatorname', '\\int_{\\sin}^{}');
+    assertLatex('int allows operatorname', '\\int_{\\sin}^{ }');
   });
 
   test('works in subscript after log, based on "except" option', function () {

@@ -177,7 +177,7 @@ suite('Public API', function () {
       mq.latex('1.2');
       assert.equal(mq.latex(), '1.2');
       mq.typedText('/');
-      assert.equal(mq.latex(), '\\frac{1.2}{}');
+      assert.equal(mq.latex(), '\\frac{1.2}{ }');
     });
 
     test('.html() trivial case', function () {
@@ -629,7 +629,7 @@ suite('Public API', function () {
       mq.cmd('y');
       assert.equal(mq.latex(), 'xy');
       mq.cmd('^');
-      assert.equal(mq.latex(), 'xy^{}');
+      assert.equal(mq.latex(), 'xy^{ }');
       mq.cmd('2');
       assert.equal(mq.latex(), 'xy^{2}');
       mq.keystroke('Right Shift-Left Shift-Left Shift-Left').cmd('\\sqrt');
@@ -772,17 +772,17 @@ suite('Public API', function () {
 
     test('prevents nested math input via .write() method', function () {
       mq.write('1\\frac{\\frac{3}{3}}{2}');
-      assert.equal(mq.latex(), '1\\frac{}{}');
+      assert.equal(mq.latex(), '1\\frac{ }{ }');
     });
 
     test('prevents nested math input via keyboard input', function () {
       mq.cmd('/').write('x');
-      assert.equal(mq.latex(), '\\frac{}{}');
+      assert.equal(mq.latex(), '\\frac{ }{ }');
     });
 
     test('stops new fraction moving content into numerator', function () {
       mq.write('x').cmd('/');
-      assert.equal(mq.latex(), 'x\\frac{}{}');
+      assert.equal(mq.latex(), 'x\\frac{ }{ }');
     });
 
     test('prevents nested math input via replacedFragment', function () {
@@ -1141,10 +1141,10 @@ suite('Public API', function () {
       assert.equal(mq.latex(), '');
 
       mq.cmd('\\sum');
-      assert.equal(mq.latex(), '\\sum_{}^{}');
+      assert.equal(mq.latex(), '\\sum_{ }^{ }');
 
       mq.cmd('n');
-      assert.equal(mq.latex(), '\\sum_{n}^{}', 'cursor in lower limit');
+      assert.equal(mq.latex(), '\\sum_{n}^{ }', 'cursor in lower limit');
     });
     test('sum starts with `n=`', function () {
       var mq = MQ.MathField($('<span>').appendTo('#mock')[0], {
@@ -1153,10 +1153,10 @@ suite('Public API', function () {
       assert.equal(mq.latex(), '');
 
       mq.cmd('\\sum');
-      assert.equal(mq.latex(), '\\sum_{n=}^{}');
+      assert.equal(mq.latex(), '\\sum_{n=}^{ }');
 
       mq.cmd('0');
-      assert.equal(mq.latex(), '\\sum_{n=0}^{}', 'cursor after the `n=`');
+      assert.equal(mq.latex(), '\\sum_{n=0}^{ }', 'cursor after the `n=`');
     });
     test('integral still has empty limits', function () {
       var mq = MQ.MathField($('<span>').appendTo('#mock')[0], {
@@ -1165,10 +1165,10 @@ suite('Public API', function () {
       assert.equal(mq.latex(), '');
 
       mq.cmd('\\int');
-      assert.equal(mq.latex(), '\\int_{}^{}');
+      assert.equal(mq.latex(), '\\int_{ }^{ }');
 
       mq.cmd('0');
-      assert.equal(mq.latex(), '\\int_{0}^{}', 'cursor in the from block');
+      assert.equal(mq.latex(), '\\int_{0}^{ }', 'cursor in the from block');
     });
   });
 
