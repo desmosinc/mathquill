@@ -285,7 +285,15 @@ class MathCommand extends MathElement {
     ctx.uncleanedLatex += this.ctrlSeq || '';
     this.eachChild((child) => {
       ctx.uncleanedLatex += '{';
+
+      let beforeLength = ctx.uncleanedLatex.length;
       child.latexRecursive(ctx);
+      let afterLength = ctx.uncleanedLatex.length;
+      if (beforeLength === afterLength) {
+        // nothing was written so we write a space
+        ctx.uncleanedLatex += ' ';
+      }
+
       ctx.uncleanedLatex += '}';
     });
 

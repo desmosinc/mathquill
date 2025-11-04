@@ -23,17 +23,17 @@ suite('infixOperatorNames', function () {
 
   test('for stops scanning', function () {
     mq.typedText('tfor1/');
-    assertLatex('t\\operatorname{for}\\frac{1}{}');
+    assertLatex('t\\operatorname{for}\\frac{1}{ }');
   });
 
   test('sin does not stop scanning', function () {
     mq.typedText('tsin1/');
-    assertLatex('\\frac{t\\sin1}{}');
+    assertLatex('\\frac{t\\sin1}{ }');
   });
 
   test('arcsinh does not stop scanning', function () {
     mq.typedText('tarcsinh1/');
-    assertLatex('\\frac{t\\operatorname{arcsinh}1}{}');
+    assertLatex('\\frac{t\\operatorname{arcsinh}1}{ }');
   });
 
   test('backspace invalidates word', function () {
@@ -41,7 +41,7 @@ suite('infixOperatorNames', function () {
     mq.keystroke('Home').keystroke('Right').keystroke('Del');
     assertLatex('tor1');
     mq.keystroke('End').typedText('/');
-    assertLatex('\\frac{tor1}{}');
+    assertLatex('\\frac{tor1}{ }');
   });
 
   test('minus after height is minus', function () {
