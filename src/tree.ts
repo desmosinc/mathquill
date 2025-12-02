@@ -116,8 +116,7 @@ class NodeBase {
   [L]: NodeRef = 0;
   [R]: NodeRef = 0;
 
-  // TODO - can this ever actually stay 0? if so we need to add null checks
-  parent: MQNode = 0 as any as MQNode;
+  parent: NodeRef = 0;
 
   /**
    * The (doubly-linked) list of this node's children.
@@ -432,7 +431,11 @@ class NodeBase {
   write(_cursor: Cursor, _ch: string) {}
 }
 
-function prayWellFormed(parent: MQNode, leftward: NodeRef, rightward: NodeRef) {
+function prayWellFormed(
+  parent: NodeRef,
+  leftward: NodeRef,
+  rightward: NodeRef
+): asserts parent {
   pray('a parent is always present', parent);
   pray(
     'leftward is properly set up',

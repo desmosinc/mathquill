@@ -89,6 +89,7 @@ class DOMView {
  * Descendant commands are organized into blocks.
  */
 class MathCommand extends MathElement {
+  parent: MQNode;
   replacedFragment: Fragment | undefined;
   protected domView: DOMView;
   protected ends: Ends<MQNode>;
@@ -489,7 +490,7 @@ function bindBinaryOperator(
  * symbols and operators that descend (in the Math DOM tree) from
  * ancestor operators.
  */
-class MathBlock extends MathElement {
+class MathBlockOrRootBlock extends MathElement {
   controller?: Controller;
 
   join(methodName: JoinMethod) {
@@ -588,32 +589,6 @@ class MathBlock extends MathElement {
     return super.keystroke(key, e, ctrlr);
   }
 
-  // editability methods: called by the cursor for editing, cursor movements,
-  // and selection of the MathQuill tree, these all take in a direction and
-  // the cursor
-  moveOutOf(dir: Direction, cursor: Cursor, updown?: 'up' | 'down') {
-    var updownInto: NodeRef | undefined;
-    if (updown === 'up') {
-      updownInto = this.parent.upInto;
-    } else if (updown === 'down') {
-      updownInto = this.parent.downInto;
-    }
-
-    if (!updownInto && this[dir]) {
-      const otherDir = -dir as Direction;
-      cursor.insAtDirEnd(otherDir, this[dir] as MQNode);
-      cursor.controller.aria.queueDirEndOf(otherDir).queue(cursor.parent, true);
-    } else {
-      cursor.insDirOf(dir, this.parent);
-      cursor.controller.aria.queueDirOf(dir).queue(this.parent);
-    }
-  }
-  selectOutOf(dir: Direction, cursor: Cursor) {
-    cursor.insDirOf(dir, this.parent);
-  }
-  deleteOutOf(_dir: Direction, cursor: Cursor) {
-    cursor.unwrapGramp();
-  }
   seek(clientX: number, cursor: Cursor) {
     var node = this.getEnd(R);
     if (!node) return cursor.insAtRightEnd(this);
@@ -712,6 +687,38 @@ class MathBlock extends MathElement {
       }
     }
     return this;
+  }
+}
+
+class MathBlock extends MathBlockOrRootBlock {
+  parent: MQNode;
+
+  // editability methods: called by the cursor for editing, cursor movements,
+  // and selection of the MathQuill tree, these all take in a direction and
+  // the cursor
+  moveOutOf(dir: Direction, cursor: Cursor, updown?: 'up' | 'down') {
+    var updownInto: NodeRef | undefined;
+    if (updown === 'up') {
+      updownInto = this.parent.upInto;
+    } else if (updown === 'down') {
+      updownInto = this.parent.downInto;
+    }
+
+    if (!updownInto && this[dir]) {
+      const otherDir = -dir as Direction;
+      cursor.insAtDirEnd(otherDir, this[dir] as MQNode);
+      cursor.controller.aria.queueDirEndOf(otherDir).queue(cursor.parent, true);
+    } else {
+      cursor.insDirOf(dir, this.parent);
+      cursor.controller.aria.queueDirOf(dir).queue(this.parent);
+    }
+  }
+  selectOutOf(dir: Direction, cursor: Cursor) {
+    cursor.insDirOf(dir, this.parent);
+  }
+  deleteOutOf(_dir: Direction, cursor: Cursor) {
+    pray('cursor is inside this block', cursor.parent === this);
+    cursor.unwrapGramp(this.parent);
   }
 }
 

@@ -26,14 +26,16 @@ CharCmds['\\'] = class LatexCommandInput extends MathCommand {
     const endsL = this.getEnd(L);
 
     endsL.focus = function () {
-      this.parent.domFrag().addClass('mq-hasCursor');
-      if (this.isEmpty()) this.parent.domFrag().removeClass('mq-empty');
+      (this.parent as MQNode).domFrag().addClass('mq-hasCursor');
+      if (this.isEmpty())
+        (this.parent as MQNode).domFrag().removeClass('mq-empty');
 
       return this;
     };
     endsL.blur = function () {
-      this.parent.domFrag().removeClass('mq-hasCursor');
-      if (this.isEmpty()) this.parent.domFrag().addClass('mq-empty');
+      (this.parent as MQNode).domFrag().removeClass('mq-hasCursor');
+      if (this.isEmpty())
+        (this.parent as MQNode).domFrag().addClass('mq-empty');
 
       return this;
     };
