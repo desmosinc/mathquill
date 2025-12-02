@@ -1,16 +1,25 @@
 suite('typing with auto-replaces', function () {
   const $ = window.test_only_jquery;
   var mq, mostRecentlyReportedLatex;
+
+  var normalConfig = {
+    handlers: {
+      edit: function () {
+        mostRecentlyReportedLatex = mq.latex();
+      }
+    }
+  };
+
+  const mathspeakConfig = {
+    ...normalConfig,
+    autoOperatorNames:
+      'sin|sine cos|cosine tan|tangent sinh|hyperbolic-sine log',
+    disableAutoSubstitutionInSubscripts: { except: 'log' }
+  };
+
   setup(function () {
     mostRecentlyReportedLatex = NaN; // != to everything
-    mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], {
-      handlers: {
-        edit: function () {
-          mostRecentlyReportedLatex = mq.latex();
-        }
-      },
-      autoOperatorNames: 'sin|sine cos|cosine tan|tangent sinh|hyperbolic-sine'
-    });
+    mq = MQ.MathField($('<span></span>').appendTo('#mock')[0], normalConfig);
   });
 
   function prayWellFormedPoint(pt) {
@@ -149,12 +158,31 @@ suite('typing with auto-replaces', function () {
 
   suite('MathspeakShorthand', function () {
     test('operatornames', function () {
+      mq.config(mathspeakConfig);
+
       mq.latex('\\cos+2');
       assertMathspeak('cosine plus 2');
       mq.latex('\\cos');
       assertMathspeak('cosine');
       mq.latex('2+\\cos');
       assertMathspeak('2 plus cosine');
+
+      // TODO - These require us passing the autoOps deeper into the tree. This conversion from "cos" to "cosine"
+      // actually only works within the RootBlock because it's the only one with access to the controller. That's
+      // where it can find the current set of autoOps. Otherwise the mathspeak code will just use an empty default
+      // list.
+      /*
+      mq.latex('\\left(\\cos\\right)');
+      assertMathspeak('left parenthesis cosine right parenthesis');
+
+      mq.latex('\\sqrt{\\cos}');
+      assertMathspeak('StartRoot, cosine, EndRoot');
+
+      mq.latex('log_{\\cos}');
+      assertMathspeak('log Subscript, cosine, Baseline');
+      */
+
+      mq.config(normalConfig);
     });
 
     test('fractions', function () {
