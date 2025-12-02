@@ -29,7 +29,6 @@ suite('mouse', function () {
       dispatchMouseEventAtPoint('mousemove', rect.left + x1, y);
       dispatchMouseEventAtPoint('mouseup', rect.left + x1, y);
 
-      debugger;
       assertDeepEqual(mq.selection(), {
         latex: '1+3+5+1+1',
         startIndex: expected[0],

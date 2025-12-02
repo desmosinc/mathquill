@@ -8,7 +8,8 @@ suite('typing with auto-replaces', function () {
         edit: function () {
           mostRecentlyReportedLatex = mq.latex();
         }
-      }
+      },
+      autoOperatorNames: 'sin|sine cos|cosine tan|tangent sinh|hyperbolic-sine'
     });
   });
 
@@ -147,6 +148,15 @@ suite('typing with auto-replaces', function () {
   });
 
   suite('MathspeakShorthand', function () {
+    test('operatornames', function () {
+      mq.latex('\\cos+2');
+      assertMathspeak('cosine plus 2');
+      mq.latex('\\cos');
+      assertMathspeak('cosine');
+      mq.latex('2+\\cos');
+      assertMathspeak('2 plus cosine');
+    });
+
     test('fractions', function () {
       // Testing singular numeric fractions from 1/2 to 1/112, and 1/100
       mq.latex('\\frac{1}{2}');
