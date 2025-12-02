@@ -364,7 +364,7 @@ class Controller_latex extends Controller_keystroke {
     if (!oldMinusSign && newMinusSign) {
       var newMinusNode = new PlusMinus('-');
       var minusSpan = document.createElement('span');
-      minusSpan.textContent = '-';
+      minusSpan.textContent = '−';
       newMinusNode.setDOM(minusSpan);
 
       var oldCharNodes0L = oldCharNodes[0][L];
