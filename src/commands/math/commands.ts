@@ -1121,7 +1121,7 @@ class Token extends MQSymbol {
   latexRecursive(ctx: LatexContext): void {
     this.checkCursorContextOpen(ctx);
 
-    ctx.uncleanedLatex += '\\token{' + this.tokenId + '}';
+    ctx.uncleanedLatex += `${this.ctrlSeq}{` + this.tokenId + '}';
 
     this.checkCursorContextClose(ctx);
   }
@@ -1165,62 +1165,10 @@ LatexCmds.token = Token;
  * remove it in the future if we add more metadata properties. Tying it
  * to Token would complicate that.
  */
-class TokenName extends MQSymbol {
-  tokenId = '';
+class TokenName extends Token {
   ctrlSeq = '\\tokenName';
   textTemplate = ['tokenName(', ')'];
-  mathspeakTemplate = ['StartTokenName,', ', EndTokenName'];
   ariaLabel = 'token name';
-
-  html(): Element | DocumentFragment {
-    const out = h('span', {
-      class: 'mq-token mq-token-name mq-ignore-mousedown',
-      'data-mq-token': this.tokenId,
-      'data-mq-token-mode': 'name'
-    });
-    this.setDOM(out);
-    NodeBase.linkElementByCmdNode(out, this);
-    return out;
-  }
-
-  latexRecursive(ctx: LatexContext): void {
-    this.checkCursorContextOpen(ctx);
-
-    ctx.uncleanedLatex += '\\tokenName{' + this.tokenId + '}';
-
-    this.checkCursorContextClose(ctx);
-  }
-
-  mathspeak() {
-    // If the caller responsible for creating this token has set an aria-label attribute for the inner children, use them in the mathspeak calculation.
-    let ariaLabelArray: string[] = [];
-
-    this.domFrag()
-      .children()
-      .eachElement((el) => {
-        const label = el.getAttribute('aria-label');
-        if (typeof label === 'string' && label !== '')
-          ariaLabelArray.push(label);
-      });
-    return ariaLabelArray.length > 0
-      ? ariaLabelArray.join(' ').trim()
-      : 'token ' + this.tokenId;
-  }
-
-  parser() {
-    var self = this;
-    return latexMathParser.block.map(function (block) {
-      var digit = block.getEnd(L);
-      if (digit) {
-        self.tokenId += (digit as Digit).ctrlSeq;
-        while ((digit = digit[R])) {
-          self.tokenId += (digit as Digit).ctrlSeq;
-        }
-      }
-
-      return self;
-    });
-  }
 }
 LatexCmds.tokenName = TokenName;
 
