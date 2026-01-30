@@ -1161,9 +1161,8 @@ LatexCmds.token = Token;
 
 /**
  * Similar to Token, but for displaying the name of a token rather than
- * its value. Code is duplicated from Token as it seems possible we'll
- * remove it in the future if we add more metadata properties. Tying it
- * to Token would complicate that.
+ * its value. Leverages Token class for functionality allows differentiation
+ * for rendering purposes.
  */
 class TokenName extends Token {
   ctrlSeq = '\\tokenName';
