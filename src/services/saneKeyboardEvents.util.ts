@@ -412,15 +412,12 @@ var saneKeyboardEvents = (function () {
           if (clipboardEvent?.clipboardData) {
             const selection = controller.exportLatexSelection().selection;
             if (selection.startIndex !== selection.endIndex) {
-              const text = selection.latex.slice(selection.startIndex, selection.endIndex);
-               clipboardEvent.clipboardData.setData(
-                'text/plain',
-                text
+              const text = selection.latex.slice(
+                selection.startIndex,
+                selection.endIndex
               );
-              clipboardEvent.clipboardData.setData(
-                'application/x-latex',
-                text
-              );
+              clipboardEvent.clipboardData.setData('text/plain', text);
+              clipboardEvent.clipboardData.setData('application/x-latex', text);
               evt.preventDefault();
             }
           }
@@ -438,15 +435,12 @@ var saneKeyboardEvents = (function () {
           if (clipboardEvent?.clipboardData) {
             const selection = controller.exportLatexSelection().selection;
             if (selection.startIndex !== selection.endIndex) {
-              const text = selection.latex.slice(selection.startIndex, selection.endIndex)
-              clipboardEvent.clipboardData.setData(
-                'text/plain',
-                text
+              const text = selection.latex.slice(
+                selection.startIndex,
+                selection.endIndex
               );
-              clipboardEvent.clipboardData.setData(
-                'application/x-latex',
-                text
-              );
+              clipboardEvent.clipboardData.setData('text/plain', text);
+              clipboardEvent.clipboardData.setData('application/x-latex', text);
               evt.preventDefault();
             }
           }
