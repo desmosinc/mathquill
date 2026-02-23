@@ -370,15 +370,12 @@ var saneKeyboardEvents = (function () {
       if (e?.clipboardData) {
         const selection = controller.exportLatexSelection().selection;
         if (selection.startIndex !== selection.endIndex) {
-          const text = selection.latex.slice(selection.startIndex, selection.endIndex);
-            e.clipboardData.setData(
-            'text/plain',
-            text
+          const text = selection.latex.slice(
+            selection.startIndex,
+            selection.endIndex
           );
-          e.clipboardData.setData(
-            'application/x-latex',
-            text
-          );
+          e.clipboardData.setData('text/plain', text);
+          e.clipboardData.setData('application/x-latex', text);
           e.preventDefault();
         }
       }
