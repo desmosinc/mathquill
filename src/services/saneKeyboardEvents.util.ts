@@ -366,6 +366,24 @@ var saneKeyboardEvents = (function () {
       everyTick.trigger(e);
     }
 
+    function updateClipboardData(e: ClipboardEvent | undefined) {
+      if (e?.clipboardData) {
+        const selection = controller.exportLatexSelection().selection;
+        if (selection.startIndex !== selection.endIndex) {
+          const text = selection.latex.slice(selection.startIndex, selection.endIndex);
+            e.clipboardData.setData(
+            'text/plain',
+            text
+          );
+          e.clipboardData.setData(
+            'application/x-latex',
+            text
+          );
+          e.preventDefault();
+        }
+      }
+    }
+
     if (controller.KIND_OF_MQ === 'StaticMath') {
       controller.addTextareaEventListeners({
         keydown: (evt) => {
@@ -409,21 +427,8 @@ var saneKeyboardEvents = (function () {
             const earlyReturn = controller.options.overrideCut(clipboardEvent);
             if (earlyReturn) return;
           }
-          if (clipboardEvent?.clipboardData) {
-            const selection = controller.exportLatexSelection().selection;
-            if (selection.startIndex !== selection.endIndex) {
-              const text = selection.latex.slice(
-                selection.startIndex,
-                selection.endIndex
-              );
-              clipboardEvent.clipboardData.setData('text/plain', text);
-              clipboardEvent.clipboardData.setData('application/x-latex', text);
-              evt.preventDefault();
-            }
-          }
-          everyTick.listenOnce(function () {
-            controller.cut();
-          });
+          updateClipboardData(clipboardEvent);
+          controller.cut();
         },
         copy: function (evt: Event) {
           const clipboardEvent =
@@ -432,21 +437,7 @@ var saneKeyboardEvents = (function () {
             const earlyReturn = controller.options.overrideCopy(clipboardEvent);
             if (earlyReturn) return;
           }
-          if (clipboardEvent?.clipboardData) {
-            const selection = controller.exportLatexSelection().selection;
-            if (selection.startIndex !== selection.endIndex) {
-              const text = selection.latex.slice(
-                selection.startIndex,
-                selection.endIndex
-              );
-              clipboardEvent.clipboardData.setData('text/plain', text);
-              clipboardEvent.clipboardData.setData('application/x-latex', text);
-              evt.preventDefault();
-            }
-          }
-          everyTick.listenOnce(function () {
-            controller.copy();
-          });
+          updateClipboardData(clipboardEvent);
         },
         paste: onPaste,
         input: onInput
