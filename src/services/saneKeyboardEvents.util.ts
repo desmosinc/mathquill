@@ -425,7 +425,9 @@ var saneKeyboardEvents = (function () {
             if (earlyReturn) return;
           }
           updateClipboardData(clipboardEvent);
-          controller.cut();
+          everyTick.listenOnce(function () {
+            controller.cut();
+          });
         },
         copy: function (evt: Event) {
           const clipboardEvent =
