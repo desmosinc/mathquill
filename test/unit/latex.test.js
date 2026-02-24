@@ -328,6 +328,13 @@ suite('latex', function () {
           assert.equal(mq.latex(), '\\token{12}');
         });
       });
+
+      suite('\\tokenName', function () {
+        test('parsing and serializing', function () {
+          mq.latex('\\tokenName{12}');
+          assert.equal(mq.latex(), '\\tokenName{12}');
+        });
+      });
     });
 
     suite('setting .selection()', function () {

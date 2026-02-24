@@ -1121,7 +1121,7 @@ class Token extends MQSymbol {
   latexRecursive(ctx: LatexContext): void {
     this.checkCursorContextOpen(ctx);
 
-    ctx.uncleanedLatex += '\\token{' + this.tokenId + '}';
+    ctx.uncleanedLatex += `${this.ctrlSeq}{` + this.tokenId + '}';
 
     this.checkCursorContextClose(ctx);
   }
@@ -1158,6 +1158,18 @@ class Token extends MQSymbol {
   }
 }
 LatexCmds.token = Token;
+
+/**
+ * Similar to Token, but for displaying the name of a token rather than
+ * its value. Leverages Token class for functionality allows differentiation
+ * for rendering purposes.
+ */
+class TokenName extends Token {
+  ctrlSeq = '\\tokenName';
+  textTemplate = ['tokenName(', ')'];
+  ariaLabel = 'token name';
+}
+LatexCmds.tokenName = TokenName;
 
 class SquareRoot extends MathCommand {
   ctrlSeq = '\\sqrt';
