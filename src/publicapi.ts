@@ -89,6 +89,11 @@ class Options {
   constructor(public version: 1 | 2 | 3) {}
 
   ignoreNextMousedown: (_el: MouseEvent) => boolean;
+  askIfShouldIgnoreMousemove: (
+    evt: MouseEvent,
+    rootDOM: HTMLElement
+  ) => boolean;
+
   substituteTextarea: () => HTMLElement;
   /** Only used in interface versions 1 and 2. */
   substituteKeyboardEvents: SubstituteKeyboardEvents;

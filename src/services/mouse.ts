@@ -6,6 +6,11 @@ const ignoreNextMouseDownNoop = (_el: MouseEvent) => {
 };
 Options.prototype.ignoreNextMousedown = ignoreNextMouseDownNoop;
 
+const askIfShouldIgnoreMousemoveNoop = (_evt: MouseEvent, _el: HTMLElement) => {
+  return false;
+};
+Options.prototype.askIfShouldIgnoreMousemove = askIfShouldIgnoreMousemoveNoop;
+
 // Whenever edits to the tree occur, in-progress selection events
 // must be invalidated and selection changes must not be applied to
 // the edited tree. cancelSelectionOnEdit takes care of this.
@@ -62,10 +67,21 @@ class Controller_mouse extends Controller_latex {
     }
 
     var lastMousemoveTarget: HTMLElement | null = null;
-    function mousemove(e: Event) {
+    function mousemove(e: MouseEvent) {
+      if (
+        rootElement &&
+        cursor.options.askIfShouldIgnoreMousemove(e, rootElement)
+      )
+        return;
       lastMousemoveTarget = e.target as HTMLElement | null;
     }
     function onDocumentMouseMove(e: MouseEvent) {
+      if (
+        rootElement &&
+        cursor.options.askIfShouldIgnoreMousemove(e, rootElement)
+      )
+        return;
+
       if (!cursor.anticursor) cursor.startSelection();
       ctrlr.seek(lastMousemoveTarget, e.clientX, e.clientY).cursor.select();
       if (cursor.selection)
