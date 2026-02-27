@@ -82,7 +82,10 @@ class Controller_mouse extends Controller_latex {
       )
         return;
 
-      if (!cursor.anticursor) cursor.startSelection();
+      if (!cursor.anticursor) {
+        ctrlr.restoreLatexSelection(originalSelection);
+        cursor.startSelection();
+      }
       ctrlr.seek(lastMousemoveTarget, e.clientX, e.clientY).cursor.select();
       if (cursor.selection)
         cursor.controller.aria
@@ -146,6 +149,8 @@ class Controller_mouse extends Controller_latex {
     ctrlr
       .seek(e.target as HTMLElement | null, e.clientX, e.clientY)
       .cursor.startSelection();
+
+    const originalSelection = ctrlr.exportLatexSelection().selection;
 
     rootElement?.addEventListener('mousemove', mousemove);
     ownerDocument?.addEventListener('mousemove', onDocumentMouseMove);
