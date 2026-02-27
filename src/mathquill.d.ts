@@ -137,6 +137,10 @@ declare namespace MathQuill {
       disableAutoSubstitutionInSubscripts?: boolean | { except: string };
       interpretTildeAsSim?: boolean;
       handlers?: HandlerOptions<BaseMathQuill<$>>;
+      askIfShouldIgnoreMousemove?: (
+        evt: MouseEvent,
+        rootElt: HTMLElement
+      ) => boolean;
     }
 
     interface Handler<MQClass> {

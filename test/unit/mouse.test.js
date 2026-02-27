@@ -69,6 +69,60 @@ suite('mouse', function () {
       endIndex: 12
     });
   });
+
+  test('askIfShouldIgnoreMousemove prevents drag selection', function () {
+    const mq = MQ.MathField($('<span></span>').appendTo('#mock')[0]);
+
+    let shouldIgnore = false;
+    mq.__controller.cursor.options.askIfShouldIgnoreMousemove = () => {
+      return shouldIgnore;
+    };
+
+    mq.latex('1+3+5+7+1');
+    const rect = mq.el().getBoundingClientRect();
+    const y = rect.top + 10;
+
+    const three = $('#mock .mq-digit:contains(3)');
+    const five = $('#mock .mq-digit:contains(5)');
+    const beforeOne = rect.left + 1;
+    const afterThree = three.get(0).getBoundingClientRect().right;
+    const afterFive = five.get(0).getBoundingClientRect().right;
+
+    // Baseline: normal drag selects
+    dispatchMouseEventAtPoint('mousedown', beforeOne, y);
+    dispatchMouseEventAtPoint('mousemove', afterThree, y);
+    assertDeepEqual(mq.selection(), {
+      latex: '1+3+5+7+1',
+      startIndex: 0,
+      endIndex: 3
+    });
+
+    // With ignore=true: drag should not extend selection
+    shouldIgnore = true;
+    dispatchMouseEventAtPoint('mousemove', afterFive, y);
+    assertDeepEqual(mq.selection(), {
+      latex: '1+3+5+7+1',
+      startIndex: 0,
+      endIndex: 3
+    });
+
+    // With ignore=false again: drag works
+    shouldIgnore = false;
+    dispatchMouseEventAtPoint('mousemove', afterFive + 1, y);
+    assertDeepEqual(mq.selection(), {
+      latex: '1+3+5+7+1',
+      startIndex: 0,
+      endIndex: 5
+    });
+
+    // can go back to 3 with ignore=false
+    dispatchMouseEventAtPoint('mousemove', afterThree, y);
+    assertDeepEqual(mq.selection(), {
+      latex: '1+3+5+7+1',
+      startIndex: 0,
+      endIndex: 3
+    });
+  });
 });
 
 function assertDeepEqual(a, b) {
