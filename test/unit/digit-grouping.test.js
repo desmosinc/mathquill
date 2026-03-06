@@ -45,7 +45,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '',
       tree: {
-        classes: 'mq-root-block mq-empty',
+        classes: 'mq-root-block mq-empty mq-show-grouping',
         content: ''
       }
     });
@@ -54,7 +54,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '1\\ ',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             classes: 'mq-digit',
@@ -71,7 +71,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '\\ 1',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             content: '&nbsp;'
@@ -88,7 +88,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '\\ 1\\ ',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             content: '&nbsp;'
@@ -108,7 +108,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: 'a',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             content: 'a'
@@ -121,7 +121,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: 'a\\ ',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             content: 'a'
@@ -137,7 +137,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '\\ a',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             content: '&nbsp;'
@@ -153,7 +153,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: 'a\\ a',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             content: 'a'
@@ -172,7 +172,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '\\ a\\ ',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             content: '&nbsp;'
@@ -191,7 +191,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '.',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             classes: 'mq-digit',
@@ -205,7 +205,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '.\\ .',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             classes: 'mq-digit',
@@ -226,7 +226,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '..',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             classes: 'mq-digit',
@@ -244,7 +244,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '2..',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             classes: 'mq-digit',
@@ -267,7 +267,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '..2',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             classes: 'mq-digit',
@@ -289,7 +289,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '\\ \\ ',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             content: '&nbsp;'
@@ -305,7 +305,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '\\ \\ \\ ',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             content: '&nbsp;'
@@ -324,7 +324,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '1234',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             classes: 'mq-digit mq-group-leading-1',
@@ -354,7 +354,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '',
       tree: {
-        classes: 'mq-root-block mq-empty',
+        classes: 'mq-root-block mq-empty mq-show-grouping',
         content: ''
       }
     });
@@ -363,7 +363,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '.2322',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           { classes: 'mq-digit', content: '.' },
           { classes: 'mq-digit', content: '2' },
@@ -378,7 +378,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '1.2322',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             classes: 'mq-digit',
@@ -412,7 +412,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '1231.123',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             classes: 'mq-digit mq-group-leading-1',
@@ -454,7 +454,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '1231.432',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             classes: 'mq-digit mq-group-leading-1',
@@ -496,7 +496,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '1231232.432',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           {
             classes: 'mq-digit mq-group-leading-1',
@@ -550,7 +550,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '12345...67890',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           { classes: 'mq-digit', content: '1' },
           { classes: 'mq-digit', content: '2' },
@@ -579,7 +579,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '12345...67890',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           { classes: 'mq-digit mq-group-leading-2', content: '1' },
           { classes: 'mq-digit mq-group-other', content: '2' },
@@ -601,7 +601,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '12345....67890',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           { classes: 'mq-digit mq-group-leading-2', content: '1' },
           { classes: 'mq-digit mq-group-other', content: '2' },
@@ -625,7 +625,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '1...\\ 6789',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           { classes: 'mq-digit', content: '1' },
           { classes: 'mq-digit mq-ellipsis-start', content: '.' },
@@ -643,7 +643,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '12345.\\ ..6789',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           { classes: 'mq-digit', content: '1' },
           { classes: 'mq-digit', content: '2' },
@@ -676,7 +676,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '1...6789.2345',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           { classes: 'mq-digit', content: '1' },
           { classes: 'mq-digit mq-ellipsis-start', content: '.' },
@@ -690,7 +690,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '6789.2345...6789.2345',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           ...n6789_2345,
           { classes: 'mq-digit mq-ellipsis-start', content: '.' },
@@ -704,7 +704,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '6789.2345...6789',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           ...n6789_2345,
           { classes: 'mq-digit mq-ellipsis-start', content: '.' },
@@ -721,7 +721,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '12345...67890...12345',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           { classes: 'mq-digit mq-group-leading-2', content: '1' },
           { classes: 'mq-digit mq-group-other', content: '2' },
@@ -758,7 +758,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '1234-...',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           { classes: 'mq-digit mq-group-leading-1', content: '1' },
           { classes: 'mq-digit mq-group-start', content: '2' },
@@ -775,7 +775,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '1234,\\ ...',
       tree: {
-        classes: 'mq-root-block',
+        classes: 'mq-root-block mq-show-grouping',
         content: [
           { classes: 'mq-digit mq-group-leading-1', content: '1' },
           { classes: 'mq-digit mq-group-start', content: '2' },
@@ -1220,7 +1220,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '',
       tree: {
-        classes: 'mq-root-block mq-empty',
+        classes: 'mq-root-block mq-empty mq-show-grouping',
         content: ''
       }
     });
@@ -1229,7 +1229,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '',
       tree: {
-        classes: 'mq-root-block mq-hasCursor',
+        classes: 'mq-root-block mq-show-grouping mq-hasCursor',
         content: [
           {
             classes: 'mq-cursor'
@@ -1242,7 +1242,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '1',
       tree: {
-        classes: 'mq-root-block mq-hasCursor mq-suppress-grouping',
+        classes: 'mq-root-block mq-hasCursor',
         content: [
           {
             classes: 'mq-digit',
@@ -1261,7 +1261,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '1234',
       tree: {
-        classes: 'mq-root-block mq-hasCursor mq-suppress-grouping',
+        classes: 'mq-root-block mq-hasCursor',
         content: [
           {
             classes: 'mq-digit mq-group-leading-1',
@@ -1290,7 +1290,7 @@ suite('Digit Grouping', function () {
     assertClasses(mq, {
       latex: '12345',
       tree: {
-        classes: 'mq-root-block mq-hasCursor mq-suppress-grouping',
+        classes: 'mq-root-block mq-hasCursor',
         content: [
           {
             classes: 'mq-digit mq-group-leading-2',
@@ -1323,7 +1323,7 @@ suite('Digit Grouping', function () {
       assertClasses(mq, {
         latex: '12345',
         tree: {
-          classes: 'mq-root-block mq-hasCursor',
+          classes: 'mq-root-block mq-hasCursor mq-show-grouping',
           content: [
             {
               classes: 'mq-digit mq-group-leading-2',
@@ -1356,7 +1356,7 @@ suite('Digit Grouping', function () {
       assertClasses(mq, {
         latex: '12345',
         tree: {
-          classes: 'mq-root-block mq-hasCursor',
+          classes: 'mq-root-block mq-hasCursor mq-show-grouping',
           content: [
             {
               classes: 'mq-digit mq-group-leading-2',
@@ -1389,7 +1389,7 @@ suite('Digit Grouping', function () {
       assertClasses(mq, {
         latex: '1235',
         tree: {
-          classes: 'mq-root-block mq-hasCursor mq-suppress-grouping',
+          classes: 'mq-root-block mq-hasCursor',
           content: [
             {
               classes: 'mq-digit mq-group-leading-1',
@@ -1419,7 +1419,7 @@ suite('Digit Grouping', function () {
         assertClasses(mq, {
           latex: '1235',
           tree: {
-            classes: 'mq-root-block',
+            classes: 'mq-root-block mq-show-grouping',
             content: [
               {
                 classes: 'mq-digit mq-group-leading-1',
@@ -1442,6 +1442,6 @@ suite('Digit Grouping', function () {
         });
         done();
       }, 1);
-    }, 1100); // should stop suppressing grouping after 1000ms
+    }, 1100); // should stop hiding grouping after 1000ms
   });
 });

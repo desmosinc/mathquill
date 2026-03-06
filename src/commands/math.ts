@@ -725,6 +725,9 @@ API.StaticMath = function (APIClasses: APIClasses) {
       this.config(opts as MathQuill.v3.Config);
       // `mathquillify` calls `createTextarea`
       super.mathquillify('mq-math-mode');
+      if (this.__options.enableDigitGrouping) {
+        this.__controller.root.domFrag().addClass('mq-show-grouping');
+      }
       this.__controller.setupStaticField();
       if (this.__options.mouseEvents) {
         this.__controller.addMouseEventListener();
