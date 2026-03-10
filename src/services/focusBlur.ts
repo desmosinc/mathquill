@@ -11,25 +11,21 @@ ControllerBase.onNotify(function (cursor, e) {
     // blurred === undefined means we are not focused.
     if (controller.blurred !== false) return;
 
-    controller.disableGroupingForSeconds(1);
+    controller.hideGroupingForEdit();
   }
 });
 
 class Controller_focusBlur extends Controller_exportText {
   blurred: boolean;
-  __disableGroupingTimeout: number;
+  __showGroupingTimeout: number;
   textareaSelectionTimeout: number;
 
-  disableGroupingForSeconds(seconds: number) {
-    clearTimeout(this.__disableGroupingTimeout);
-    if (seconds === 0) {
-      this.root.domFrag().removeClass('mq-suppress-grouping');
-    } else {
-      this.root.domFrag().addClass('mq-suppress-grouping');
-      this.__disableGroupingTimeout = setTimeout(() => {
-        this.root.domFrag().removeClass('mq-suppress-grouping');
-      }, seconds * 1000);
-    }
+  hideGroupingForEdit() {
+    clearTimeout(this.__showGroupingTimeout);
+    this.root.domFrag().removeClass('mq-show-grouping');
+    this.__showGroupingTimeout = setTimeout(() => {
+      this.root.domFrag().addClass('mq-show-grouping');
+    }, 1000);
   }
 
   private blurTimeout: number;
@@ -55,7 +51,10 @@ class Controller_focusBlur extends Controller_exportText {
       clearTimeout(this.textareaSelectionTimeout);
       this.textareaSelectionTimeout = 0;
     }
-    this.disableGroupingForSeconds(0);
+    if (this.options.enableDigitGrouping) {
+      clearTimeout(this.__showGroupingTimeout);
+      this.root.domFrag().addClass('mq-show-grouping');
+    }
     this.blurred = true;
     this.blurTimeout = setTimeout(() => {
       // wait for blur on window; if
@@ -114,6 +113,9 @@ class Controller_focusBlur extends Controller_exportText {
     });
     ctrlr.blurred = true;
     cursor.hide().parent.blur(cursor);
+    if (ctrlr.options.enableDigitGrouping) {
+      ctrlr.root.domFrag().addClass('mq-show-grouping');
+    }
   }
 
   addStaticFocusBlurListeners() {

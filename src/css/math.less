@@ -21,38 +21,28 @@
     margin-right: @expand-margin;
   }
 
-  .mq-group-start {
-    margin-left: @digit-separator;
-    margin-right: @contract-margin;
-  }
+  &.mq-show-grouping {
+    .mq-group-start {
+      margin-left: @digit-separator;
+      margin-right: @contract-margin;
+    }
 
-  .mq-group-other {
-    margin-left: @contract-margin;
-    margin-right: @contract-margin;
-  }
+    .mq-group-other {
+      margin-left: @contract-margin;
+      margin-right: @contract-margin;
+    }
 
-  .mq-group-leading-1,
-  .mq-group-leading-2 {
-    margin-left: 0;
-    margin-right: @contract-margin;
-  }
-
-  .mq-group-leading-3 {
-    margin-left: 4 * @expand-margin;
-    margin-right: @contract-margin;
-  }
-
-  &.mq-suppress-grouping {
-    .mq-group-start,
-    .mq-group-other,
     .mq-group-leading-1,
-    .mq-group-leading-2,
+    .mq-group-leading-2 {
+      margin-left: 0;
+      margin-right: @contract-margin;
+    }
+
     .mq-group-leading-3 {
-      margin-left: @expand-margin;
-      margin-right: @expand-margin;
+      margin-left: 4 * @expand-margin;
+      margin-right: @contract-margin;
     }
   }
-
   .mq-ellipsis-start {
     margin-left: @ellipsis-separator;
     margin-right: @ellipsis-internal-sep;
