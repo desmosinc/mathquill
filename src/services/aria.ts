@@ -27,9 +27,13 @@ class Aria {
     this.controller = controller;
   }
 
+  private firstMessageSent = false;
+
   attach() {
     const container = this.controller.container;
     if (this.span.parentNode !== container) {
+      // Append the element empty first to ensure screen readers detect the live region
+      // before any content is added. This fixes the issue where the first alert isn't announced.
       domFrag(container).prepend(domFrag(this.span));
     }
   }
@@ -89,7 +93,18 @@ class Aria {
         if (this.controller.options.logAriaAlerts && this.msg) {
           console.log(this.msg);
         }
-        this.span.textContent = this.msg;
+
+        // For the first message only, use a 50ms delay to ensure the empty live region
+        // is registered with screen readers before adding content. Screen readers need
+        // actual time (not just a different execution context) to process the empty element.
+        if (!this.firstMessageSent) {
+          this.firstMessageSent = true;
+          setTimeout(() => {
+            this.span.textContent = this.msg;
+          }, 50);
+        } else {
+          this.span.textContent = this.msg;
+        }
       }
     }
     return this.clear();
