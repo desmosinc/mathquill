@@ -50,11 +50,6 @@ class ControllerBase {
     this.options = options;
 
     this.aria = new Aria(this.getControllerSelf());
-    // Attach the aria element immediately to ensure it's in the DOM before first use
-    // This prevents the first alert from being lost
-    if (container) {
-      this.aria.attach();
-    }
     this.ariaLabel = 'Math Input';
     this.ariaPostLabel = '';
 
