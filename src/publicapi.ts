@@ -293,10 +293,6 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
 
       var contents = domFrag(el).addClass(classNames).children().detach();
 
-      // Attach the aria element after saving original contents but before setting up the math field
-      // This ensures the live region exists before any alerts are triggered
-      ctrlr.aria.attach();
-
       root.setDOM(
         domFrag(h('span', { class: 'mq-root-block', 'aria-hidden': true }))
           .appendTo(el)
