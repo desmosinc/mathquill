@@ -28,6 +28,7 @@ class Aria {
   }
 
   private firstMessageSent = false;
+  private firstMessageTimeout: number | null = null;
 
   attach() {
     const container = this.controller.container;
@@ -94,12 +95,18 @@ class Aria {
           console.log(this.msg);
         }
 
-        // For the first message only, use a 50ms delay to ensure the empty live region
+        // For the first message, use a 50ms delay to ensure the empty live region
         // is registered with screen readers before adding content. Screen readers need
         // actual time (not just a different execution context) to process the empty element.
+        // We debounce to ensure that if multiple messages arrive within the first 50ms,
+        // only the final message is announced (avoiding out-of-order announcements).
         if (!this.firstMessageSent) {
-          this.firstMessageSent = true;
-          setTimeout(() => {
+          if (this.firstMessageTimeout !== null) {
+            clearTimeout(this.firstMessageTimeout);
+          }
+          this.firstMessageTimeout = setTimeout(() => {
+            this.firstMessageSent = true;
+            this.firstMessageTimeout = null;
             this.span.textContent = this.msg;
           }, 50);
         } else {
