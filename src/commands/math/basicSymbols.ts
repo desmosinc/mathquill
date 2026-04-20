@@ -865,7 +865,12 @@ LatexCmds['.'] = () =>
     '.'
   );
 
-LatexCmds["'"] = LatexCmds.prime = bindVanillaSymbol("'", '&prime;', 'prime');
+LatexCmds['\u2018'] =
+  LatexCmds['\u2019'] =
+  LatexCmds['\u02BC'] =
+  LatexCmds["'"] =
+  LatexCmds.prime =
+    bindVanillaSymbol("'", '&prime;', 'prime');
 LatexCmds['″'] = LatexCmds.dprime = bindVanillaSymbol(
   '″',
   '&Prime;',
