@@ -109,6 +109,15 @@ suite('typing with auto-replaces', function () {
     });
   });
 
+  suite('EquivalentQuote', function () {
+    test('different quote symbols', function () {
+      //these 4 are all different characters (!!)
+      mq.typedText("\u2018\u2019\u02BC'");
+      //these 4 are all the same character
+      assertLatex("''''");
+    });
+  });
+
   suite('LatexCommandInput', function () {
     test('basic', function () {
       mq.typedText('\\sqrt-x');
