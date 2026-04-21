@@ -966,22 +966,27 @@ var Fraction =
             // Handle the case of an integer followed by a simplified fraction such as 1\frac{1}{2}.
             // Such combinations should be spoken aloud as "1 and 1 half."
             // Start at the left sibling of the fraction and continue leftward until something other than a digit or whitespace is found.
-            var precededByInteger = false;
+            let sawDigit = false;
+
+            let sibling;
+            // Scan until you see something other than a digit or space
             for (
-              var sibling: NodeRef | undefined = this[L];
-              sibling && sibling[L] !== undefined;
+              sibling = this[L];
+              sibling &&
+              sibling.ctrlSeq &&
+              (sibling.ctrlSeq === '\\ ' || intRgx.test(sibling.ctrlSeq ?? ''));
               sibling = sibling[L]
             ) {
-              // Ignore whitespace
-              if (sibling.ctrlSeq === '\\ ') {
-                continue;
-              } else if (intRgx.test(sibling.ctrlSeq || '')) {
-                precededByInteger = true;
-              } else {
-                precededByInteger = false;
-                break;
+              if (intRgx.test(sibling.ctrlSeq)) {
+                sawDigit = true;
               }
             }
+            const lastNodeSeen = sibling;
+
+            // `precededByInteger` is true if everything we saw while scanning is digits and spaces, and
+            // we saw at least one digit.
+            const precededByInteger =
+              sawDigit && !(lastNodeSeen && lastNodeSeen.ctrlSeq === '.');
             if (precededByInteger) {
               output += 'and ';
             }
