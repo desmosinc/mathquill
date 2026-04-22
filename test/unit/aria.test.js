@@ -255,6 +255,36 @@ suite('aria', function () {
     assertAriaEqual('left parenthesis');
   });
 
+  test('testing mathspeak for mixed fractions', function () {
+    const mq = mathField;
+    mq.latex('1+2\\frac{3}{4}');
+    mq.select();
+    assert.equal(mq.mathspeak().trim(), '1 plus 2 and 3 fourths');
+
+    mq.latex('1.2\\frac{3}{4}');
+    mq.select();
+    assert.equal(mq.mathspeak().trim(), '1.2 3 fourths');
+
+    mq.latex('a\\frac{3}{4}');
+    mq.select();
+    assert.equal(mq.mathspeak().trim(), '"a" 3 fourths');
+
+    mq.latex('a1\\frac{3}{4}');
+    mq.select();
+    assert.equal(mq.mathspeak().trim(), '"a" 1 and 3 fourths');
+
+    mq.latex('1\\left(x\\right)\\frac{3}{4}');
+    mq.select();
+    assert.equal(
+      mq.mathspeak().trim(),
+      '1 left parenthesis, "x" , right parenthesis 3 fourths'
+    );
+
+    mq.latex('1+2\\ \\ \\frac{3}{4}');
+    mq.select();
+    assert.equal(mq.mathspeak().trim(), '1 plus 2 and 3 fourths');
+  });
+
   test('testing beginning and end alerts', function () {
     mathField.typedText('sqrt(x)');
     mathField.keystroke('Home');
