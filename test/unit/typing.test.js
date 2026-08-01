@@ -766,6 +766,45 @@ suite('typing with auto-replaces', function () {
         assertLatex('1+2+3+4');
       });
 
+      test('wrapping a bracketed selection in the same bracket unwraps it', function () {
+        mq.typedText('(ab)');
+        assertLatex('\\left(ab\\right)');
+        mq.keystroke('Shift-Home').typedText('(');
+        assertLatex('ab');
+        // cursor should go after contents
+        // so typing "(" inserts a new bracket
+        mq.typedText('(');
+        assertLatex('ab\\left(\\right)');
+      });
+
+      test('unwrapping only happens when the selection is exactly one bracket', function () {
+        mq.typedText('(a)(b)');
+        assertLatex('\\left(a\\right)\\left(b\\right)');
+        mq.keystroke('Shift-Home').typedText('(');
+        assertLatex('\\left(\\left(a\\right)\\left(b\\right)\\right)');
+      });
+
+      test('unwrapping only happens when the bracket type matches', function () {
+        mq.typedText('(ab)');
+        assertLatex('\\left(ab\\right)');
+        mq.keystroke('Shift-Home').typedText('[');
+        assertLatex('\\left[\\left(ab\\right)\\right]');
+      });
+
+      test('does not unwrap a mismatched bracket', function () {
+        mq.typedText('(ab]');
+        assertLatex('\\left(ab\\right]');
+        mq.keystroke('Shift-Home').typedText('(');
+        assertLatex('\\left(\\left(ab\\right]\\right)');
+      });
+
+      test('wrapping an empty bracket in the same bracket wraps rather than unwraps', function () {
+        mq.typedText('()');
+        assertLatex('\\left(\\right)');
+        mq.keystroke('Shift-Home').typedText('(');
+        assertLatex('\\left(\\left(\\right)\\right)');
+      });
+
       test('backspacing close-bracket of 1+(2+3] (nothing after) then typing', function () {
         mq.typedText('1+(2+3]');
         assertLatex('1+\\left(2+3\\right]');

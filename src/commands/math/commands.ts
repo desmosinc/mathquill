@@ -1325,6 +1325,8 @@ class Bracket extends DelimsNode {
     [L]: { ch: string; ctrlSeq: string };
     [R]: { ch: string; ctrlSeq: string };
   };
+  // Skip mathspeak and instead emit an empty string.
+  skipMathspeak = false;
   constructor(
     side: BracketSide,
     open: string,
@@ -1404,6 +1406,7 @@ class Bracket extends DelimsNode {
     this.checkCursorContextClose(ctx);
   }
   mathspeak(opts?: MathspeakOptions) {
+    if (this.skipMathspeak) return '';
     var open = this.sides[L].ch,
       close = this.sides[R].ch;
     if (open === '|' && close === '|') {
@@ -1454,7 +1457,57 @@ class Bracket extends DelimsNode {
       .removeClass('mq-ghost');
     this.replaceBracket(brackFrag, this.side);
   }
+
+  // Returns true iff handled the insertion.
+  unwrapSelectedBracket(cursor: Cursor) {
+    var seln = this.replacedFragment;
+    if (!seln) return false;
+
+    var inner = seln.getEnd(L);
+    if ( // do we have a matching bracket pair?
+      !(inner instanceof Bracket) ||
+      inner !== seln.getEnd(R) ||
+      inner.sides[L].ch !== this.sides[L].ch ||
+      inner.sides[R].ch !== this.sides[R].ch
+    ) {
+      return false;
+    }
+
+    var innerBlock = inner.getEnd(L);
+    // Nothing to unwrap if the bracket is empty; fall back to wrapping.
+    if (innerBlock.isEmpty()) return false;
+
+    var innerR = innerBlock.getEnd(R) as MQNode;
+
+    // Move the bracket's children to where the selection was
+    // and drop the bracket that was there
+    var children = innerBlock.children();
+    var brackFrag = seln.domFrag();
+    children.disown().adopt(cursor.parent, cursor[L], cursor[R]);
+    children.domFrag().insertBefore(brackFrag);
+    brackFrag.remove();
+
+    cursor.parent.bubble(function (node) {
+      node.reflow();
+      return undefined;
+    });
+    // remove the selection
+    cursor.insRightOf(innerR);
+
+    // Skip the announcement for the otherwise to-be created bracket and
+    // instead announce the unwrapped contents.
+    this.skipMathspeak = true;
+    cursor.controller.aria.queue(
+      children
+        .fold('', function (speech, child) {
+          return speech + ' ' + child.mathspeak();
+        })
+        .trim()
+    );
+    return true;
+  }
   createLeftOf(cursor: Cursor) {
+    if (this.unwrapSelectedBracket(cursor)) return;
     var brack;
     if (!this.replacedFragment) {
       // unless wrapping seln in brackets,
