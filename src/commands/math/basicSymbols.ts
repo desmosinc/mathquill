@@ -178,16 +178,15 @@ class DigitGroupingChar extends MQSymbol {
 
       // only do grouping if we have at least 4 numbers
       if (totalDigits >= 4) {
+        // The digit is the nth digit from right in the group. Rightmost digit is 1.
         if (count === totalDigits) {
           cls = 'mq-group-leading-' + numDigitsInFirstGroup;
         } else if (count % 3 === 0) {
-          if (count !== totalDigits) {
-            cls = 'mq-group-start';
-          }
-        }
-
-        if (!cls) {
-          cls = 'mq-group-other';
+          cls = 'mq-group-start';
+        } else if (count % 3 === 2) {
+          cls = 'mq-group-middle';
+        } else {
+          cls = 'mq-group-end';
         }
       }
 

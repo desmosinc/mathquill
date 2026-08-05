@@ -18,45 +18,56 @@
 
   .mq-digit {
     display: inline-block;
-    margin-left: @expand-margin;
-    margin-right: @expand-margin;
+    // Using padding instead of margin because margin causes subpixel rounding
+    // in Safari, which accumulates in long lists.
+    padding-left: @expand-margin;
+    padding-right: @expand-margin;
   }
 
   &.mq-show-grouping {
+    .mq-group-start,
+    .mq-group-leading-3,
+    .mq-group-middle,
+    .mq-group-leading-2,
+    .mq-group-end,
+    .mq-group-leading-1 {
+      // Clear padding for all digits involved in digit grouping.
+      // (This excludes the '.' and digits after a decimal point).
+      padding: 0;
+    }
+
     .mq-group-start {
-      margin-left: @digit-separator;
-      margin-right: @contract-margin;
+      padding-left: @digit-separator + 5 * @contract-margin;
     }
 
-    .mq-group-other {
-      margin-left: @contract-margin;
-      margin-right: @contract-margin;
-    }
-
-    .mq-group-leading-1,
-    .mq-group-leading-2 {
-      margin-left: 0;
-      margin-right: @contract-margin;
-    }
-
+    .mq-group-start,
     .mq-group-leading-3 {
-      margin-left: 4 * @expand-margin;
-      margin-right: @contract-margin;
+      transform: translateX(-5 * @contract-margin);
+    }
+
+    .mq-group-middle,
+    .mq-group-leading-2 {
+      transform: translateX(-3 * @contract-margin);
+    }
+
+    .mq-group-end,
+    .mq-group-leading-1 {
+      transform: translateX(-1 * @contract-margin);
     }
   }
   .mq-ellipsis-start {
-    margin-left: @ellipsis-separator;
-    margin-right: @ellipsis-internal-sep;
+    padding-left: @ellipsis-separator;
+    padding-right: @ellipsis-internal-sep;
   }
 
   .mq-ellipsis-middle {
-    margin-left: @ellipsis-internal-sep;
-    margin-right: @ellipsis-internal-sep;
+    padding-left: @ellipsis-internal-sep;
+    padding-right: @ellipsis-internal-sep;
   }
 
   .mq-ellipsis-end {
-    margin-left: @ellipsis-internal-sep;
-    margin-right: @ellipsis-separator;
+    padding-left: @ellipsis-internal-sep;
+    padding-right: @ellipsis-separator;
   }
 }
 
