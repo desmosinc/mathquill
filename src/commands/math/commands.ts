@@ -1826,7 +1826,10 @@ class MathFieldNode extends MathCommand {
     return h('span', { class: 'mq-editable-field' }, [
       h.block(
         'span',
-        { class: 'mq-root-block', 'aria-hidden': 'true' },
+        {
+          class: 'mq-root-block' + SPACING_BUG_CLASS_APPEND,
+          'aria-hidden': 'true'
+        },
         blocks[0]
       )
     ]);

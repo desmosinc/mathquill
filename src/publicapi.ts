@@ -294,7 +294,12 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
       var contents = domFrag(el).addClass(classNames).children().detach();
 
       root.setDOM(
-        domFrag(h('span', { class: 'mq-root-block', 'aria-hidden': true }))
+        domFrag(
+          h('span', {
+            class: 'mq-root-block' + SPACING_BUG_CLASS_APPEND,
+            'aria-hidden': true
+          })
+        )
           .appendTo(el)
           .oneElement()
       );

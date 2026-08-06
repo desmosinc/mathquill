@@ -25,6 +25,7 @@ INTRO = $(SRC_DIR)/intro.js
 OUTRO = $(SRC_DIR)/outro.js
 
 BASE_SOURCES = \
+  $(SRC_DIR)/has-spacing-bug.ts \
   $(SRC_DIR)/utils.ts \
   $(SRC_DIR)/dom.ts \
   $(SRC_DIR)/unicode.ts \
