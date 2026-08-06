@@ -178,7 +178,7 @@ class DigitGroupingChar extends MQSymbol {
 
       // only do grouping if we have at least 4 numbers
       if (totalDigits >= 4) {
-        // The digit is the nth digit from right in the group. Rightmost digit is 1.
+        // The digit is the `count`th digit from right in the group. Rightmost digit is `count = 1`.
         if (count === totalDigits) {
           cls = 'mq-group-leading-' + numDigitsInFirstGroup;
         } else if (count % 3 === 0) {
@@ -187,6 +187,17 @@ class DigitGroupingChar extends MQSymbol {
           cls = 'mq-group-middle';
         } else {
           cls = 'mq-group-end';
+        }
+
+        // Some extra classes to support transforms in the leading group, and avoid padding after last group.
+        if (count === 1) {
+          cls += ' mq-group-final-end'
+        } else if (count === totalDigits - 1 && numDigitsInFirstGroup === 2) {
+          cls += ' mq-group-leading-2-end'
+        } else if (count === totalDigits - 1 && numDigitsInFirstGroup === 3) {
+          cls += ' mq-group-leading-3-middle'
+        } else if (count === totalDigits - 2 && numDigitsInFirstGroup === 3) {
+          cls += ' mq-group-leading-3-end'
         }
       }
 

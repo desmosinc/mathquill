@@ -5,6 +5,10 @@
 @contract-margin: -0.01em;
 @ellipsis-separator: 0.14em;
 @ellipsis-internal-sep: 0.009em;
+// When we were using margin, each group had a @digit-separator (positive) margin
+// plus 5 @contract-margin (negative) margins. Group that all together into one value.
+@digit-separator-reduced: @digit-separator + 5 * @contract-margin;
+@leading-3-margin: 4 * @expand-margin;
 
 .mq-root-block,
 .mq-math-mode .mq-root-block {
@@ -36,23 +40,49 @@
       padding: 0;
     }
 
+    // Typical groups
     .mq-group-start {
-      padding-left: @digit-separator + 5 * @contract-margin;
-    }
-
-    .mq-group-start,
-    .mq-group-leading-3 {
       transform: translateX(-5 * @contract-margin);
     }
 
-    .mq-group-middle,
-    .mq-group-leading-2 {
+    .mq-group-middle {
       transform: translateX(-3 * @contract-margin);
     }
 
-    .mq-group-end,
-    .mq-group-leading-1 {
+    .mq-group-end {
       transform: translateX(-1 * @contract-margin);
+      // Padding is provided to the right of each group
+      padding-right: @digit-separator-reduced;
+    }
+
+    .mq-group-final-end {
+      // No padding after the last group.
+      padding-right: 0;
+    }
+
+    // The leading group, if it's 3 digits long
+    .mq-group-leading-3 {
+      padding-left: @leading-3-margin
+    }
+
+    .mq-group-leading-3-middle {
+      transform: translateX(2 * @contract-margin);
+    }
+
+    .mq-group-leading-3-end {
+      transform: translateX(4 * @contract-margin);
+      padding-right: @digit-separator-reduced + 5 * @contract-margin;
+    }
+
+    // The leading group, if it's 2 digits long
+    .mq-group-leading-2-end {
+      transform: translateX(2 * @contract-margin);
+      padding-right: @digit-separator-reduced + 3 * @contract-margin;
+    }
+
+    // The leading group, if it's 1 digit long
+    .mq-group-leading-1 {
+      padding-right: @digit-separator-reduced + 1 * @contract-margin;
     }
   }
   .mq-ellipsis-start {
