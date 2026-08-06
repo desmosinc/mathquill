@@ -293,10 +293,12 @@ function getInterface(v: number): MathQuill.v3.API | MathQuill.v1.API {
 
       var contents = domFrag(el).addClass(classNames).children().detach();
 
+      const spacingBugAppend = hasSpacingBug() ? ' mq-has-spacing-bug' : '';
+
       root.setDOM(
         domFrag(
           h('span', {
-            class: 'mq-root-block' + SPACING_BUG_CLASS_APPEND,
+            class: 'mq-root-block' + spacingBugAppend,
             'aria-hidden': true
           })
         )

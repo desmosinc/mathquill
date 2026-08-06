@@ -1,15 +1,16 @@
+let _hasSpacingBug: boolean | undefined;
+
+function hasSpacingBug() {
+  if (_hasSpacingBug === undefined) _hasSpacingBug = computeHasSpacingBug();
+  return _hasSpacingBug;
+}
+
 /**
  * On webkit, we're seeing a bug where 1000 inline-block elements inside an inline-block parent
  * would be spaced well, but the parent gets sized incorrectly by a few dozen pixels. This
  * is likely due to some error in sub-pixel accumulation. True if that problem is detected.
- *
- * Computed only once.
  */
-const HAS_SPACING_BUG = hasSpacingBug();
-
-const SPACING_BUG_CLASS_APPEND = HAS_SPACING_BUG ? ' mq-has-spacing-bug' : '';
-
-function hasSpacingBug() {
+function computeHasSpacingBug() {
   const parent = document.createElement('span');
   parent.style.display = 'inline-block';
   for (let i = 0; i < 9; i++) {
