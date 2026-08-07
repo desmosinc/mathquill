@@ -1823,10 +1823,14 @@ class MathFieldNode extends MathCommand {
   name: string;
   ctrlSeq = '\\MathQuillMathField';
   domView = new DOMView(1, (blocks) => {
+    const spacingBugAppend = hasSpacingBug() ? ' mq-has-spacing-bug' : '';
     return h('span', { class: 'mq-editable-field' }, [
       h.block(
         'span',
-        { class: 'mq-root-block', 'aria-hidden': 'true' },
+        {
+          class: 'mq-root-block' + spacingBugAppend,
+          'aria-hidden': 'true'
+        },
         blocks[0]
       )
     ]);
